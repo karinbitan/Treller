@@ -1,0 +1,196 @@
+.card-preview {
+    background-color: white;
+    padding: 6px 8px 2px;
+    margin-bottom: 8px;
+    position: relative;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
+    color: #172b4d;
+    position: relative;
+    cursor: pointer;
+    & p {
+        margin: 0;
+    }
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.438);
+    }
+    & .label {
+        height: 8px;
+        width: 50px;
+        border-radius: 3px;
+        &.green {
+            background-color: #61bd4f;
+        }
+        &.yellow {
+            background-color: #f2d600;
+        }
+        &.orange {
+            background-color: #ff9f1a;
+        }
+        &.red {
+            background-color: #eb5a46;
+        }
+        &.purple {
+            background-color: #c377e0;
+        }
+        &.blue {
+            background-color: #0079bf;
+        }
+    }
+}
+
+.edit-icon {
+    font-size: smaller;
+    &-btn {
+        cursor: pointer;
+        position: absolute;
+        right: 4px;
+        top: 2px;
+        background-color: unset;
+        border: none;
+        &:hover {
+            background-color: rgba(119, 118, 118, 0.589);
+        }
+    }
+}
+
+.card-option {
+    &.modal {
+        position: fixed; /* Stay in place */
+        z-index: 3; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        border: 1px solid black;
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        position: relative;
+        margin: auto;
+        padding: 0;
+        width: 200px;
+        -webkit-animation-name: animatetop;
+        -webkit-animation-duration: 0.4s;
+        animation-name: animatetop;
+        animation-duration: 0.4s;
+        text-align: center;
+        &.txt {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 3px;
+            clear: both;
+            color: #e6e6e6;
+            display: block;
+            float: left;
+            margin: 0 0 4px 8px;
+            padding: 6px 12px 6px 8px;
+            text-decoration: none;
+            transition: transform 85ms ease-in;
+        }
+    }
+
+    /* Add Animation */
+    @-webkit-keyframes animatetop {
+        from {
+            top: -300px;
+            opacity: 0;
+        }
+        to {
+            top: 0;
+            opacity: 1;
+        }
+    }
+
+    @keyframes animatetop {
+        from {
+            top: -300px;
+            opacity: 0;
+        }
+        to {
+            top: 0;
+            opacity: 1;
+        }
+    }
+
+    /* The Close Button */
+    .close {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modal-header {
+        padding: 2px 16px;
+        background-color: #5cb85c;
+        color: white;
+    }
+
+    .modal-body {
+        padding: 2px 16px;
+    }
+
+    .modal-footer {
+        padding: 2px 16px;
+        background-color: #5cb85c;
+        color: white;
+    }
+
+    // & button {
+    //     color: white;
+    //     background-color: orange;
+    //     text-decoration: none;
+    //     border: 1px solid orange;
+    //     padding: 5px;
+    //     // margin-left: 2px;
+    //     // margin-right: 2px;
+    //     border-radius: 5px;
+    //     cursor: pointer;
+    //     padding: 5px 10px;
+    //     font-size: 1.5rem;
+    //     font-family: quicksand;
+
+    //     &:hover {
+    //         background-color: white;
+    //         color: orange;
+    //     }
+    // }
+
+    .modal-close-btn {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 1rem;
+        margin: 10px;
+        font-family: quicksand;
+        align-self: flex-end;
+    }
+
+    & form {
+        position: relative;
+        z-index: 1;
+    }
+
+    & img {
+        width: 270px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        opacity: 0.6;
+    }
+
+    .modal-content {
+        display: flex;
+    }
+}

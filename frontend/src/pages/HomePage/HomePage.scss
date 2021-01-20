@@ -1,0 +1,11 @@
+.home-page {
+    background-color: white;
+    & .head-line {
+        text-align: center;
+        font-size: x-large;
+    }
+    & .text {
+        align-self: flex-end;
+        font-size: x-large;
+    }
+}

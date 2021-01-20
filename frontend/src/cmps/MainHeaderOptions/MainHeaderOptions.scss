@@ -1,0 +1,28 @@
+.main-header-options {
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+    overflow: hidden;
+    position: absolute;
+    width: 303px;
+    z-index: 70;
+    top: 37px;
+    left: 45px;
+    min-height: 150px;
+    & p {
+        border-bottom: 1px solid rgba(9, 30, 66, 0.13);
+        color: #5e6c84;
+        text-align: center;
+    }
+    & ul {
+        text-align: center;
+        color: #172b4d;
+        & li {
+            cursor: pointer;
+            padding: 5px;
+            &:hover {
+                background-color: rgba(9, 30, 66, 0.04);
+            }
+        }
+    }
+}
