@@ -120,6 +120,10 @@ class _TrellerApp extends Component {
         this.setState({ isMenuOpen: !this.state.isMenuOpen })
     }
 
+    toggleInviteMenu = () => {
+        this.setState({ isInviteMenuOpen: !this.state.isInviteMenuOpen })
+    }
+
     // LIST//
     toggleForm = (ev) => {
         ev.stopPropagation();
@@ -276,11 +280,14 @@ class _TrellerApp extends Component {
                         </div>
                             |
                         <div className="invite-container">
-                            <button className="invite-btn no-button">Invite</button>
-                            {isInviteMenuOpen}  <div className="invite pop-up">
-                            <p>Invite</p>
-                            
-                            </div>
+                            <button onClick={this.toggleInviteMenu} className="invite-btn no-button">Invite</button>
+                            {isInviteMenuOpen && <div className="invite pop-up">
+                                <button onClick={this.toggleInviteMenu}>X</button>
+                                <p>Invite</p>
+                                <form>
+                                    <input type="search" /><i className="fa fa-search search-icon"></i>
+                                </form>
+                            </div>}
                         </div>
                         <div className="menu-container">
                             <button className="show-menu-icon" onClick={this.toggleMenu}>

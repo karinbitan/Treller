@@ -14,6 +14,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import './MainHeader.scss';
 import { MainHeaderOptions } from '../MainHeaderOptions/MainHeaderOptions';
+import { Filter } from '../Filter/Filter';
 
 class _MainHeader extends Component {
 
@@ -61,7 +62,7 @@ class _MainHeader extends Component {
                     <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Boards')}>
                         <img className="icon" src={Logo} alt="boards" />
                     </button>
-                    <input className="search" type="search" /><i className="fa fa-search search-icon"></i>
+                    <Filter />
                 </div>
                 <div className="logo">
                     <NavLink to="/treller" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</NavLink>
