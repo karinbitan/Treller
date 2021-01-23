@@ -38,7 +38,14 @@ async function deleteCard(req, res) {
 }
 
 async function addCard(req, res) {
-    const { boardId, listIdx, card } = req.body;
+    let { boardId, listId, listIdx, card } = req.body
+    if (req.session.user) {
+        card.createdBy = {
+            userId: req.session.user._id,
+            boardId,
+            listId
+        }
+    }
     try {
         const realCard = await cardService.addCard(card);
         await boardService.addCard(boardId, listIdx, realCard);

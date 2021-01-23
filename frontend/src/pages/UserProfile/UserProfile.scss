@@ -1,1 +1,11 @@
-.userProfile {}
+.user-profile {
+    color: #0c3953;
+    & .headline {
+        font-size: xx-large;
+        text-align: center;
+    }
+    & .profile-picture{
+        width: 200px;
+        height: 200px;
+    }
+}

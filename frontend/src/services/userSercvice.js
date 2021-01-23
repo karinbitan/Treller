@@ -2,6 +2,7 @@ import httpService from './httpService';
 export const userService = {
     query,
     getUserById,
+    updateUser,
     getEmptyUser
 }
 
@@ -11,6 +12,10 @@ function query() {
 
 function getUserById(userId) {
     return httpService.get(`user/${userId}`);
+}
+
+function updateUser(user) {
+    return httpService.put(`user/${user._id}`, user);
 }
 
 function getEmptyUser() {

@@ -1,5 +1,4 @@
 const userService = require('./user.service')
-const logger = require('../../services/logger.service')
 
 
 async function getUsers(req, res) {
@@ -35,8 +34,8 @@ async function deleteUser(req, res) {
 async function updateUser(req, res) {
     const user = req.body;
     try {
-        await userService.update(user)
-        res.send(user)
+        const savedUser = await userService.updateUser(user)
+        res.send(savedUser)
     } catch (err) {
         console.log(`ERROR: ${err}`)
         throw err;

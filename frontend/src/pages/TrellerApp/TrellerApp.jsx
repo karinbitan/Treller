@@ -9,6 +9,7 @@ import { ListPreview } from './../../cmps/ListPreview';
 
 import './TrellerApp.scss';
 import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
+import { MainHeader } from '../../cmps/MainHeader/MainHeader';
 
 class _TrellerApp extends Component {
 
@@ -245,7 +246,8 @@ class _TrellerApp extends Component {
             isMenuOpen, isInviteMenuOpen } = this.state;
         return (
             <section>
-                {board && <section className="treller-app" style={{ backgroundColor: board.style.backgroundColor }}>
+                <MainHeader board={board} />
+                {board && <section className="treller-app" style={{ backgroundColor: board.style.backgroundColor.app }}>
                     <BoardHeader onUpdateBoard={this.onUpdateBoard}
                         board={board} boardToEdit={boardToEdit}
                         isStarred={isStarred}

@@ -13,8 +13,13 @@ export class _Filter extends Component {
         isFormOpen: false
     }
 
+    async componentDidMount() {
+        // await this.props.loadCards();
+        // console.log(this.props.cards)
+    }
+
     toggleForm = () => {
-        this.setState({isFormOpen: !this.state.isFormOpen})
+        this.setState({ isFormOpen: !this.state.isFormOpen })
     }
 
     handleChange = ({ target }) => {
@@ -25,7 +30,9 @@ export class _Filter extends Component {
 
     setFilter = async (ev) => {
         ev.preventDefault();
+        debugger
         await this.props.loadCards(this.state.filterBy);
+        console.log(this.props.cards)
     }
 
     render() {
@@ -34,19 +41,20 @@ export class _Filter extends Component {
         return (
             <section className="filter">
                 <form onSubmit={this.setFilter}>
-                    <input type="search" className="search" name="" onFocus={this.toggleForm} onBlur={this.toggleForm} />
+                    <input type="search" className="search" name="title"
+                        onChange={this.handleChange} onFocus={this.toggleForm} onBlur={this.toggleForm} />
                     <button className="no-button"><i className="fa fa-search search-icon"></i></button>
                 </form>
                 {isFormOpen && <div className="search-tab pop-up" >
                     <p>Seatch Results</p>
                     <ul>
-                        {cards.map(card => {
+                        {/* {cards.map(card => {
                             if (card) {
                                 return <li key={card._id}>{card}</li>
                             } else {
                                 <li>No cards found...</li>
                             }
-                        })}
+                        })} */}
                     </ul>
                 </div>}
             </section>

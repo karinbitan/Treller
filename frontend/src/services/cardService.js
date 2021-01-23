@@ -29,8 +29,8 @@ function deleteCard(boardId, listIdx, cardId) {
     return httpService.delete(`card/${boardId}/${listIdx}/${cardId}`);
 }
 
-function addCard(boardId, listIdx, card) {
-    return httpService.post(`card/`, { boardId, listIdx, card });
+function addCard(boardId, listId, listIdx, card) {
+    return httpService.post(`card/`, { boardId, listId, listIdx, card });
 }
 
 function updateCard(card) {
@@ -55,7 +55,11 @@ function getEmptyCard() {
         labels: [],
         dueDate: '',
         createdAt: Date.now(),
-        byMember: [],
+        createdBy: {
+            userId: '',
+            boardId: '',
+            listId: '',
+        },
         style: ''
     }
     return card;

@@ -11,7 +11,10 @@ export class BoardHeader extends Component {
         isInviteMenuOpen: false,
         isStyleMenuOpen: false,
         style: {
-            backgroundColor: null
+            backgroundColor: {
+                app: null,
+                header: null
+            }
         }
     }
 
@@ -30,11 +33,14 @@ export class BoardHeader extends Component {
         this.setState(prevState => ({ boardToEdit: { ...prevState.boardToEdit, [field]: value } }));
     }
 
-    changeStyle = (color) => {
-        const field = 'backgroundColor';
-        this.setState(prevState => ({ style: { ...prevState.style, [field]: color } }), () =>
-            this.props.onChangeStyle(this.state.style)
-        );
+    changeStyle = (app, header) => {
+        const { style } = this.state;
+        style.backgroundColor.app = app;
+        style.backgroundColor.header = header;
+        // this.setState(prevState => ({ style: { ...prevState.style, [field]: color } }), () =>
+        //     this.props.onChangeStyle(this.state.style);
+        // );
+        this.setState({ style }, () => this.props.onChangeStyle(this.state.style));
     }
 
     onUpdateBoard = (ev) => {
@@ -72,7 +78,7 @@ export class BoardHeader extends Component {
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
-                    <form onSubmit={this.updateBoard}>
+                    <form onSubmit={this.onUpdateBoard}>
                         {boardToEdit && <input type="text" ref={el => this.myTextRef = el} className="board-header board-name" name="title"
                             placeholder="Enter your board name here..."
                             value={boardToEdit.title} onChange={this.handleChangeBoard} />}
@@ -104,7 +110,9 @@ export class BoardHeader extends Component {
                             {!isStyleMenuOpen ? <div>
                                 <p>Menu</p>
                                 <ul>
-                                    <li onClick={this.toggleStyleMenu}>Change Style</li>
+                                    <li onClick={this.toggleStyleMenu}>Change Style
+                                     <div className="color-sample" style={{ backgroundColor: board.style.backgroundColor.app }}></div>
+                                    </li>
                                     <li onClick={this.onDeleteBoard}>Delete Board</li>
                                 </ul>
                             </div>
@@ -112,9 +120,11 @@ export class BoardHeader extends Component {
                                     <button onClick={this.toggleStyleMenu}><i className="fas fa-arrow-left"></i></button>
                                     <p>Change Style</p>
                                     <div className="flex">
-                                        <div onClick={() => this.changeStyle('rgb(0, 121, 191)')} className="color-picker blue" ></div>
-                                        <div onClick={() => this.changeStyle('rgb(81, 152, 57)')} className="color-picker green" ></div>
-                                        <div onClick={() => this.changeStyle('rgb(210, 144, 52)')} className="color-picker orange" ></div>
+                                        <div onClick={() => this.changeStyle('rgb(0, 121, 191)', 'rgb(5, 97, 150)')} className="color-picker blue" ></div>
+                                        <div onClick={() => this.changeStyle('rgb(81, 152, 57)', 'rgb(55, 105, 39)')} className="color-picker green" ></div>
+                                        <div onClick={() => this.changeStyle('rgb(210, 144, 52)', 'rgb(156, 108, 40)')} className="color-picker orange" ></div>
+                                        <div onClick={() => this.changeStyle('rgb(176, 70, 50)', 'rgb(105, 43, 30)')} className="color-picker red" ></div>
+                                        <div onClick={() => this.changeStyle('rgb(137, 96, 158)', 'rgb(68, 48, 78)')} className="color-picker purple" ></div>
                                     </div>
                                 </div>}
                         </div>}

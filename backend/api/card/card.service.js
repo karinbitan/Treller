@@ -3,6 +3,7 @@ const ObjectId = require('mongodb').ObjectId;
 
 module.exports = {
     query,
+
     getCardById,
     deleteCard,
     updateCard,
@@ -37,6 +38,33 @@ function _setFilter(filterBy) {
     }
     return filter;
 }
+
+// function _setFilter(filterBy) {
+//     const filter = {};
+//     let mainFilter = []
+//     // if (filterBy.txt) {
+//     //     filter.title = filterBy.txt
+//     // }
+
+//     if (filterBy.cardIds) {
+//         filter._id = { $in: filterBy.cardIds };
+//     }
+
+//     // TODO: Support lowercase
+//     // TODO: Support search by all
+//     if (filterBy.txt) {
+//         let textFields = []
+//         textFields.push({ "title": { $regex: `.*${requestQuery.txt}.*` } });
+//         textFields.push({ "description": { $regex: `.*${requestQuery.txt}.*` } });
+//         // textFields.push({ "about": { $regex: `.*${requestQuery.txt}.*` } });
+
+//         mainFilter.push({
+//             $or: textFields
+//         });
+//     }
+
+//     return mainFilter;
+// }
 
 
 async function getCardById(cardId) {

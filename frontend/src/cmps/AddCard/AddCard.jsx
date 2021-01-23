@@ -32,9 +32,9 @@ export class _AddCard extends Component {
     addCard = async (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
-        const { listIdx, boardId } = this.props;
+        const { listId, listIdx, boardId } = this.props;
         const { cardToEdit } = this.state;
-        await this.props.addCard(boardId, listIdx, cardToEdit);
+        await this.props.addCard(boardId, listId, listIdx, cardToEdit);
         await this.props.setBoard(boardId);
         this.setState(({ cardToEdit: { ...this.state.cardToEdit, title: '' } }));
         this.setState({ showing: false })

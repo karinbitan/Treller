@@ -2,6 +2,7 @@ const INITIAL_STATE = {
   users: [],
   loggedInUser: null
 }
+
 export function userReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_USERS':

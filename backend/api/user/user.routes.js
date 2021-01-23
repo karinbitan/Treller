@@ -1,6 +1,6 @@
 const express = require('express');
 const { requireAuth } = require('../../middlewares/requireAuth.middleware');
-const { getUsers, getUserById, deleteUser, updateUser } = require('./user.controller');
+const { getUsers, getUserById, updateUser, deleteUser} = require('./user.controller');
 const router = express.Router();
 
 // middleware that is specific to this router

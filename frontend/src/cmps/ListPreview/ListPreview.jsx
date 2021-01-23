@@ -55,7 +55,7 @@ export class ListPreview extends Component {
     }
 
     onEnterPress = (ev) => {
-        if (ev.keyCode == 13 && ev.shiftKey == false) {
+        if (ev.keyCode === 13 && ev.shiftKey === false) {
             ev.preventDefault();
             this.changeListTitle(ev);
             this.handleChange(ev);
@@ -143,7 +143,7 @@ export class ListPreview extends Component {
                 </div>}
 
                 {/* <CardList list={list} cards={list.cards} idx={idx} key={list._id} /> */}
-                <AddCard listIdx={idx} boardId={board._id} />
+                <AddCard boardId={board._id} listId={list._id} listIdx={idx} />
             </section >
         )
     }

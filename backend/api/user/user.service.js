@@ -42,11 +42,11 @@ async function getUserById(userId) {
         ]
         let user = await collection.aggregate(aggQuery).toArray();
         // const user = await collection.findOne({ _id: ObjectId(userId) })
-        if (user.password) delete user.password;
         if (user.length) {
             user = user[0]
         }
-        return user
+        if (user.password) delete user.password;
+        return user;
     } catch (err) {
         console.log(`ERROR: while finding user ${userId}`)
         throw err;
@@ -77,9 +77,11 @@ async function deleteUser(userId) {
 async function updateUser(user) {
     const collection = await dbService.getCollection('user')
     user._id = ObjectId(user._id);
+    delete user._id;
     try {
-        await collection.replaceOne({ _id: user._id }, { user })
-        return user
+        await collection.replaceOne({ _id: user._id }, { user });
+        user._id = ObjectId(user._id);
+        return user;
     } catch (err) {
         console.log(`ERROR: cannot update user ${user._id}`)
         throw err;

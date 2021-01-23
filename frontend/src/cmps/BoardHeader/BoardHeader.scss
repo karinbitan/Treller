@@ -66,6 +66,12 @@
                 background-color: rgba(255, 255, 255, 0.171);
             }
         }
+        & .color-sample {
+            float: left;
+            width: 20px;
+            height: 20px;
+        }
+
         & .style-change-container {
             & .color-picker {
                 height: 50px;
@@ -78,6 +84,12 @@
                 }
                 &.orange {
                     background-color: rgb(210, 144, 52);
+                }
+                &.red {
+                    background-color: rgb(176, 70, 50);
+                }
+                &.purple {
+                    background-color: rgb(137, 96, 158);
                 }
             }
         }

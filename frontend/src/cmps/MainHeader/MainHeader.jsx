@@ -26,7 +26,7 @@ class _MainHeader extends Component {
 
     async componentDidMount() {
         await this.props.getLoggedInUser();
-        await this.props.setUser(this.props.user._id);
+        // await this.props.setUser(this.props.user._id);
     }
 
     toggleAvatarOptions = () => {
@@ -51,12 +51,12 @@ class _MainHeader extends Component {
     }
 
     render() {
-        const { user } = this.props;
+        const { user, board, isHomePage, isUserPage } = this.props;
         const { isAvatarOptionsOpen, isMainHeaderOptionsOpen, mainHeaderOptionsType } = this.state;
         return (
-            <header>
+            <header style={{ backgroundColor: board ? board.style.backgroundColor.header : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
                 <section className="main-header flex align-center">
-                    <div className="menu-container flex align-center">
+                    {!isHomePage && <div className="menu-container flex align-center">
                         <button className="icon-container no-button">
                             <NavLink to="/treller"><img className="icon" src={Home} alt="home" /></NavLink>
                         </button>
@@ -64,17 +64,22 @@ class _MainHeader extends Component {
                             <img className="icon" src={Logo} alt="boards" />
                         </button>
                         <Filter />
-                    </div>
+                    </div>}
                     <div className="logo">
-                        <NavLink to="/treller" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</NavLink>
+                        {!isHomePage ?
+                            <Link to="/treller" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
+                           : <Link to="/" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
+                        }
                     </div>
                     <div className="menu-container flex flex-end align-center">
-                        <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Create')}>
-                            <img className="icon" src={Add} alt="add" />
-                        </button>
-                        <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Notifications')}>
-                            <img className="icon" src={Notification} alt="notifications" />
-                        </button>
+                        {!isHomePage && <div className="flex">
+                            <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Create')}>
+                                <img className="icon" src={Add} alt="add" />
+                            </button>
+                            <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Notifications')}>
+                                <img className="icon" src={Notification} alt="notifications" />
+                            </button>
+                        </div>}
                         {user && <Avatar name={user.fullName} size="40" round={true} onClick={this.toggleAvatarOptions} />}
                         {(user && isAvatarOptionsOpen) && <div className="avatar-options">
                             <p>Account</p>

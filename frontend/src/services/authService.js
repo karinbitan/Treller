@@ -34,6 +34,9 @@ export const authService = {
 async function login(userCred) {
     try {
         const user = await httpService.post('auth/login', userCred);
+        if (!user) {
+            throw Error('login failed')
+        }
         return user;
     } catch (err) {
         console.log('UserService: err in login', err);

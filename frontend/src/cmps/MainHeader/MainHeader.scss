@@ -1,11 +1,17 @@
-header {
-    background-color: rgb(106, 126, 180);
-}
-
+// header {
+//     &.blue {
+//         background-color: rgb(5, 97, 150);
+//     }
+//     &.green {
+//         background-color: rgb(55, 105, 39);
+//     }
+//     &.orange {
+//         background-color: rgb(156, 108, 40);
+//     }
+// }
 .main-header {
     margin-left: 5px;
     margin-right: 5px;
-    background-color: rgb(106, 126, 180);
 }
 
 .logo {

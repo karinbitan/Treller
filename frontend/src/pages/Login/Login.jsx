@@ -38,9 +38,17 @@ export class _Login extends Component {
 
     login = async (ev) => {
         ev.preventDefault();
-        await this.props.login(this.state.login);
-        this.setState({ login: { userName: '', password: '' } });
-        this.props.history.push('/user/6002b6fd65bd0821d0dc7d3b');
+        try {
+            const user = await this.props.login(this.state.login);
+            this.setState({ login: { userName: '', password: '' } });
+            if(user){
+                this.props.history.push(`/user/${user._id}`);
+            } else {
+                alert('Login failed!')
+            }
+        } catch (err) {
+            alert('Login failed!!!')
+        }
     }
 
     signup = async (ev) => {

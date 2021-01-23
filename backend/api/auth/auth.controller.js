@@ -1,4 +1,5 @@
 const authService = require('./auth.service');
+const userService = require('./../user/user.service');
 const logger = require('../../services/logger.service');
 
 async function login(req, res) {
@@ -16,7 +17,7 @@ async function login(req, res) {
 async function signup(req, res) {
     try {
         const { userName, password } = req.body;
-        const account = await authService.signup(req.body);
+        await authService.signup(req.body);
         const user = await authService.login(userName, password);
         req.session.user = user;
         // req.session.save();
@@ -39,7 +40,8 @@ async function logout(req, res) {
 async function getLoggedInUser(req, res) {
     try {
         if (req.session.user) {
-            res.json(req.session.user);
+            const user = await userService.getUserById(req.session.user._id);
+            res.json(user);
         }
     } catch (err) {
         // res.json({});

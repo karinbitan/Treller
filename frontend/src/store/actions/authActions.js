@@ -4,6 +4,7 @@ export function login(userCred) {
   return async dispatch => {
     const user = await authService.login(userCred);
     dispatch({ type: 'SET_USER', user });
+    return user;
   }
 }
 
