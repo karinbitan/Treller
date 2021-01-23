@@ -14,7 +14,6 @@ function App() {
     <section className="App">
       <Router>
         <MainHeader />
-        <main>
           <Switch>
             <Route exact component={CardDetails} path="/treller/card/:id"></Route>
             <Route exact component={TrellerApp} path="/treller/board/:id"></Route>
@@ -22,7 +21,6 @@ function App() {
             <Route exact component={Login} path="/login"></Route>
             <Route exact component={HomePage} path="/"></Route>
           </Switch>
-        </main>
       </Router>
     </section >
   );

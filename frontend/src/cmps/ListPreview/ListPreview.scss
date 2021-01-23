@@ -3,7 +3,7 @@
     border-radius: 3px;
     width: 272px;
     max-height: 100%;
-    margin: 10px;
+    margin-right: 10px;
     position: relative;
     & textarea.list-title {
         padding: 10px 8px;
@@ -68,8 +68,6 @@
 }
 
 .card-list {
-    margin: 0 8px;
-    padding: 5px 5px;
 }
 
 .add-card {

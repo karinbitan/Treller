@@ -1,4 +1,4 @@
-import HttpService from './HttpService';
+import httpService from './httpService';
 export const userService = {
     query,
     getUserById,
@@ -6,11 +6,11 @@ export const userService = {
 }
 
 function query() {
-    return HttpService.get('user');
+    return httpService.get('user');
 }
 
 function getUserById(userId) {
-    return HttpService.get(`user/${userId}`);
+    return httpService.get(`user/${userId}`);
 }
 
 function getEmptyUser() {

@@ -5,60 +5,17 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { boardService } from '../../services/boardService';
 import { deleteCard, updateCard } from '../../store/actions/cardActions';
 
-import Avatar from 'react-avatar';
 import { ListPreview } from './../../cmps/ListPreview';
 
 import './TrellerApp.scss';
-
-const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-
-    return result;
-};
-
-const move = (source, destination, droppableSource, droppableDestination) => {
-    const sourceClone = Array.from(source);
-    const destClone = Array.from(destination);
-    const [removed] = sourceClone[0].cards.splice(droppableSource.index, 1);
-
-    destClone[0].cards.splice(droppableDestination.index, 0, removed);
-
-    const result = {};
-    result[droppableSource.droppableId] = sourceClone;
-    result[droppableDestination.droppableId] = destClone;
-
-    return result;
-};
-
-//
-const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? '#6a7eb4' : 'rgb(178, 185, 224)',
-    // display: 'flex',
-});
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-    // some basic styles to make the items look a bit nicer
-    userSelect: 'none',
-
-    // change background colour if dragging
-    background: isDragging ? '' : 'rgb(178, 185, 224)',
-
-    // styles we need to apply on draggables
-    ...draggableStyle,
-});
-//
+import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
 
 class _TrellerApp extends Component {
 
     state = {
         boardToEdit: null,
         listToEdit: null,
-        showingAddListForm: false,
-        isStarred: null,
-        isMenuOpen: false,
-        isInviteMenuOpen: false
+        showingAddListForm: false
     }
 
     async componentDidMount() {
@@ -81,7 +38,6 @@ class _TrellerApp extends Component {
         // }
         const listToEdit = boardService.getEmptyList();
         this.setState({ listToEdit });
-        this.setState({ isStarred: this.state.boardToEdit.isFavorite });
     }
 
     // componentDidUpdate(prevProps, prevState) {
@@ -90,44 +46,28 @@ class _TrellerApp extends Component {
     //     }
     // }
 
-    handleChangeBoard = ({ target }) => {
-        const field = target.name;
-        const value = target.value;
-        this.setState(prevState => ({ boardToEdit: { ...prevState.boardToEdit, [field]: value } }));
+    onUpdateBoard = async (boardToEdit) => {
+        await this.props.updateBoard(boardToEdit);
     }
 
+    onChangeStyle = async (style) => {
+        const { boardToEdit } = this.state;
+        boardToEdit.style = style;
+        this.setState({ boardToEdit });
+        await this.props.updateBoard(boardToEdit);
+        await this.props.setBoard(boardToEdit._id);
+    }
+
+    // LIST//
     handleChangeList = ({ target }) => {
         const field = target.name;
         const value = target.value;
         this.setState(prevState => ({ listToEdit: { ...prevState.listToEdit, [field]: value } }));
     }
 
-    favoriteBoard = async () => {
-        await this.setState({ isStarred: !this.state.isStarred }, async () => {
-            await this.props.favoriteBoard(this.props.board._id, this.state.isStarred);
-        });
-        console.log(this.state.isStarred)
-    }
-
-    updateBoard = async (ev) => {
-        ev.preventDefault();
-        const { boardToEdit } = this.state;
-        this.myTextRef.blur();
-        await this.props.updateBoard(boardToEdit);
-    }
-
-    toggleMenu = () => {
-        this.setState({ isMenuOpen: !this.state.isMenuOpen })
-    }
-
-    toggleInviteMenu = () => {
-        this.setState({ isInviteMenuOpen: !this.state.isInviteMenuOpen })
-    }
-
-    // LIST//
-    toggleForm = (ev) => {
+    toggleListForm = (ev) => {
         ev.stopPropagation();
-        this.setState({ showingAddListForm: !this.state.showing })
+        this.setState({ showingAddListForm: !this.state.showingAddListForm })
     }
 
     addList = async (ev) => {
@@ -136,9 +76,9 @@ class _TrellerApp extends Component {
         const { board } = this.props;
         const { listToEdit } = this.state;
         await this.props.addList(board._id, listToEdit);
-        await this.props.setBoard(board._id)
+        await this.props.setBoard(board._id);
         this.setState(({ listToEdit: { ...this.state.listToEdit, title: '' } }));
-        this.setState({ showingAddListForm: false })
+        this.setState({ showingAddListForm: false });
     }
 
     copyList = (list) => {
@@ -177,8 +117,48 @@ class _TrellerApp extends Component {
         await this.props.setBoard(board._id)
     }
 
+    // DRAG AND DROP //
+    reorder = (list, startIndex, endIndex) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+
+    move = (source, destination, droppableSource, droppableDestination) => {
+        const sourceClone = Array.from(source);
+        const destClone = Array.from(destination);
+        const [removed] = sourceClone[0].cards.splice(droppableSource.index, 1);
+
+        destClone[0].cards.splice(droppableDestination.index, 0, removed);
+
+        const result = {};
+        result[droppableSource.droppableId] = sourceClone;
+        result[droppableDestination.droppableId] = destClone;
+
+        return result;
+    };
+
+    //
+    getListStyle = isDraggingOver => ({
+        background: isDraggingOver ? '#6a7eb4' : this.props.board.style.backgroundColor,
+        // display: 'flex',
+    });
+
+    getItemStyle = (isDragging, draggableStyle) => ({
+        // some basic styles to make the items look a bit nicer
+        userSelect: 'none',
+
+        // change background colour if dragging
+        background: isDragging ? '' : this.props.board.style.backgroundColor,
+
+        // styles we need to apply on draggables
+        ...draggableStyle,
+    });
+    //
+
     onDragEnd = async (result) => {
-        debugger
         if (!result.destination) {
             return;
         }
@@ -190,7 +170,7 @@ class _TrellerApp extends Component {
         // };
         const { boardToEdit } = this.state;
         if (result.type === 'list') {
-            const lists = reorder(
+            const lists = this.reorder(
                 this.state.boardToEdit.lists,
                 result.source.index,
                 result.destination.index
@@ -213,7 +193,7 @@ class _TrellerApp extends Component {
                 // Assign var to list.cards
                 let cardsList = list.cards;
                 // Re order
-                const cardsListReorder = reorder(
+                const cardsListReorder = this.reorder(
                     cardsList,
                     result.source.index,
                     result.destination.index
@@ -233,7 +213,7 @@ class _TrellerApp extends Component {
                 let sourceList = boardToEdit.lists.filter(list => {
                     return list._id === sourceListId;
                 })
-                move(
+                this.move(
                     sourceList,
                     destList,
                     result.source,
@@ -261,55 +241,23 @@ class _TrellerApp extends Component {
 
     render() {
         const { board } = this.props;
-        const { boardToEdit, isStarred, listToEdit, showingAddListForm, isMenuOpen, isInviteMenuOpen } = this.state;
+        const { boardToEdit, isStarred, listToEdit, showingAddListForm,
+            isMenuOpen, isInviteMenuOpen } = this.state;
         return (
-            <section className="treller-app">
-                {board && <section>
-                    <div className="board-header flex align-center">
-                        <form onSubmit={this.updateBoard}>
-                            {boardToEdit && <input type="text" ref={el => this.myTextRef = el} className="board-header board-name" name="title"
-                                placeholder="Enter your board name here..."
-                                value={boardToEdit.title} onChange={this.handleChangeBoard} />}
-                        </form>
-                        <button onClick={this.favoriteBoard} className="icon-container board-header-icon no-button">
-                            <i style={isStarred ? { color: "goldenrod" } : {}} className="far fa-star"></i></button> |
-                            <div className="avatar-container board-header-icon">
-                            {board.members.map(member => {
-                                return <Avatar name={member.fullName} size="25" round={true} key={member._id} />
-                            })}
-                        </div>
-                            |
-                        <div className="invite-container">
-                            <button onClick={this.toggleInviteMenu} className="invite-btn no-button">Invite</button>
-                            {isInviteMenuOpen && <div className="invite pop-up">
-                                <button onClick={this.toggleInviteMenu}>X</button>
-                                <p>Invite</p>
-                                <form>
-                                    <input type="search" /><i className="fa fa-search search-icon"></i>
-                                </form>
-                            </div>}
-                        </div>
-                        <div className="menu-container">
-                            <button className="show-menu-icon" onClick={this.toggleMenu}>
-                                <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
-                            </button>
-                            {isMenuOpen && <div className="menu pop-up">
-                                <button onClick={this.toggleMenu}>X</button>
-                                <p>Menu</p>
-                                <ul>
-                                    <li>Add Description To Board</li>
-                                    <li>Change Background</li>
-                                    <li>Delete Board</li>
-                                </ul>
-                            </div>}
-                        </div>
-                    </div>
+            <section>
+                {board && <section className="treller-app" style={{ backgroundColor: board.style.backgroundColor }}>
+                    <BoardHeader onUpdateBoard={this.onUpdateBoard}
+                        board={board} boardToEdit={boardToEdit}
+                        isStarred={isStarred}
+                        isMenuOpen={isMenuOpen}
+                        isInviteMenuOpen={isInviteMenuOpen}
+                        onChangeStyle={this.onChangeStyle} />
                     <section className="lists flex column">
                         <DragDropContext onDragEnd={this.onDragEnd}>
                             <Droppable droppableId="dropable-list" direction="horizontal" type="list">
                                 {(provided, snapshot) => (
                                     <div className="droppable-container flex"
-                                        style={getListStyle(snapshot.isDraggingOver)}
+                                        style={this.getListStyle(snapshot.isDraggingOver)}
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}>
                                         {board.lists.map((list, idx) => {
@@ -319,7 +267,7 @@ class _TrellerApp extends Component {
                                                         <div className="list"
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
-                                                            style={getItemStyle(
+                                                            style={this.getItemStyle(
                                                                 snapshot.isDragging,
                                                                 provided.draggableProps.style
                                                             )}
@@ -327,7 +275,7 @@ class _TrellerApp extends Component {
                                                             <Droppable droppableId={list._id} direction="vertical" type="card">
                                                                 {(provided, snapshot) => (
                                                                     <div className="card-list flex column"
-                                                                        style={getListStyle(snapshot.isDraggingOver)}
+                                                                        style={this.getListStyle(snapshot.isDraggingOver)}
                                                                         {...provided.droppableProps}
                                                                         ref={provided.innerRef}>
                                                                         <ListPreview list={list} idx={idx} key={idx} board={this.props.board}
@@ -352,22 +300,16 @@ class _TrellerApp extends Component {
                                 )}
                             </Droppable>
                         </DragDropContext>
-                        {/* 
-                {lists.map((list, idx) => {
-                    return (
-                        <ListPreview list={list} idx={idx} key={idx} />
-                    )
-                })} */}
-                        {!showingAddListForm ? <div className="add-container" onClick={this.toggleForm}><i className="fas fa-plus"></i> Add another list</div>
+                        {!showingAddListForm ? <div className="add-container" onClick={this.toggleListForm}><i className="fas fa-plus"></i> Add another list</div>
                             : <form onSubmit={this.addList} className="add-list-form">
                                 <input type="text" className="add-form" name="title"
-                                    value={listToEdit.title} onChange={this.handleChangeList} placeholder="Enter a title for this card" />
+                                    value={listToEdit.title} onChange={this.handleChangeList}
+                                    placeholder="Enter a title for this card" onBlur={this.toggleListForm} />
                                 <br />
                                 <button className="add-form-btn">Add list</button>
-                                <button className="exit-btn" onClick={this.toggleForm}><i className="fas fa-times"></i></button>
+                                <button className="exit-btn" onClick={this.toggleListForm}><i className="fas fa-times"></i></button>
                             </form>}
                     </section>
-                    {/* <TrellerLists onAddList={this.onAddList} lists={board.lists} onUpdateBoard={this.onUpdateBoard} /> */}
                 </section>}
             </section>
         )

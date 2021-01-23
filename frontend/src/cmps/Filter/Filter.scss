@@ -1,9 +1,16 @@
 .filter {
+    position: relative;
+    & button {
+        background-color: unset;
+    }
     .search {
         background-color: hsla(0, 0%, 100%, 0.3);
         border: none;
         margin-left: 5px;
         height: 30px;
+        &:focus {
+            background-color: white;
+        }
     }
 
     .search-icon {
@@ -11,5 +18,14 @@
         color: white;
         background: rgba(255, 255, 255, 0.3);
         height: 30px;
+    }
+
+    .search-tab {
+        width: 600px;
+        background-color: white;
+        position: absolute;
+        top: 33px;
+        left: 5px;
+        z-index: 1;
     }
 }

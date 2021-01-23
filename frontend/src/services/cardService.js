@@ -1,4 +1,4 @@
-import HttpService from './HttpService';
+import httpService from './httpService';
 
 export const cardService = {
     query,
@@ -11,32 +11,38 @@ export const cardService = {
     deleteComment
 }
 
-function query() {
-    return HttpService.get(`card/`);
+function query(filter = null) {
+    debugger
+    var filterStr = '';
+    if (filter) {
+        const searchStr = (filter.txt) ? `&txt=${filter.txt}` : '';
+        filterStr = searchStr;
+    }
+    return httpService.get(`card?_sort=${filterStr}`);
 }
 
 function getCardById(cardId) {
-    return HttpService.get(`card/${cardId}`);
+    return httpService.get(`card/${cardId}`);
 }
 
 function deleteCard(boardId, listIdx, cardId) {
-    return HttpService.delete(`card/${boardId}/${listIdx}/${cardId}`);
+    return httpService.delete(`card/${boardId}/${listIdx}/${cardId}`);
 }
 
 function addCard(boardId, listIdx, card) {
-    return HttpService.post(`card/`, { boardId, listIdx, card });
+    return httpService.post(`card/`, { boardId, listIdx, card });
 }
 
 function updateCard(card) {
-    return HttpService.put(`card/${card._id}`, card);
+    return httpService.put(`card/${card._id}`, card);
 }
 
 function addComment(cardId, comment) {
-    return HttpService.post(`card/${cardId}/comments`, comment);
+    return httpService.post(`card/${cardId}/comments`, comment);
 }
 
 function deleteComment(cardId, commentId) {
-    return HttpService.delete(`card/${cardId}/comments/delete`, { commentId });
+    return httpService.delete(`card/${cardId}/comments/delete`, { commentId });
 }
 
 function getEmptyCard() {

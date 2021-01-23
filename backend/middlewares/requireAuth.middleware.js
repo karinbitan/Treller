@@ -26,6 +26,15 @@ async function requireOwner(req, res, next) {
 //   next();
 // }
 
+// async function requireMember(req, res, next) {
+//   const user = req.session.user;
+//   if (!user.isAdmin) {
+//     res.status(403).end('Unauthorized Enough..');
+//     return;
+//   }
+//   next();
+// }
+
 
 // module.exports = requireAuth;
 

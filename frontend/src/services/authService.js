@@ -1,4 +1,4 @@
-import HttpService from './HttpService';
+import httpService from './httpService';
 
 export const authService = {
     login,
@@ -33,7 +33,7 @@ export const authService = {
 
 async function login(userCred) {
     try {
-        const user = await HttpService.post('auth/login', userCred);
+        const user = await httpService.post('auth/login', userCred);
         return user;
     } catch (err) {
         console.log('UserService: err in login', err);
@@ -42,7 +42,7 @@ async function login(userCred) {
 
 async function signup(userCred) {
     try {
-        const user = await HttpService.post('auth/signup', userCred);
+        const user = await httpService.post('auth/signup', userCred);
         return user;
     } catch (err) {
         console.log('UserService: err in signup', err);
@@ -51,7 +51,7 @@ async function signup(userCred) {
 
 async function logout() {
     try {
-        await HttpService.post('auth/logout');
+        await httpService.post('auth/logout');
     } catch (err) {
         console.log('UserService: err in logout', err);
     }
@@ -59,7 +59,7 @@ async function logout() {
 
 async function getLoggedInUser() {
     try {
-        const user = await HttpService.get('auth/user');
+        const user = await httpService.get('auth/user');
         return user;
     } catch (err) {
         console.log('UserService: err in getting loggedInUser', err);

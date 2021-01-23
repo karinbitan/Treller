@@ -11,19 +11,31 @@ module.exports = {
     deleteComment
 }
 
-async function query(cardIds = []) {
+
+async function query(filterBy = {}) {
+    const filter = _setFilter(filterBy);
+    const collection = await dbService.getCollection('card');
     try {
-        let where = {}
-        if (cardIds.length) {
-            where = { _id: { $in: cardIds } };
-        }
-        const collection = await dbService.getCollection('card')
-        let cards = await collection.find(where).toArray();
+        const cards = await collection.find(filter).toArray();
         return cards;
     } catch (err) {
-        console.log('ERROR: cannot find cards', err)
+        console.log('ERROR: cannot find cards', err);
         throw err;
     }
+}
+
+function _setFilter(filterBy) {
+    const filter = {};
+    if (filterBy.txt) {
+        filter.title = filterBy.txt
+    }
+    // if (filterBy.minBalance) {
+    //     filter.balance = { $gte: +filterBy.minBalance }
+    // }
+    if (filterBy.cardIds) {
+        filter._id = { $in: filterBy.cardIds };
+    }
+    return filter;
 }
 
 

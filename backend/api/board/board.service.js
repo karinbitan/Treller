@@ -59,7 +59,7 @@ async function getBoardById(boardId) {
         let cards = []
         // Get card documents by card ids.
         if (cardIds.length) {
-            cards = await cardService.query(cardIds);
+            cards = await cardService.query({ cardIds });
         }
 
         // Build an hasmap (dict) which holds card id as key and card document in value.

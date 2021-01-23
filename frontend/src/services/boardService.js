@@ -1,4 +1,4 @@
-import HttpService from './HttpService';
+import httpService from './httpService';
 
 export const boardService = {
     query,
@@ -15,27 +15,27 @@ export const boardService = {
 
 // BOARD //
 function query() {
-    return HttpService.get(`board`);
+    return httpService.get(`board`);
 }
 
 function getBoardById(boardId) {
-    return HttpService.get(`board/${boardId}`);
+    return httpService.get(`board/${boardId}`);
 }
 
 function removeBoard(boardId) {
-    return HttpService.delete(`board/${boardId}`);
+    return httpService.delete(`board/${boardId}`);
 }
 
 function addBoard(board) {
-    return HttpService.post(`board/${board._id}`, board);
+    return httpService.post(`board/${board._id}`, board);
 }
 
 function updateBoard(board) {
-    return HttpService.put(`board/${board._id}`, board);
+    return httpService.put(`board/${board._id}`, board);
 }
 
 function favoriteBoard(boardId, isStarred) {
-    return HttpService.post(`board/${boardId}`, {isStarred})
+    return httpService.post(`board/${boardId}`, {isStarred})
 }
 
 function getEmptyBoard() {
@@ -46,7 +46,8 @@ function getEmptyBoard() {
         style: '',
         members: [],
         lists: [],
-        activities: []
+        activities: [],
+        isFavorite: false
     }
     return board;
 }
@@ -54,10 +55,10 @@ function getEmptyBoard() {
 // LIST //
 
 function addList(boardId, list) {
-    return HttpService.post(`board/${boardId}/list`, list);
+    return httpService.post(`board/${boardId}/list`, list);
 }
 function deleteList(boardId, listId) {
-    return HttpService.delete(`board/${boardId}/list/${listId}`);
+    return httpService.delete(`board/${boardId}/list/${listId}`);
 }
 
 function getEmptyList() {
