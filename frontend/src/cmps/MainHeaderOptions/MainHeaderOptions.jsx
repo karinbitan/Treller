@@ -1,4 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
+import { eventBus } from '../../services/eventBusService';
 import './MainHeaderOptions.scss';
 
 function Boards(props) {
@@ -13,7 +15,7 @@ function Boards(props) {
     return (
         <div className="boards">
             <p>{props.type}</p>
-            {favBoards && <div className="fav-boards">
+            {(favBoards && favBoards.length) && <div className="fav-boards">
                 <h5>Starred Boards</h5>
                 <ul>
                     {favBoards.map(board => {
@@ -33,18 +35,7 @@ function Boards(props) {
                     })}
                 </ul>
             </div>}
-            <span>Create new board...</span>
-        </div>
-    )
-}
-
-function Create(props) {
-    return (
-        <div className="create-options">
-            <p>{props.type}</p>
-            <ul>
-                <li>Create Board</li>
-            </ul>
+            <span className="add-board" onClick={props.onAddBoard}>Create new board...</span>
         </div>
     )
 }
@@ -58,11 +49,22 @@ function Notifications(props) {
 }
 
 
-
 function _MainHeaderOptions(props) {
+    const [notification, setNotification] = useState(null);
+
+    useEffect(() => {
+        eventBus.on('notification', msg => {
+            console.log(msg)
+            setNotification(msg)
+        })
+    });
 
     const closePopUp = () => {
         props.closePopUp();
+    }
+
+    const onAddBoard = () => {
+        props.onAddBoard();
     }
 
     const { type, boards } = props;
@@ -70,20 +72,17 @@ function _MainHeaderOptions(props) {
         switch (props.type) {
             case 'Boards':
                 return <Boards {...props} />
-            case 'Create':
-                return <Create {...props} />
             case 'Notifications':
                 return <Notifications {...props} />
             default:
                 return <h1>Something went wrong</h1>
         }
     }
-    // const DynamicCmp = dynamicMap['Hello']
 
     return (
         <div className="main-header-options">
             <button onClick={closePopUp}>X</button>
-            <DynamicCmp type={type} boards={boards} closePopUp={closePopUp} />
+            <DynamicCmp type={type} boards={boards} onAddBoard={onAddBoard} notification={notification} />
         </div>)
 }
 

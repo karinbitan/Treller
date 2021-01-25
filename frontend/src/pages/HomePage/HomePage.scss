@@ -1,11 +1,36 @@
 .home-page {
     background-color: white;
-    & .head-line {
-        text-align: center;
-        font-size: x-large;
+    min-height: 100vh;
+    color: rgb(5, 97, 150);
+    & .home-page-container {
+        margin-top: 10px;
     }
-    & .text {
+    & p {
         align-self: flex-end;
-        font-size: x-large;
+        text-align: center;
+        font-size: 1.75rem;
+        & button {
+            border: none;
+            padding: 10px;
+            background: #056196;
+            font-weight: bolder;
+            cursor: pointer;
+            & a {
+                color: white;
+            }
+        }
+        & .head-line {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+    }
+    & img {
+        max-width: 657px;
+    }
+}
+
+@media screen and (max-width: 780px) {
+    .home-page-container {
+        flex-wrap: wrap;
     }
 }

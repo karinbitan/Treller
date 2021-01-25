@@ -12,10 +12,10 @@ module.exports = {
 }
 
 async function query(filterBy = {}) {
-    const criteria = _buildCriteria(filterBy)
+    const filter = _setFilter(filterBy)
     const collection = await dbService.getCollection('user')
     try {
-        const users = await collection.find(criteria).toArray();
+        const users = await collection.find(filter).toArray();
         users.forEach(user => delete user.password);
 
         return users
@@ -23,6 +23,23 @@ async function query(filterBy = {}) {
         console.log('ERROR: cannot find users')
         throw err;
     }
+}
+
+function _setFilter(filterBy) {
+    let mainFilter = []
+    // TODO: Support lowercase
+    // TODO: Support search by all
+    if (filterBy.txt) {
+        let textFields = []
+        textFields.push({ "fullName": { $regex: `.*${requestQuery.txt}.*` } });
+        textFields.push({ "userName": { $regex: `.*${requestQuery.txt}.*` } });
+
+        mainFilter.push({
+            $or: textFields
+        });
+    }
+
+    return mainFilter;
 }
 
 async function getUserById(userId) {

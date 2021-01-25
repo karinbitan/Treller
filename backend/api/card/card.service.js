@@ -48,6 +48,7 @@ function _setFilter(filterBy) {
 
 //     if (filterBy.cardIds) {
 //         filter._id = { $in: filterBy.cardIds };
+//         mainFilter.push(filter._id)
 //     }
 
 //     // TODO: Support lowercase

@@ -15,6 +15,9 @@ export class BoardHeader extends Component {
                 app: null,
                 header: null
             }
+        },
+        filter: {
+            txt: ''
         }
     }
 
@@ -33,6 +36,15 @@ export class BoardHeader extends Component {
         this.setState(prevState => ({ boardToEdit: { ...prevState.boardToEdit, [field]: value } }));
     }
 
+    handleChangeInvite = ({ target }) => {
+        const field = target.name;
+        const value = target.value;
+        this.setState(prevState => ({ filter: { ...prevState.filter,[field]:  value } }), ()=>{
+            this.props.onFilterUsers(this.state.filter);
+        });
+    }
+
+
     changeStyle = (app, header) => {
         const { style } = this.state;
         style.backgroundColor.app = app;
@@ -50,9 +62,9 @@ export class BoardHeader extends Component {
         this.props.onUpdateBoard(boardToEdit);
     }
 
-    favoriteBoard = async () => {
-        this.setState({ isStarred: !this.state.isStarred }, async () => {
-            await this.props.favoriteBoard(this.props.board._id, this.state.isStarred);
+    onFavoriteBoard = async () => {
+        this.setState({ isStarred: !this.state.isStarred }, () => {
+            this.props.onFavoriteBoard(this.state.isStarred);
         });
     }
 
@@ -83,7 +95,7 @@ export class BoardHeader extends Component {
                             placeholder="Enter your board name here..."
                             value={boardToEdit.title} onChange={this.handleChangeBoard} />}
                     </form>
-                    <button onClick={this.favoriteBoard} className="icon-container board-header-icon no-button">
+                    <button onClick={this.onFavoriteBoard} className="icon-container board-header-icon no-button">
                         <i style={isStarred ? { color: "goldenrod" } : {}} className="far fa-star"></i></button> |
                 <div className="avatar-container board-header-icon">
                         {board.members.map(member => {
@@ -97,7 +109,10 @@ export class BoardHeader extends Component {
                             <button onClick={this.toggleInviteMenu}>X</button>
                             <p>Invite</p>
                             <form>
-                                <input type="search" /><i className="fa fa-search search-icon"></i>
+                                <input type="search" name="txt" onChange={this.handleChangeInvite} />
+                                <button>
+                                    <i className="fa fa-search search-icon"></i>
+                                </button>
                             </form>
                         </div>}
                     </div>

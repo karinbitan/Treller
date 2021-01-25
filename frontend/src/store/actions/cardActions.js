@@ -28,7 +28,7 @@ export function getCardById(cardId) {
 export function deleteCard(boardId, listIdx, cardId) {
   return async dispatch => {
     try {
-      await cardService.deleteCard(boardId,listIdx, cardId); 
+      await cardService.deleteCard(boardId, listIdx, cardId);
       dispatch({ type: 'DELETE_CARD', cardId })
     } catch (err) {
       console.log('ERROR!', err);
@@ -36,10 +36,10 @@ export function deleteCard(boardId, listIdx, cardId) {
   }
 }
 
-export function addCard(boardId,listId, listIdx, card) {
+export function addCard(boardId, listId, listIdx, card) {
   return async dispatch => {
     try {
-      const savedCard = await cardService.addCard(boardId, listIdx, card);
+      const savedCard = await cardService.addCard(boardId, listId, listIdx, card);
       dispatch({ type: 'ADD_CARD', card: savedCard });
     } catch (err) {
       console.log('ERROR!', err);

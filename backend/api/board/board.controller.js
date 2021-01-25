@@ -47,7 +47,7 @@ async function addBoard(req, res) {
             }
         }
         await boardService.addBoard(board);
-        await userService.addBoard(req.session._id, board._id);
+        await userService.addBoard(req.session.user._id, board._id);
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)

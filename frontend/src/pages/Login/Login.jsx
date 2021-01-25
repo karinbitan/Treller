@@ -2,6 +2,8 @@ import { Component } from 'react';
 import { userService } from '../../services/userSercvice';
 import { connect } from 'react-redux';
 import { login, signup } from '../../store/actions/authActions';
+import { Link } from 'react-router-dom';
+import Logo from './../../assets/treller-logo.png';
 
 import './Login.scss'
 
@@ -32,7 +34,7 @@ export class _Login extends Component {
         this.setState(prevState => ({ login: { ...prevState.login, [field]: value } }));
     }
 
-    closeModal = async ()=>{
+    closeModal = async () => {
         this.props.history.push('/');
     }
 
@@ -41,7 +43,7 @@ export class _Login extends Component {
         try {
             const user = await this.props.login(this.state.login);
             this.setState({ login: { userName: '', password: '' } });
-            if(user){
+            if (user) {
                 this.props.history.push(`/user/${user._id}`);
             } else {
                 alert('Login failed!')
@@ -62,31 +64,33 @@ export class _Login extends Component {
 
     render() {
         return (
-            <section className="login modal">
-                <div className="modal-content">
-                    <button className="modal-close-btn" onClick={this.closeModal}><i className="fas fa-times"></i></button>
-                    <h1>Welcome to Treller!</h1>
-                    <div className="flex justify-center">
-                        <div className="signup-container">
-                            <p>If you don't have an account yet..</p>
-                            <h3>Sign up</h3>
-                            <form onSubmit={this.signup}>
-                                <label>Full name: <input type="text" name="fullName" onChange={this.handleChangeSignUp} /></label><br />
-                                <label>User name: <input type="text" name="userName" onChange={this.handleChangeSignUp} /></label><br />
-                                <label>Password: <input type="password" name="password" onChange={this.handleChangeSignUp} /></label><br />
-                                <button>Sign Up</button>
-                            </form>
+            <section className="login">
+                <header>
+                    <div className="logo">
+                        <Link to="/" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
+                    </div>
+                </header>
+                <h1>Welcome to Treller!</h1>
+                <div className="flex justify-center">
+                    <div className="signup-container">
+                        <p>If you don't have an account yet..</p>
+                        <h3>Sign up</h3>
+                        <form onSubmit={this.signup}>
+                            <label>Full name: <input type="text" name="fullName" onChange={this.handleChangeSignUp} /></label><br />
+                            <label>User name: <input type="text" name="userName" onChange={this.handleChangeSignUp} /></label><br />
+                            <label>Password: <input type="password" name="password" onChange={this.handleChangeSignUp} /></label><br />
+                            <button>Sign Up</button>
+                        </form>
 
-                        </div>
-                        <div className="login-container">
-                            <p>If you already have an account..</p>
-                            <h3>Login</h3>
-                            <form onSubmit={this.login}>
-                                <label>User name: <input type="text" name="userName" onChange={this.handleChangeLogin} /></label><br />
-                                <label>Password: <input type="password" name="password" onChange={this.handleChangeLogin} /></label><br />
-                                <button>Login</button>
-                            </form>
-                        </div>
+                    </div>
+                    <div className="login-container">
+                        <p>If you already have an account..</p>
+                        <h3>Login</h3>
+                        <form onSubmit={this.login}>
+                            <label>User name: <input type="text" name="userName" onChange={this.handleChangeLogin} /></label><br />
+                            <label>Password: <input type="password" name="password" onChange={this.handleChangeLogin} /></label><br />
+                            <button>Login</button>
+                        </form>
                     </div>
                 </div>
             </section>

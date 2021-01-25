@@ -27,7 +27,7 @@ function removeBoard(boardId) {
 }
 
 function addBoard(board) {
-    return httpService.post(`board/${board._id}`, board);
+    return httpService.post(`board`, board);
 }
 
 function updateBoard(board) {
@@ -35,15 +35,20 @@ function updateBoard(board) {
 }
 
 function favoriteBoard(boardId, isStarred) {
-    return httpService.post(`board/${boardId}`, {isStarred})
+    return httpService.post(`board/${boardId}`, { isStarred })
 }
 
 function getEmptyBoard() {
     const board = {
-        title: '',
+        title: 'New Board',
         createdAt: Date.now(),
         createdBy: {},
-        style: '',
+        style: {
+            backgroundColor: {
+                app: "rgb(137, 96, 158)",
+                header: "rgb(68, 48, 78)"
+            }
+        },
         members: [],
         lists: [],
         activities: [],

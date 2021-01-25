@@ -56,9 +56,9 @@ export class _UserProfile extends Component {
         return (
             <section className="user-profile">
                 <MainHeader isUserPage={true} />
-                {user && <section>
+                {user && <section className="user-profile-container">
                     <h1 className="headline">Welcome {user.fullName}!</h1>
-                    <h3>Your personal info:</h3>
+                    <h2>Your personal info:</h2>
                     <form onSubmit={this.updateUser}>
                         {!isLoading ?
                             <label>Choose your profile picture:

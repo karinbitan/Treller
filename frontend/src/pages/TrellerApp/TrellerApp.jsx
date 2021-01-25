@@ -4,48 +4,39 @@ import { setBoard, addBoard, updateBoard, addList, deleteList, favoriteBoard } f
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { boardService } from '../../services/boardService';
 import { deleteCard, updateCard } from '../../store/actions/cardActions';
+import { getUsers } from './../../store/actions/userActions';
+import { getLoggedInUser } from '../../store/actions/authActions';
 
 import { ListPreview } from './../../cmps/ListPreview';
 
 import './TrellerApp.scss';
 import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
+import { eventBus } from '../../services/eventBusService';
 
 class _TrellerApp extends Component {
 
     state = {
         boardToEdit: null,
         listToEdit: null,
-        showingAddListForm: false
+        showingAddListForm: false,
     }
 
     async componentDidMount() {
-        // const user = this.props.user;
         const boardId = this.props.match.params.id;
         await this.props.setBoard(boardId);
-        await this.setState({ boardToEdit: this.props.board })
-        // if (!user) {
-        //     await this.props.setBoard("60040605a5297b5978123a93");
-        //     this.setState({ boardToEdit: this.props.board })
-        // } else {
-        //     if (user.boardsMember.length > 0) {
-        //         this.props.history.push(`/user/${user._id}`)
-        //     } else {
-        //         const emptyBoard = boardService.getEmptyBoard();
-        //         const board = await this.props.addBoard(emptyBoard);
-        //         // await this.props.setBoard('5ff1b13c36eed552e70fec47');
-        //         this.setState({ boardToEdit: board });
-        //     }
-        // }
+        this.setState({ boardToEdit: this.props.board })
         const listToEdit = boardService.getEmptyList();
         this.setState({ listToEdit });
+        await this.props.getLoggedInUser();
     }
 
-    // componentDidUpdate(prevProps, prevState) {
-    //     if (prevProps.board !== this.props.board) {
-    //         this.props.setBoard('5ff1b13c36eed552e70fec47');
-    //     }
-    // }
+    async componentDidUpdate(prevProps, prevState) {
+        const boardId = this.props.match.params.id;
+        if (prevProps.match.params.id !== this.props.match.params.id) {
+            await this.props.setBoard(boardId)
+        }
+    }
 
     onUpdateBoard = async (boardToEdit) => {
         await this.props.updateBoard(boardToEdit);
@@ -58,6 +49,24 @@ class _TrellerApp extends Component {
         await this.props.updateBoard(boardToEdit);
         await this.props.setBoard(boardToEdit._id);
     }
+
+    onFavoriteBoard = async (isStarred) => {
+        await this.props.favoriteBoard(this.props.board._id, isStarred);
+        await this.props.setBoard(this.state.boardToEdit._id);
+    }
+
+    onAddBoard = async () => {
+        const emptyBoard = boardService.getEmptyBoard();
+        const board = await this.props.addBoard(emptyBoard);
+        console.log(board)
+        await this.props.setBoard(board._id);
+    }
+
+    // onFilterUsers = async (filter) => {
+    //     debugger
+    //     await this.props.getUsers(filter);
+    //     console.log(this.props.users)
+    // }
 
     // LIST//
     handleChangeList = ({ target }) => {
@@ -78,8 +87,11 @@ class _TrellerApp extends Component {
         const { listToEdit } = this.state;
         await this.props.addList(board._id, listToEdit);
         await this.props.setBoard(board._id);
-        this.setState(({ listToEdit: { ...this.state.listToEdit, title: '' } }));
+        // this.setState(({ listToEdit: { ...this.state.listToEdit, title: '' } }));
         this.setState({ showingAddListForm: false });
+        // eventBus.emit('notification', {
+        //     title: 'List added',
+        // })
     }
 
     copyList = (list) => {
@@ -97,25 +109,40 @@ class _TrellerApp extends Component {
         this.setState({ boardToEdit }, async () => {
             await this.props.updateBoard(boardToEdit)
         })
+        eventBus.emit('notification', {
+            title: 'List updated',
+            list: this.state.listToEdit,
+            by: this.props.user
+        })
     }
 
     onDeleteList = async (listId) => {
         const { board } = this.props;
         await this.props.deleteList(board._id, listId);
-        await this.props.setBoard(board._id)
+        await this.props.setBoard(board._id);
+        eventBus.emit('notification', {
+            title: 'List deleted',
+            list: this.state.listToEdit,
+            by: this.props.user
+        })
     }
 
     // CARD //
     onDeleteCard = async (listIdx, cardId) => {
         const { board } = this.props;
         await this.props.deleteCard(this.props.board._id, listIdx, cardId);
-        await this.props.setBoard(board._id)
+        await this.props.setBoard(board._id);
     }
 
     onUpdateCard = async (card) => {
         const { board } = this.props;
         await this.props.updateCard(card);
         await this.props.setBoard(board._id)
+        eventBus.emit('notification', {
+            title: 'Card updated',
+            card: card,
+            by: this.props.user
+        })
     }
 
     // DRAG AND DROP //
@@ -143,7 +170,7 @@ class _TrellerApp extends Component {
 
     //
     getListStyle = isDraggingOver => ({
-        background: isDraggingOver ? '#6a7eb4' : this.props.board.style.backgroundColor,
+        background: isDraggingOver ? this.props.board.style.backgroundColor.header : this.props.board.style.backgroundColor.app,
         // display: 'flex',
     });
 
@@ -241,19 +268,21 @@ class _TrellerApp extends Component {
 
 
     render() {
-        const { board } = this.props;
+        const { board, user } = this.props;
         const { boardToEdit, isStarred, listToEdit, showingAddListForm,
             isMenuOpen, isInviteMenuOpen } = this.state;
         return (
             <section>
-                <MainHeader board={board} />
+                {(board && user) && <MainHeader board={board} user={user} onAddBoard={this.onAddBoard} />}
                 {board && <section className="treller-app" style={{ backgroundColor: board.style.backgroundColor.app }}>
                     <BoardHeader onUpdateBoard={this.onUpdateBoard}
+                        onFavoriteBoard={this.onFavoriteBoard}
                         board={board} boardToEdit={boardToEdit}
                         isStarred={isStarred}
                         isMenuOpen={isMenuOpen}
                         isInviteMenuOpen={isInviteMenuOpen}
-                        onChangeStyle={this.onChangeStyle} />
+                        onChangeStyle={this.onChangeStyle}
+                        onFilterUsers={this.onFilterUsers} />
                     <section className="lists flex column">
                         <DragDropContext onDragEnd={this.onDragEnd}>
                             <Droppable droppableId="dropable-list" direction="horizontal" type="list">
@@ -321,7 +350,8 @@ class _TrellerApp extends Component {
 function mapStateToProps(state) {
     return {
         board: state.boardReducer.currBoard,
-        user: state.userReducer.currUser
+        user: state.userReducer.loggedInUser,
+        users: state.userReducer.users
     }
 }
 const mapDispatchToProps = {
@@ -332,6 +362,8 @@ const mapDispatchToProps = {
     deleteList,
     deleteCard,
     updateCard,
-    favoriteBoard
+    favoriteBoard,
+    getUsers,
+    getLoggedInUser
 }
 export const TrellerApp = connect(mapStateToProps, mapDispatchToProps)(_TrellerApp)
