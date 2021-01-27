@@ -12,28 +12,31 @@
         border: 1px solid black;
         background-color: rgb(0, 0, 0); /* Fallback color */
         background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+        cursor: default;
     }
-
     /* Modal Content */
     .modal-content {
         position: relative;
-        background-color: #fefefe;
+        background-color: #f4f5f7;
         margin: auto;
         padding: 10px;
         border: 1px solid #888;
-        width: 768px;
+        width: 840px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         -webkit-animation-name: animatetop;
         -webkit-animation-duration: 0.4s;
         animation-name: animatetop;
         animation-duration: 0.4s;
-        height: 90%;
+        // height: 90%;
         text-align: center;
         overflow-y: auto;
         & .icon {
-            font-size: 20px;
+            font-size: 16px;
             position: absolute;
             left: 10px;
+        }
+        & h3 {
+            font-size: 18px;
         }
     }
 
@@ -62,7 +65,7 @@
 
     /* The Close Button */
 
-    .modal-close-btn {
+    .close-btn {
         font-size: 1rem;
         margin: 10px;
         font-family: quicksand;
@@ -80,7 +83,7 @@
     }
 
     .headline {
-        margin-left: 30px;
+        margin-left: 40px;
     }
 
     .title-container {
@@ -97,11 +100,15 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
                 "Helvetica Neue", sans-serif;
         }
-        // TO DO: List title //
+        & .list-name {
+            text-align: start;
+            margin-bottom: 10px;
+        }
     }
     .main-container {
         flex: 0.9;
         & .labels-container {
+            margin-right: 10px;
             & .label {
                 width: 50px;
                 height: 32px;
@@ -127,8 +134,11 @@
             }
         }
         .description-container {
+            margin-top: 30px;
             margin-bottom: 30px;
             & .description-text-area {
+                margin-bottom: 15px;
+                text-align: start;
                 &-fake {
                     background-color: rgba(9, 30, 66, 0.04);
                     box-shadow: none;
@@ -136,52 +146,93 @@
                     border-radius: 3px;
                     width: 500px;
                     min-height: 50px;
-                    margin-left: 30px;
+                    margin-left: 40px;
+                    text-align: start;
+                    margin-top: 10px;
+                    cursor: pointer;
+                    &:hover {
+                        background-color: rgba(9, 30, 66, 0.08);
+                    }
                 }
             }
             & .description-form {
+                & .btn {
+                    margin-left: 35px;
+                }
                 & textarea {
                     resize: none;
                     width: 500px;
                     height: 120px;
                     box-shadow: inset 0 0 0 2px #0079bf;
+                    margin: 8px 0;
+                    font-size: 16px;
+                    font-family: unset;
+                }
+            }
+        }
+        & .comment-container {
+            & h3 {
+                font-size: 18px;
+            }
+            & .comment-form {
+                position: relative;
+                margin-bottom: 30px;
+                & .avatar-comment {
+                    position: absolute;
+                    left: 0;
+                    top: 6px;
+                }
+                & .comment-text-area {
+                    box-shadow: inset 0 0 0 2px #dfe1e6;
+                    border: none;
+                    margin-top: 10px;
+                    margin-left: 40px;
+                    width: 500px;
+                    background-color: #ffffff;
+                    resize: none;
+                    min-height: 40px;
+                    font-size: 16px;
+                    font-family: unset;
+                    position: relative;
+                    &:focus {
+                        box-shadow: inset 0 0 0 3px #dfe1e6;
+                        outline: none;
+                        padding-bottom: 56px;
+                    }
+                }
+                & .comment-save-btn {
+                    background-color: rgba(9, 30, 66, 0.04);
+                    box-shadow: none;
+                    border: none;
+                    color: #a5adba;
+                    cursor: not-allowed;
+                    padding: 6px 12px;
+                    font-size: 14px;
+                    position: absolute;
+                    left: 45px;
+                    bottom: 10px;
+                    &.typing {
+                        background-color: #5aac44;
+                        color: white;
+                        padding: 10px;
+                        border: none;
+                        cursor: pointer;
+                        &:hover {
+                            background-color: #6cb459;
+                        }
+                    }
+                }
+            }
+            & .txt-container {
+                p {
                     margin: 8px 12px;
                 }
             }
         }
-
-        & .comment-form {
-            box-shadow: inset 0 0 0 2px #dfe1e6;
-            border: none;
-            margin-bottom: 5px;
-            margin-left: 30px;
-            width: 500px;
-            background-color: #ffffff;
-            resize: none;
-            min-height: 40px;
-            &:focus {
-                box-shadow: inset 0 0 0 3px #dfe1e6;
-                outline: none;
-            }
-        }
-        // & .activity-container {
-        // }
-    }
-
-    .comment-save-btn {
-        background-color: rgba(9, 30, 66, 0.04);
-        box-shadow: none;
-        border: none;
-        color: #a5adba;
-        cursor: not-allowed;
-        &.typing {
-            background-color: #5aac44;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            &:hover {
-                background-color: #6cb459;
+        .checklist-container {
+            margin-bottom: 30px;
+            & .todo {
+                text-align: start;
             }
         }
     }
@@ -199,7 +250,7 @@
             color: #172b4d;
             font-size: 1rem;
             &:hover {
-                background-color: rgb(150, 150, 150);
+                background-color: rgba(9, 30, 66, 0.08);
             }
         }
     }

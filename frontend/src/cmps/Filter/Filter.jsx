@@ -36,7 +36,7 @@ export class _Filter extends Component {
     }
 
     render() {
-        const { cards } = this.props;
+        // const { cards } = this.props;
         const { isFormOpen } = this.state;
         return (
             <section className="filter">

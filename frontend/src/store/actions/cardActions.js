@@ -14,7 +14,7 @@ export function loadCards(filterBy) {
   }
 }
 
-export function getCardById(cardId) {
+export function setCard(cardId) {
   return async dispatch => {
     try {
       const card = await cardService.getCardById(cardId)

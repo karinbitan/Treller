@@ -41,21 +41,34 @@ function Boards(props) {
 }
 
 function Notifications(props) {
+    console.log(props)
+    const { notification } = props;
+    const notifications = [];
+    notifications.push(notification)
+    console.log(notifications)
     return (
         <div>
             <p>{props.type}</p>
+            {/* <ul>
+                {notifications.map(notification => {
+                    if (notification) {
+                        return <li>
+                            <span><a href="#">{notification.title}</a></span>
+                        </li>
+                    }
+                })}
+            </ul> */}
         </div>
     )
 }
 
 
 function _MainHeaderOptions(props) {
-    const [notification, setNotification] = useState(null);
+    const [notification, setNotification] = useState([]);
 
     useEffect(() => {
-        eventBus.on('notification', msg => {
-            console.log(msg)
-            setNotification(msg)
+        eventBus.on('notification', notification => {
+            setNotification(notification)
         })
     });
 

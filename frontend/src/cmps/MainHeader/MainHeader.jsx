@@ -61,7 +61,6 @@ class _MainHeader extends Component {
     render() {
         const { user, board, isHomePage, isUserPage } = this.props;
         const { isAvatarOptionsOpen, isBoardOptionOpen, isNotifOptionOpen, mainHeaderOptionsType } = this.state;
-        console.log(user)
         return (
             <header style={{ backgroundColor: board ? board.style.backgroundColor.header : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
                 <section className="main-header flex align-center">

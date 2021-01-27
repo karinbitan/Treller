@@ -51,7 +51,7 @@ function getEmptyCard() {
         description: '',
         members: [],
         comments: [],
-        checklists: [],
+        checklist: [],
         labels: [],
         dueDate: '',
         createdAt: Date.now(),

@@ -132,7 +132,12 @@ export class ListPreview extends Component {
                                                 provided.draggableProps.style
                                             )}
                                             ref={provided.innerRef}>
-                                            <CardPreview card={card} idx={idx} key={card._id} onDeleteCard={this.onDeleteCard} onUpdateCard={this.onUpdateCard} />
+                                            <CardPreview card={card}
+                                                idx={idx}
+                                                key={card._id}
+                                                list={list}
+                                                onDeleteCard={this.onDeleteCard}
+                                                onUpdateCard={this.onUpdateCard} />
                                         </div>
                                     )}
                                 </Draggable>
