@@ -54,6 +54,7 @@ function getEmptyCard() {
         checklist: [],
         labels: [],
         dueDate: '',
+        isComplete: false,
         createdAt: Date.now(),
         createdBy: {
             userId: '',

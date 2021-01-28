@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Avatar from 'react-avatar';
 
 import './CardOptions.scss';
@@ -6,7 +6,12 @@ import './CardOptions.scss';
 
 export function CardOptions(props) {
     const [todo, newTodo] = useState('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState(props.card.dueDate);
+
+    useEffect(() => {
+        // setDate(props.card.dueDate);
+        console.log(date)
+    })
 
     function Members(props) {
         return (
@@ -22,41 +27,35 @@ export function CardOptions(props) {
     }
 
     function Labels(props) {
-        const green = { title: '', color: 'green' };
-        const yellow = { title: '', color: 'yellow' };
-        const orange = { title: '', color: 'orange' };
-        const red = { title: '', color: 'red' };
-        const purple = { title: '', color: 'purple' };
-        const blue = { title: '', color: 'blue' };
+        const green = { color: 'green' };
+        const yellow = { color: 'yellow' };
+        const orange = { color: 'orange' };
+        const red = {color: 'red' };
+        const purple = { color: 'purple' };
+        const blue = { color: 'blue' };
         return (
             <div className="labels-container">
                 <p className="headline-option">{props.type}</p>
                 <div className="labels">
-                    <ul>
-                        <li className="label green" onClick={() => props.func(green)}><button><i className="fas fa-pen"></i></button></li>
-                        <li className="label yellow" onClick={() => props.func(yellow)}><button><i className="fas fa-pen"></i></button></li>
-                        <li className="label orange" onClick={() => props.func(orange)}><button><i className="fas fa-pen"></i></button></li>
-                        <li className="label red" onClick={() => props.func(red)}><button><i className="fas fa-pen"></i></button></li>
-                        <li className="label purple" onClick={() => props.func(purple)}><button><i className="fas fa-pen"></i></button></li>
-                        <li className="label blue" onClick={() => props.func(blue)}><button><i className="fas fa-pen"></i></button></li>
+                    <ul className="flex column align-center">
+                        <li className="label green" onClick={() => props.func(green)}></li>
+                        <li className="label yellow" onClick={() => props.func(yellow)}></li>
+                        <li className="label orange" onClick={() => props.func(orange)}></li>
+                        <li className="label red" onClick={() => props.func(red)}></li>
+                        <li className="label purple" onClick={() => props.func(purple)}></li>
+                        <li className="label blue" onClick={() => props.func(blue)}></li>
                     </ul>
                 </div>
-                {/* <div className="edit">
-                    <p>Change labels</p>
-                    <span>Name:</span>
-                    <input type="text" />
-                </div> */}
             </div>
         )
     }
 
     function CheckList(props) {
-        // How to send form info?????
         return (
             <div>
                 <p className="headline-option">{props.type}</p>
                 <span>Add Todo:</span>
-                <form onSubmit={(ev) => props.func(ev, todo)}>
+                <form onSubmit={(ev) => props.func(ev, { title: todo, isDone: false })}>
                     <input type="text" name="todo" value={todo} onChange={ev => newTodo(ev.target.value)} />
                     <br />
                     <button>Add</button>
@@ -70,7 +69,7 @@ export function CardOptions(props) {
             <div onSubmit={ev => props.func(ev, date)}>
                 <p className="headline-option">{props.type}</p>
                 <form>
-                    <input type="date" value={date} name="dueDate" onChange={ev => setDate(ev.target.value)} />
+                    <input type="datetime-local" value={date} name="dueDate" onChange={ev => setDate(ev.target.value)} />
                     <br />
                     <button>Add</button>
                 </form>
