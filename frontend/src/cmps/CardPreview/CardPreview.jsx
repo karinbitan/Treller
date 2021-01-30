@@ -54,7 +54,7 @@ export class CardPreview extends Component {
     }
 
     render() {
-        const { card, list } = this.props;
+        const { card, list, listIdx } = this.props;
         const { cardToEdit, isEditModalOpen, isDetailsModalOpen } = this.state;
         return (
             <section className="card-preview">
@@ -64,7 +64,7 @@ export class CardPreview extends Component {
                     })}
                 </div>}
                 {card && <p onClick={this.openDetailsModal} className="card-title">{card.title}</p>}
-                {isDetailsModalOpen && <CardDetails cardId={card._id} list={list} />}
+                {isDetailsModalOpen && <CardDetails cardId={card._id} list={list} listIdx={listIdx} />}
                 <button className="edit-icon-btn" onClick={this.openEditModal}><i className="fas fa-pen edit-icon"></i></button>
                 {isEditModalOpen && <section className="card-option modal">
                     <div className="card-option modal-content">

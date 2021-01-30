@@ -108,8 +108,9 @@ async function updateCard(card) {
 
 async function addCard(card) {
     const collection = await dbService.getCollection('card');
+    if (card._id) delete card._id;
     try {
-        const res = await collection.insertOne(card);
+        await collection.insertOne(card);
         return card;
     } catch (err) {
         console.log(`ERROR: cannot insert card`)
@@ -132,11 +133,12 @@ async function addComment(cardId, comment) {
 async function deleteComment(cardId, commentId) {
     const collection = await dbService.getCollection('card');
     try {
-        const res = await collection.updateOne({ _id: ObjectId(cardId) }, { $pull: { comments: { $elemMatch: { _id: commentId } } } });
+        const res = await collection.updateOne({ _id: ObjectId(cardId) },
+            { $pull: { comments: { _id: commentId } } });
         const card = await getCardById(cardId);
         return card;
     } catch (err) {
-        console.log(`ERROR: cannot insert card`)
+        console.log(`ERROR: cannot delete comment`)
         throw err;
     }
 }

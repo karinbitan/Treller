@@ -13,6 +13,14 @@ export class CardComments extends Component {
         isTyping: '',
     }
 
+    // componentDidUpdate(prevProps) {
+    //     // Typical usage (don't forget to compare props):
+    //     debugger
+    //     if (this.props.comments !== prevProps.comments) {
+    //       this.fetchData(this.props.comments);
+    //     }
+    //   }
+
     // COMMENT //
     handleChangeComment = ({ target }) => {
         const field = target.name;
@@ -28,6 +36,7 @@ export class CardComments extends Component {
     toggleCommentOption = (ev, boolean) => {
         //TODO: Find how to enter this mode when click window
         ev.stopPropagation();
+        ev.stopPropagation();
         if (boolean === true) {
             this.setState({ onComment: true });
         } else {
@@ -35,50 +44,46 @@ export class CardComments extends Component {
         }
     }
 
-    addComment = async (ev) => {
-        debugger
+    onAddComment = async (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
-        let { cardToEdit } = this.state;
+        this.setState({ onComment: false })
         let comment = this.state.cardComment;
-        await this.props.addComment(cardToEdit, comment);
-        this.setState(({ cardComment: { ...this.state.cardComment, txt: '' } }), async () =>
-            await this.props.setCard(cardToEdit._id));
+        this.props.onAddComment(comment);
+        this.setState(({ cardComment: { ...this.state.cardComment, txt: '' } }));
     }
 
 
-    deleteComment = (ev, commentId) => {
+    onDeleteComment = (ev, commentId) => {
         ev.preventDefault();
-        this.props.deleteComment(commentId);
-    }
-
-    deleteComment = async (commentId) => {
-        const cardId = this.props.cardId;
-        await this.props.deleteComment(cardId, commentId);
-        await this.props.setCard(cardId);
+        this.props.onDeleteComment(commentId);
     }
 
     render() {
-        const { comments } = this.props;
-        const {onComment, cardComment, isTyping}
+        const { comments, user } = this.props;
+        const { onComment, cardComment, isTyping } = this.state;
         return (
-            <section className="comment-container">
+            <section className="card-comment">
                 <div className="headline flex align-center">
                     <i className="fas fa-comments icon"></i><h3>  Comments</h3>
                 </div>
-                <form onFocus={(ev) => this.toggleCommentOption(ev, true)}
-                    className="comment-form flex wrap" onSubmit={this.addComment}>
+                <div className="comment-form-container">
                     {user && <Avatar className="avatar-comment" name={user.fullName} size="35" round={true} />}
-                    <textarea className="comment-text-area" name="txt" placeholder="Add a comment..." value={cardComment.txt}
-                        onChange={this.handleChangeComment}
-                    // onBlur={(ev) => this.toggleCommentOption(ev, false)}
-                    >
-                    </textarea>
-                    <br />
-                    {onComment &&
-                        <button className={'comment-save-btn' + isTyping}>Save</button>
-                    }
-                </form>
+                    <form onFocus={(ev) => this.toggleCommentOption(ev, true)}
+                        className="comment-form flex wrap" onSubmit={this.onAddComment}>
+                        <textarea className="comment-text-area" name="txt" placeholder="Add a comment..." value={cardComment.txt}
+                            onChange={this.handleChangeComment}
+                        // onBlur={(ev) => this.toggleCommentOption(ev, false)}
+                        >
+                        </textarea>
+                        <br />
+                        {onComment &&
+                            <div className="btn-container">
+                                <button className={'comment-save-btn' + isTyping}>Save</button>
+                            </div>
+                        }
+                    </form>
+                </div>
                 {comments.map((comment, idx) => {
                     return <div className="comment" key={idx}>
                         <Avatar className="comment-avatar" name={comment.byMember.fullName} size="30" round={true}
@@ -91,7 +96,7 @@ export class CardComments extends Component {
                             <div className="comment-actions">
                                 <span>Edit</span>
                             -
-                            <span onClick={(ev) => this.deleteComment(ev, comment._id)}>Delete</span>
+                            <span onClick={(ev) => this.onDeleteComment(ev, comment._id)}>Delete</span>
                             </div>
                         </div>
                     </div>

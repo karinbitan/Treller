@@ -1,5 +1,5 @@
 const boardService = require('./board.service');
-const cardService = require('./../card/card.service');
+// const cardService = require('./../card/card.service');
 const userService = require('./../user/user.service');
 const logger = require('../../services/logger.service');
 const utilService = require('./../../services/util.service');
@@ -69,7 +69,7 @@ async function updateBoard(req, res) {
 
 async function favoriteBoard(req, res) {
     const boardId = req.params.id;
-    const {isStarred} = req.body;
+    const { isStarred } = req.body;
     try {
         await boardService.favoriteBoard(boardId, isStarred);
         const realBoard = await boardService.getBoardById(boardId)
@@ -84,10 +84,10 @@ async function favoriteBoard(req, res) {
 async function addList(req, res) {
     const boardId = req.params.id;
     let list = req.body;
-    list._id = utilService._makeId();
+    list._id = utilService._makeId(); 
     try {
-        await boardService.addList(boardId, list);
-        res.send(list);
+       const realList =  await boardService.addList(boardId, list);
+        res.send(realList);
     } catch (err) {
         console.log(`ERROR: ${err}`)
         throw err;

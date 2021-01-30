@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getLoggedInUser } from '../../store/actions/authActions';
-import { setCard, updateCard, addComment, deleteComment } from '../../store/actions/cardActions';
+import { setCard, updateCard, deleteCard, addCard, addComment, deleteComment } from '../../store/actions/cardActions';
 import { eventBus } from '../../services/eventBusService';
 
-import Avatar from 'react-avatar';
 import { CardComments } from '../../cmps/CardComments/CardComments';
-import { CardOptions } from '../../cmps/CardOptions/CardOptions';
+import { CardOptions } from '../../cmps/CardOptionsPopUp/CardOptions';
 
 import './CardDetails.scss';
+import Avatar from 'react-avatar';
 
 export class _CardDetails extends Component {
     state = {
@@ -30,17 +30,21 @@ export class _CardDetails extends Component {
 
     // CARD //
 
+    closeModal() {
+        eventBus.emit('close-details-modal');
+    }
+
     handleChangeCard = ({ target }) => {
         const field = target.name;
         const value = target.value;
         this.setState(prevState => ({ cardToEdit: { ...prevState.cardToEdit, [field]: value } }));
     }
 
-    onEnterPress = (ev) => {
+    onEnterPress = async (ev) => {
         if (ev.keyCode === 13 && ev.shiftKey === false) {
             ev.preventDefault();
-            this.updateCard(ev);
             this.handleChangeCard(ev);
+            this.updateTitle(ev);
         }
     }
 
@@ -51,6 +55,20 @@ export class _CardDetails extends Component {
         await this.props.setCard(cardToEdit._id);
         this.myTextareaRef.blur();
     }
+
+    deleteCard = async () => {
+        const { cardId, board, listIdx } = this.props;
+        await this.props.deleteCard(board._id, listIdx, cardId);
+        this.closeModal();
+        eventBus.emit('cardChanged');
+    }
+
+    copyCard = async () => {
+        const { card, board, list, listIdx } = this.props;
+        await this.props.addCard(board._id, list._id, listIdx, card);
+        eventBus.emit('cardChanged');
+    }
+
 
     // DESCRIPTION //
     toggleDescriptionForm = (ev) => {
@@ -65,6 +83,17 @@ export class _CardDetails extends Component {
         await this.props.updateCard(cardToEdit);
         await this.props.setCard(cardToEdit._id);
         this.setState({ showingDescirptionForm: false });
+    }
+
+    // MEMBERS //
+    addMember = async (ev, member) => {
+        ev.preventDefault();
+        const { cardToEdit } = this.state;
+        let members = cardToEdit.members;
+        members.push(member);
+        this.setState({ cardToEdit });
+        await this.props.updateCard(cardToEdit);
+        await this.props.setCard(cardToEdit._id);
     }
 
     // CHECKLIST //
@@ -91,11 +120,13 @@ export class _CardDetails extends Component {
         });
         await this.props.setCard(cardToEdit._id)
     }
-    showTodoDeleteBtn = () => {
+    showTodoDeleteBtn = (ev) => {
+        ev.stopPropagation();
         this.setState({ isTodoDeleteBtnShow: true })
     }
 
-    hideTodoDeleteBtn = () => {
+    hideTodoDeleteBtn = (ev) => {
+        ev.stopPropagation();
         this.setState({ isTodoDeleteBtnShow: false })
     }
 
@@ -110,7 +141,6 @@ export class _CardDetails extends Component {
 
     // DUE DATE //
     setDate = async (ev, date) => {
-        debugger
         ev.preventDefault();
         const { cardToEdit } = this.state;
         cardToEdit.dueDate = date;
@@ -136,12 +166,23 @@ export class _CardDetails extends Component {
         this.setState(cardToEdit);
         await this.props.updateCard(cardToEdit);
         await this.props.setCard(cardToEdit._id);
+        eventBus.emit('cardChanged');
     }
 
-    // & MODALS //
-    closeModal() {
-        eventBus.emit('close-details-modal');
+    // COMMENTS //
+    onAddComment = async (comment) => {
+        const { cardId } = this.props;
+        await this.props.addComment(cardId, comment);
+        await this.props.setCard(cardId);
     }
+
+    onDeleteComment = async (commentId) => {
+        const cardId = this.props.cardId;
+        await this.props.deleteComment(cardId, commentId);
+        await this.props.setCard(cardId);
+    }
+
+    // CARD OPTIONS //
 
     openPopUp = (type, func) => {
         this.setState({ isCardOptionOpen: true })
@@ -155,12 +196,12 @@ export class _CardDetails extends Component {
     //
 
     render() {
-        const { user, list } = this.props;
+        const { user, board, list, card } = this.props;
         const { cardToEdit, showingDescirptionForm, isCardOptionOpen, cardOptionType,
-             cardOptionFunc, isTodoDeleteBtnShow } = this.state;
+            cardOptionFunc, isTodoDeleteBtnShow } = this.state;
         return (
             <section className="card-details modal">
-                {cardToEdit && <section className="modal-content">
+                {(card && cardToEdit) && <section className="modal-content">
                     <button className="close-btn" onClick={this.closeModal}>
                         <i className="fas fa-times"></i>
                     </button>
@@ -180,11 +221,22 @@ export class _CardDetails extends Component {
                     <div className="flex">
                         <div className="main-container">
                             <div className="flex">
-                                {(cardToEdit.labels && cardToEdit.labels.length > 0) &&
+                                {(card.members && card.members.length > 0) &&
+                                    <div className="members-containers">
+                                        <h4>Members</h4>
+                                        <div className="flex">
+                                            {card.members.map(member => {
+                                                return <Avatar name={member.fullName}
+                                                    size="30" round={true} key={member._id} />
+                                            })}
+                                        </div>
+                                    </div>
+                                }
+                                {(card.labels && card.labels.length > 0) &&
                                     <div className="labels-container">
                                         <h4>Labels</h4>
                                         <div className="flex">
-                                            {cardToEdit.labels.map(label => {
+                                            {card.labels.map(label => {
                                                 if (label || label.length) {
                                                     return <div className={`label ${label.color}`}
                                                         key={label.color}>{label.title}</div>
@@ -192,13 +244,13 @@ export class _CardDetails extends Component {
                                             })}
                                         </div>
                                     </div>}
-                                {cardToEdit.dueDate && <div className="due-date-container">
+                                {card.dueDate && <div className="due-date-container">
                                     <h4>Due Date</h4>
                                     <input type="checkbox" onChange={this.handleCheckDueDate} />
                                     <button className="due-date">
-                                        {cardToEdit.dueDate.replace('T', ' at ')}
-                                        {cardToEdit.isComplete && <span className="due-status complete">Complete</span>}
-                                        {new Date() > new Date(cardToEdit.dueDate) &&
+                                        {card.dueDate.replace('T', ' at ')}
+                                        {card.isComplete && <span className="due-status complete">Complete</span>}
+                                        {new Date() > new Date(card.dueDate) &&
                                             <span className="due-status over-due">Over Due</span>}
                                     </button>
                                 </div>}
@@ -207,24 +259,24 @@ export class _CardDetails extends Component {
                                 <div className="headline flex align-center">
                                     <i className="fas fa-align-left icon"></i>
                                     <h3>Description</h3>
-                                    {cardToEdit.description &&
+                                    {(card.description && !showingDescirptionForm) &&
                                         <button className="edit-description" onClick={this.toggleDescriptionForm}>Edit</button>}
                                 </div>
                                 {!showingDescirptionForm ? <div>
-                                    {!cardToEdit.description ? <div
+                                    {!card.description ? <div
                                         onClick={this.toggleDescriptionForm}
                                         className="description-text-area-fake">
                                         Add more detailed description...
                                 </div>
                                         : <div onClick={this.toggleDescriptionForm}
                                             className="description-text-area">
-                                            {cardToEdit.description}
+                                            {card.description}
                                         </div>}
                                 </div>
                                     : <form className="description-form"
                                         onSubmit={this.updateDescription}>
                                         <textarea name="description"
-                                            value={cardToEdit.description}
+                                            value={card.description}
                                             onChange={this.handleChangeCard}
                                             placeholder="Add more detailed description...">
                                         </textarea>
@@ -238,13 +290,13 @@ export class _CardDetails extends Component {
                                         </div>
                                     </form>}
                             </div>
-                            {cardToEdit.checklist.length > 0 &&
+                            {card.checklist.length > 0 &&
                                 <div className="checklist-container">
                                     <div className="headline flex align-center">
                                         <i className="fas fa-tasks icon"></i><h3>Checklist</h3>
                                     </div>
                                     <ul>
-                                        {cardToEdit.checklist.map((todo, idx) => {
+                                        {card.checklist.map((todo, idx) => {
                                             return <li className="todo flex space-between" key={idx}
                                                 onMouseEnter={this.showTodoDeleteBtn}
                                                 onMouseLeave={this.hideTodoDeleteBtn}>
@@ -262,11 +314,13 @@ export class _CardDetails extends Component {
                                         })}
                                     </ul>
                                 </div>}
-                            <CardComments comments={cardToEdit.comments} deleteComment={this.deleteComment} />
+                            <CardComments comments={card.comments} user={user}
+                                onAddComment={this.onAddComment}
+                                onDeleteComment={this.onDeleteComment} />
                         </div>
                         <div className="side-container flex column">
                             <h4>ADD TO CARD</h4>
-                            <button onClick={() => this.openPopUp('Members')} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('Members'), this.addMember} className="card-details-btn">
                                 <i className="fas fa-user-friends"></i> Members</button>
                             <button onClick={() => this.openPopUp('Labels', this.saveLabels)} className="card-details-btn">
                                 <i className="fas fa-tags"></i> Labels</button>
@@ -276,13 +330,13 @@ export class _CardDetails extends Component {
                                 <i className="fas fa-calendar-week"></i> Due Date</button>
                             <br />
                             <h4>ACTIONS</h4>
-                            <button className="card-details-btn">
+                            <button onClick={this.copyCard} className="card-details-btn">
                                 <i className="fas fa-copy"></i> Copy</button>
-                            <button className="card-details-btn">
+                            <button onClick={this.deleteCard} className="card-details-btn">
                                 <i className="fas fa-trash"></i> Delete</button>
                         </div>
                     </div>
-                    {isCardOptionOpen && <CardOptions type={cardOptionType} card={cardToEdit}
+                    {isCardOptionOpen && <CardOptions board={board} type={cardOptionType} card={card}
                         closePopUp={this.closePopUp} func={cardOptionFunc} />}
                 </section>}
             </section>
@@ -293,13 +347,16 @@ export class _CardDetails extends Component {
 function mapStateToProps(state) {
     return {
         user: state.userReducer.loggedInUser,
-        card: state.cardReducer.currCard
+        card: state.cardReducer.currCard,
+        board: state.boardReducer.currBoard
     }
 }
 const mapDispatchToProps = {
     getLoggedInUser,
     setCard,
     updateCard,
+    deleteCard,
+    addCard,
     addComment,
     deleteComment
 }

@@ -8,20 +8,28 @@ export function CardOptions(props) {
     const [todo, newTodo] = useState('');
     const [date, setDate] = useState(props.card.dueDate);
 
-    useEffect(() => {
-        // setDate(props.card.dueDate);
-        console.log(date)
-    })
-
-    function Members(props) {
+    function Members({ type, board }) {
         return (
-            <div>
-                <p className="headline-option">{props.type}</p>
-                {props.card.members && <div>
+            <div className="members-container">
+                <p className="headline-option">{type}</p>
+                <span>Board Members</span>
+                {board.members && <div>
+                    {board.members.map(member => {
+                        return (
+                            <div onClick={addMember} className="member flex" key={member._id}>
+                                <Avatar className="avatar-logo" name={member.fullName} round={true}
+                                    size={30} />
+                                    {member.fullName}
+                            </div>
+                        )
+                    })}
+                </div>}
+
+                {/* {props.card.members && <div>
                     {props.card.members.map(member => {
                         return <Avatar name={member} />
                     })}
-                </div>}
+                </div>} */}
             </div>
         )
     }
@@ -30,7 +38,7 @@ export function CardOptions(props) {
         const green = { color: 'green' };
         const yellow = { color: 'yellow' };
         const orange = { color: 'orange' };
-        const red = {color: 'red' };
+        const red = { color: 'red' };
         const purple = { color: 'purple' };
         const blue = { color: 'blue' };
         return (
@@ -38,12 +46,12 @@ export function CardOptions(props) {
                 <p className="headline-option">{props.type}</p>
                 <div className="labels">
                     <ul className="flex column align-center">
-                        <li className="label green" onClick={() => props.func(green)}></li>
-                        <li className="label yellow" onClick={() => props.func(yellow)}></li>
-                        <li className="label orange" onClick={() => props.func(orange)}></li>
-                        <li className="label red" onClick={() => props.func(red)}></li>
-                        <li className="label purple" onClick={() => props.func(purple)}></li>
-                        <li className="label blue" onClick={() => props.func(blue)}></li>
+                        <li className="label green" onClick={(ev) => props.addLabel(ev, green)}></li>
+                        <li className="label yellow" onClick={(ev) => props.addLabel(ev, yellow)}></li>
+                        <li className="label orange" onClick={(ev) => props.addLabel(ev, orange)}></li>
+                        <li className="label red" onClick={(ev) => props.addLabel(ev, red)}></li>
+                        <li className="label purple" onClick={(ev) => props.addLabel(ev, purple)}></li>
+                        <li className="label blue" onClick={(ev) => props.addLabel(ev, blue)}></li>
                     </ul>
                 </div>
             </div>
@@ -55,7 +63,7 @@ export function CardOptions(props) {
             <div>
                 <p className="headline-option">{props.type}</p>
                 <span>Add Todo:</span>
-                <form onSubmit={(ev) => props.func(ev, { title: todo, isDone: false })}>
+                <form onSubmit={(ev) => props.addTodo(ev, { title: todo, isDone: false })}>
                     <input type="text" name="todo" value={todo} onChange={ev => newTodo(ev.target.value)} />
                     <br />
                     <button>Add</button>
@@ -66,7 +74,7 @@ export function CardOptions(props) {
 
     function DueDate(props) { /* */
         return (
-            <div onSubmit={ev => props.func(ev, date)}>
+            <div onSubmit={ev => props.addDueDate(ev, date)}>
                 <p className="headline-option">{props.type}</p>
                 <form>
                     <input type="datetime-local" value={date} name="dueDate" onChange={ev => setDate(ev.target.value)} />
@@ -81,12 +89,29 @@ export function CardOptions(props) {
         props.closePopUp();
     }
 
-    const func = (ev, val) => {
-        debugger
+    const addMember = (ev, val) =>{
         props.func(ev, val)
     }
 
-    const { type, card } = props;
+    const addLabel = (ev, val) => {
+        props.func(ev, val);
+    }
+
+    const addTodo = (ev, val) => {
+        ev.preventDefault();
+        props.func(ev, val);
+        newTodo('');
+    }
+
+    const addDueDate = (ev, val) => {
+        props.func(ev, val);
+    }
+
+    // const func = (ev, val) => {
+    //     props.func(ev, val);
+    // }
+
+    const { type, card, board } = props;
     const DynamicCmp = (props) => {
         switch (props.type) {
             case 'Members':
@@ -113,6 +138,7 @@ export function CardOptions(props) {
     return (
         <div className="card-options">
             <button className="close-btn" onClick={closePopUp}><i className="fas fa-times"></i></button>
-            <DynamicCmp type={type} card={card} func={func} />
+            <DynamicCmp type={type} card={card} addLabel={addLabel} addTodo={addTodo}
+                addDueDate={addDueDate} board={board} />
         </div>)
 }

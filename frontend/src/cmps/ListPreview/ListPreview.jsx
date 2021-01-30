@@ -68,6 +68,20 @@ export class ListPreview extends Component {
         this.myTextareaRef.blur();
     }
 
+    onCopyList = () => {
+        debugger
+        const { list } = this.props;
+        this.props.onCopyList(list)
+        this.setState({ listActionOpen: !this.state.listActionOpen })
+    }
+
+    onDeleteList = () => {
+        const { list } = this.props;
+        this.props.onDeleteList(list);
+        this.setState({ listActionOpen: false });
+    }
+
+    // MODALS //
     toggleListOptionModel = (ev) => {
         ev.stopPropagation();
         this.setState({ listActionOpen: !this.state.listActionOpen })
@@ -78,18 +92,9 @@ export class ListPreview extends Component {
         this.setState({ listActionOpen: false })
     }
 
-    copyList() {
-
-    }
-
-    onDeleteList = () => {
-        const { list } = this.props;
-        this.props.onDeleteList(list._id);
-        this.setState({ listActionOpen: false });
-    }
-
+    // CARD //
     onDeleteCard = (cardId) => {
-        this.props.onDeleteCard(this.props.idx, cardId);
+        this.props.onDeleteCard(this.props.listIdx, cardId);
     }
 
     onUpdateCard = (card) => {
@@ -97,7 +102,7 @@ export class ListPreview extends Component {
     }
 
     render() {
-        const { list, idx, board } = this.props;
+        const { list, listIdx, board } = this.props;
         const { provided, innerRef, isDraggingOver } = this.props;
         const { listToEdit, listActionOpen } = this.state;
         return (
@@ -111,7 +116,7 @@ export class ListPreview extends Component {
                 {listActionOpen && <div className="list-actions">
                     <p>List Actions</p>
                     <ul>
-                        <li onClick={this.copyList}>Copy List</li>
+                        <li onClick={this.onCopyList}>Copy List</li>
                         <li onClick={this.onDeleteList}>Delete List</li>
                     </ul>
                     <button className="close-btn" onClick={this.closeListOptionModel}>X</button>
@@ -133,7 +138,7 @@ export class ListPreview extends Component {
                                             )}
                                             ref={provided.innerRef}>
                                             <CardPreview card={card}
-                                                idx={idx}
+                                                listIdx={listIdx}
                                                 key={card._id}
                                                 list={list}
                                                 onDeleteCard={this.onDeleteCard}
@@ -148,7 +153,7 @@ export class ListPreview extends Component {
                 </div>}
 
                 {/* <CardList list={list} cards={list.cards} idx={idx} key={list._id} /> */}
-                <AddCard boardId={board._id} listId={list._id} listIdx={idx} />
+                <AddCard boardId={board._id} listId={list._id} listIdx={listIdx} />
             </section >
         )
     }

@@ -5,7 +5,6 @@ import { cardService } from '../../services/cardService';
 export function loadCards(filterBy) {
   return async dispatch => {
     try {
-      debugger
       const cards = await cardService.query(filterBy);
       dispatch({ type: 'SET_CARDS', cards });
     } catch (err) {
@@ -58,10 +57,10 @@ export function updateCard(card) {
   }
 }
 
-export function addComment(card, comment) {
+export function addComment(cardId, comment) {
   return async dispatch => {
     try {
-      const realCard = await cardService.addComment(card._id, comment);
+      const realCard = await cardService.addComment(cardId, comment);
       const savedCard = await cardService.updateCard(realCard);
       dispatch({ type: 'UPDATE_CARD', card: savedCard });
     } catch (err) {

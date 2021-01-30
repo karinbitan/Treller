@@ -3,10 +3,10 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { TrellerApp } from './pages/TrellerApp/TrellerApp';
 import { CardDetails } from './pages/CardDetails';
-
-import './App.scss';
 import { UserProfile } from './pages/UserProfile/UserProfile';
 import { Login } from './pages/Login';
+
+import './App.scss';
 
 function App() {
   return (

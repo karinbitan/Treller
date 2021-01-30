@@ -13,22 +13,22 @@ import './TrellerApp.scss';
 import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
 import { eventBus } from '../../services/eventBusService';
+import { AddList } from '../../cmps/AddList/AddList';
 
 class _TrellerApp extends Component {
 
     state = {
         boardToEdit: null,
-        listToEdit: null,
-        showingAddListForm: false,
     }
 
     async componentDidMount() {
         const boardId = this.props.match.params.id;
         await this.props.setBoard(boardId);
         this.setState({ boardToEdit: this.props.board })
-        const listToEdit = boardService.getEmptyList();
-        this.setState({ listToEdit });
         await this.props.getLoggedInUser();
+        eventBus.on('cardChanged', async () => {
+            await this.props.setBoard(boardId);
+        })
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -68,61 +68,48 @@ class _TrellerApp extends Component {
     //     console.log(this.props.users)
     // }
 
-    // LIST//
-    handleChangeList = ({ target }) => {
-        const field = target.name;
-        const value = target.value;
-        this.setState(prevState => ({ listToEdit: { ...prevState.listToEdit, [field]: value } }));
-    }
-
-    toggleListForm = (ev) => {
-        ev.stopPropagation();
-        this.setState({ showingAddListForm: !this.state.showingAddListForm })
-    }
-
-    addList = async (ev) => {
-        ev.stopPropagation();
-        ev.preventDefault();
+    // LIST //
+    onAddList = async (list) => {
         const { board } = this.props;
-        const { listToEdit } = this.state;
-        await this.props.addList(board._id, listToEdit);
+        await this.props.addList(board._id, list);
         await this.props.setBoard(board._id);
-        // this.setState(({ listToEdit: { ...this.state.listToEdit, title: '' } }));
-        this.setState({ showingAddListForm: false });
         // eventBus.emit('notification', {
         //     title: 'List added',
         // })
     }
 
-    copyList = (list) => {
-
+    onCopyList = async (list) => {
+        debugger
+        const { board } = this.props;
+        await this.props.addList(board._id, list);
+        await this.props.setBoard(board._id);
     }
 
-    onUpdateList = async (listToEdit) => {
+    onUpdateList = async (list) => {
         const { boardToEdit } = this.state;
         const lists = boardToEdit.lists;
         const idx = lists.findIndex(list => {
-            return list._id === listToEdit._id;
+            return list._id === list._id;
         })
-        lists.splice(idx, 1, listToEdit);
+        lists.splice(idx, 1, list);
         boardToEdit.lists = lists;
         this.setState({ boardToEdit }, async () => {
             await this.props.updateBoard(boardToEdit)
         })
         eventBus.emit('notification', {
             title: 'List updated',
-            list: this.state.listToEdit,
+            list: list,
             by: this.props.user
         })
     }
 
-    onDeleteList = async (listId) => {
+    onDeleteList = async (list) => {
         const { board } = this.props;
-        await this.props.deleteList(board._id, listId);
+        await this.props.deleteList(board._id, list._id);
         await this.props.setBoard(board._id);
         eventBus.emit('notification', {
             title: 'List deleted',
-            list: this.state.listToEdit,
+            list: list,
             by: this.props.user
         })
     }
@@ -269,8 +256,7 @@ class _TrellerApp extends Component {
 
     render() {
         const { board, user } = this.props;
-        const { boardToEdit, isStarred, listToEdit, showingAddListForm,
-            isMenuOpen, isInviteMenuOpen } = this.state;
+        const { boardToEdit, isStarred, isMenuOpen, isInviteMenuOpen } = this.state;
         return (
             <section>
                 {(board && user) && <MainHeader board={board} user={user} onAddBoard={this.onAddBoard} />}
@@ -309,11 +295,11 @@ class _TrellerApp extends Component {
                                                                         style={this.getListStyle(snapshot.isDraggingOver)}
                                                                         {...provided.droppableProps}
                                                                         ref={provided.innerRef}>
-                                                                        <ListPreview list={list} idx={idx} key={idx} board={this.props.board}
+                                                                        <ListPreview list={list} listIdx={idx} key={idx} board={this.props.board}
                                                                             innerRef={provided.innerRef}
                                                                             provided={provided}
                                                                             isDraggingOver={snapshot.isDraggingOver}
-                                                                            copyList={this.copyList}
+                                                                            onCopyList={this.onCopyList}
                                                                             onDeleteList={this.onDeleteList}
                                                                             onUpdateList={this.onUpdateList}
                                                                             onDeleteCard={this.onDeleteCard}
@@ -331,15 +317,7 @@ class _TrellerApp extends Component {
                                 )}
                             </Droppable>
                         </DragDropContext>
-                        {!showingAddListForm ? <div className="add-container" onClick={this.toggleListForm}><i className="fas fa-plus"></i> Add another list</div>
-                            : <form onSubmit={this.addList} className="add-list-form">
-                                <input type="text" className="add-form" name="title"
-                                    value={listToEdit.title} onChange={this.handleChangeList}
-                                    placeholder="Enter a title for this card" onBlur={this.toggleListForm} />
-                                <br />
-                                <button className="add-form-btn">Add list</button>
-                                <button className="exit-btn" onClick={this.toggleListForm}><i className="fas fa-times"></i></button>
-                            </form>}
+                        <AddList onAddList={this.onAddList} />
                     </section>
                 </section>}
             </section>

@@ -42,7 +42,7 @@ function addComment(cardId, comment) {
 }
 
 function deleteComment(cardId, commentId) {
-    return httpService.delete(`card/${cardId}/comments/delete`, { commentId });
+    return httpService.post(`card/${cardId}/comments/${commentId}`);
 }
 
 function getEmptyCard() {

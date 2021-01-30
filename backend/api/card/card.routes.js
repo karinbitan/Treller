@@ -13,7 +13,7 @@ router.delete('/:boardId/:listIdx/:id', deleteCard);
 router.put('/:id', updateCard);
 router.post('/', addCard);
 router.post('/:id/comments', addComment);
-router.get('/:id/comments/delete', deleteComment);
+router.post('/:id/comments/:commentId', deleteComment);
 
 
 module.exports = router;

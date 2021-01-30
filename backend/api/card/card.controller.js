@@ -93,10 +93,9 @@ async function addComment(req, res) {
 }
 
 async function deleteComment(req, res) {
-    const cardId = req.params.id;
-    const commentId = req.body.commentId;
+    const {id, commentId} = req.params;
     try {
-        const card = await cardService.deleteComment(cardId, commentId);
+        const card = await cardService.deleteComment(id, commentId);
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)

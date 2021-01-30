@@ -148,6 +148,20 @@ async function favoriteBoard(boardId, isStarred) {
 // LIST //
 async function addList(boardId, list) {
     const collection = await dbService.getCollection('board');
+    // if (list._id) {
+    //     delete list._id;
+    //     list.cards.forEach(card => {
+    //         if (card && card.length) {
+    //             delete card._id;
+    //             cardService.addCard(card)
+    //         }
+    //     })
+    //     .map(card =>{
+    //         return 
+    //     })
+    // } else {
+    //     list._id = _makeId();
+    // }
     try {
         const result = await collection.updateOne({ _id: ObjectId(boardId) },
             { $push: { lists: list } });
