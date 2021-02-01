@@ -67,9 +67,6 @@
     padding: 6px 8px 2px;
 }
 
-.card-list {
-}
-
 .add-card {
     color: #5e6c84;
     cursor: pointer;
@@ -106,9 +103,12 @@
     right: 0;
     border: none;
     margin: 10px;
+    color: #6b778c;
+    cursor: pointer;
     &:hover {
         background-color: rgb(213, 214, 214);
         border-radius: 3px;
+        color: black;
     }
 }
 

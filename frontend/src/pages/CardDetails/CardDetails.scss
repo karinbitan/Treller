@@ -108,62 +108,75 @@
     }
     .main-container {
         margin-right: 30px;
-        & .labels-container {
+        & .other-details {
             margin-left: 40px;
-            margin-right: 40px;
-            & h4 {
-                text-align: start;
-            }
-            & .label {
-                width: 50px;
-                height: 32px;
-                border-radius: 3px;
-                margin-top: 8px;
-                &.green {
-                    background-color: #61bd4f;
+            & .labels-container {
+                margin-left: 40px;
+                margin-right: 40px;
+                & h4 {
+                    text-align: start;
                 }
-                &.yellow {
-                    background-color: #f2d600;
-                }
-                &.orange {
-                    background-color: #ff9f1a;
-                }
-                &.red {
-                    background-color: #eb5a46;
-                }
-                &.purple {
-                    background-color: #c377e0;
-                }
-                &.blue {
-                    background-color: #0079bf;
-                }
-            }
-        }
-        & .due-date-container {
-            & h4 {
-                text-align: start;
-            }
-            & input[type="checkbox"] {
-                height: 16px;
-                width: 16px;
-            }
-            & .due-date {
-                background-color: rgba(9, 30, 66, 0.04);
-                border: none;
-                padding: 8px 12px;
-                margin-top: 8px;
-                color: #172b4d;
-                font-size: 1rem;
-                & .due-status {
-                    color: white;
-                    font-size: 14px;
-                    margin-left: 3px;
-                    padding: 2px;
-                    &.complete {
-                        background-color: #5aac44;
+                & .label {
+                    width: 50px;
+                    height: 32px;
+                    border-radius: 3px;
+                    margin-top: 8px;
+                    &.green {
+                        background-color: #61bd4f;
                     }
-                    &.over-due {
-                        background-color: #cf513d;
+                    &.yellow {
+                        background-color: #f2d600;
+                    }
+                    &.orange {
+                        background-color: #ff9f1a;
+                    }
+                    &.red {
+                        background-color: #eb5a46;
+                    }
+                    &.purple {
+                        background-color: #c377e0;
+                    }
+                    &.blue {
+                        background-color: #0079bf;
+                    }
+                }
+            }
+            & .due-date-container {
+                & h4 {
+                    text-align: start;
+                }
+                & input[type="checkbox"] {
+                    height: 16px;
+                    width: 16px;
+                }
+                & .due-date {
+                    background-color: rgba(9, 30, 66, 0.04);
+                    border: none;
+                    padding: 8px 12px;
+                    margin-top: 8px;
+                    color: #172b4d;
+                    font-size: 1rem;
+                    & .due-status {
+                        color: white;
+                        font-size: 14px;
+                        margin-left: 3px;
+                        padding: 2px;
+                        &.complete {
+                            background-color: #5aac44;
+                        }
+                        &.over-due {
+                            background-color: #cf513d;
+                        }
+                    }
+                }
+                & .delete-due-date {
+                    background-color: rgba(9, 30, 66, 0.04);
+                    border: none;
+                    padding: 8px 12px;
+                    font-size: 1rem;
+                    &:hover {
+                        background-color: rgba(9, 30, 66, 0.08);
+                        cursor: pointer;
                     }
                 }
             }

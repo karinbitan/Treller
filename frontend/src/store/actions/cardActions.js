@@ -49,6 +49,7 @@ export function addCard(boardId, listId, listIdx, card) {
 export function updateCard(card) {
   return async dispatch => {
     try {
+      debugger
       const savedCard = await cardService.updateCard(card)
       dispatch({ type: 'UPDATE_CARD', card: savedCard })
     } catch (err) {

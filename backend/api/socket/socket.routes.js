@@ -2,14 +2,11 @@ module.exports = connectSockets
 
 function connectSockets(io) {
     io.on('connection', socket => {
-        socket.on('treats newTreat', (pet) => {
-
-            // console.log('treat', treat)
+        socket.on('savedBoard', () => {
             // io.emit('treats addTreat', treat)
-            // console.log(pet, 'petid')
-            io.to(socket.myTopic).emit('treats addTreat', pet)
+            io.to(socket.myTopic).emit('newBoard')
         })
-        socket.on('treats topic', topic => {
+        socket.on('boardId topic', topic => {
 
             if (socket.myTopic) {
                 socket.leave(socket.myTopic)
@@ -23,15 +20,12 @@ function connectSockets(io) {
         //     io.to(socket.myTopic).emit('chat addMsg', msg)
 
         // })
-        socket.on('register chat room', adoptionRequestId => {
-            socket.join(adoptionRequestId)
-        });
+        // socket.on('register chat room', adoptionRequestId => {
+        //     socket.join(adoptionRequestId)
+        // });
 
-        socket.on('leave chat room', adoptionRequestId => {
-            socket.leave(adoptionRequestId)
-        });
-
-
+        // socket.on('leave chat room', adoptionRequestId => {
+        //     socket.leave(adoptionRequestId)
+        // });
     })
-
 }

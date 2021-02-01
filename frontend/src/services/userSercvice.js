@@ -1,4 +1,4 @@
-import httpService from './httpService';
+import {httpService} from './httpService';
 export const userService = {
     query,
     getUserById,
@@ -30,7 +30,10 @@ function getEmptyUser() {
         fullName: '',
         userName: '',
         password: '',
-        imgUrl: ''
+        imgUrl: '',
+        boardOwner: [],
+        boardMember: [],
+        cardMember : []
     }
     return user;
 }

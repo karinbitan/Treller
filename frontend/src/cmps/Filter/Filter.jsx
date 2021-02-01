@@ -43,7 +43,7 @@ export class _Filter extends Component {
                 <form onSubmit={this.setFilter}>
                     <input type="search" className="search" name="title"
                         onChange={this.handleChange} onFocus={this.toggleForm} onBlur={this.toggleForm} />
-                    <button className="no-button"><i className="fa fa-search search-icon"></i></button>
+                    <button className="search-btn"><i className="fa fa-search"></i></button>
                 </form>
                 {isFormOpen && <div className="search-tab pop-up" >
                     <p>Seatch Results</p>

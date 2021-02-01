@@ -39,7 +39,7 @@ export class BoardHeader extends Component {
     handleChangeInvite = ({ target }) => {
         const field = target.name;
         const value = target.value;
-        this.setState(prevState => ({ filter: { ...prevState.filter,[field]:  value } }), ()=>{
+        this.setState(prevState => ({ filter: { ...prevState.filter, [field]: value } }), () => {
             this.props.onFilterUsers(this.state.filter);
         });
     }
@@ -91,20 +91,21 @@ export class BoardHeader extends Component {
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
                     <form onSubmit={this.onUpdateBoard}>
-                        {boardToEdit && <input type="text" ref={el => this.myTextRef = el} className="board-header board-name" name="title"
+                        {boardToEdit && <input type="text" ref={el => this.myTextRef = el} className="board-header-icon board-name" name="title"
                             placeholder="Enter your board name here..."
                             value={boardToEdit.title} onChange={this.handleChangeBoard} />}
                     </form>
-                    <button onClick={this.onFavoriteBoard} className="icon-container board-header-icon no-button">
-                        <i style={isStarred ? { color: "goldenrod" } : {}} className="far fa-star"></i></button> |
-                <div className="avatar-container board-header-icon">
+                    <button onClick={this.onFavoriteBoard} className="board-header-icon favorite-board">
+                        <i style={isStarred ? { color: "#f2d600" } : {}} className="far fa-star"></i></button>
+                         |
+                <div className="board-header-icon avatar-container">
                         {board.members.map(member => {
-                            return <Avatar name={member.fullName} size="25" round={true} key={member._id} />
+                            return <Avatar className="member-avatar" name={member.fullName} size="25" round={true} key={member._id} />
                         })}
                     </div>
         |
                 <div className="invite-container">
-                        <button onClick={this.toggleInviteMenu} className="invite-btn no-button">Invite</button>
+                        <button onClick={this.toggleInviteMenu} className="board-header-icon invite-btn">Invite</button>
                         {isInviteMenuOpen && <div className="invite pop-up">
                             <button onClick={this.toggleInviteMenu}>X</button>
                             <p>Invite</p>
@@ -116,8 +117,8 @@ export class BoardHeader extends Component {
                             </form>
                         </div>}
                     </div>
-                    <div className="menu-container">
-                        <button className="show-menu-icon" onClick={this.toggleMenu}>
+                    <div className="menu-container flex">
+                        <button className="board-header-icon show-menu-icon" onClick={this.toggleMenu}>
                             <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
                         </button>
                         {isMenuOpen && <div className="menu pop-up">

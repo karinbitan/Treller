@@ -7,7 +7,7 @@ const BASE_URL = process.env.NODE_ENV === 'production' ?
     '/api/' :
     '//localhost:4000/api/'
 
-export default {
+export const httpService = {
     get(endpoint, data) {
         return ajax(endpoint, 'GET', data)
     },

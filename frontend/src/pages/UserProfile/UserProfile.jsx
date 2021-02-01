@@ -10,6 +10,7 @@ import Loading from './../../assets/loading.gif';
 import profilePic from './../../assets/profile-logo.png';
 
 import './UserProfile.scss';
+import { eventBus } from '../../services/eventBusService';
 
 export class _UserProfile extends Component {
 
@@ -23,8 +24,19 @@ export class _UserProfile extends Component {
         // console.log(this.props.user)
         // const user = await this.props.setUser(userId);
         await this.props.getLoggedInUser();
-        const { user } = this.props;
+        let { user } = this.props;
         this.setState({ userToEdit: user });
+
+        eventBus.on('invite-to-card', (info => {
+            if (info.member._id === user._id) {
+                user.cardMember = info.card._id;
+                this.setState({ userToEdit: user }, async () => {
+                    await this.props.updateUser(user)
+                })
+                // eventBus.emit('add-to-notification', {txt: `You were added to card - ${info.card.title}
+                // as a member`});
+            }
+        }))
     }
 
     uploadImgProfile = async (ev) => {

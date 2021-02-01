@@ -6,14 +6,15 @@ import { boardService } from '../../services/boardService';
 import { deleteCard, updateCard } from '../../store/actions/cardActions';
 import { getUsers } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
+import { eventBus } from '../../services/eventBusService';
+import {socketService} from '../../services/socketService.js';
 
 import { ListPreview } from './../../cmps/ListPreview';
-
-import './TrellerApp.scss';
+import { AddList } from '../../cmps/AddList/AddList';
 import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
-import { eventBus } from '../../services/eventBusService';
-import { AddList } from '../../cmps/AddList/AddList';
+
+import './TrellerApp.scss';
 
 class _TrellerApp extends Component {
 
@@ -29,6 +30,11 @@ class _TrellerApp extends Component {
         eventBus.on('cardChanged', async () => {
             await this.props.setBoard(boardId);
         })
+        socketService.setup();
+        socketService.emit('boardId topic', boardId);
+        socketService.on('newBoard', async () => {
+            await this.props.setBoard(boardId)
+        });
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -40,6 +46,7 @@ class _TrellerApp extends Component {
 
     onUpdateBoard = async (boardToEdit) => {
         await this.props.updateBoard(boardToEdit);
+        socketService.emit('savedBoard');
     }
 
     onChangeStyle = async (style) => {
@@ -85,20 +92,20 @@ class _TrellerApp extends Component {
         await this.props.setBoard(board._id);
     }
 
-    onUpdateList = async (list) => {
+    onUpdateList = async (savedList) => {
         const { boardToEdit } = this.state;
         const lists = boardToEdit.lists;
         const idx = lists.findIndex(list => {
-            return list._id === list._id;
+            return list._id === savedList._id;
         })
-        lists.splice(idx, 1, list);
+        lists.splice(idx, 1, savedList);
         boardToEdit.lists = lists;
         this.setState({ boardToEdit }, async () => {
             await this.props.updateBoard(boardToEdit)
         })
         eventBus.emit('notification', {
             title: 'List updated',
-            list: list,
+            list: savedList,
             by: this.props.user
         })
     }
@@ -110,24 +117,6 @@ class _TrellerApp extends Component {
         eventBus.emit('notification', {
             title: 'List deleted',
             list: list,
-            by: this.props.user
-        })
-    }
-
-    // CARD //
-    onDeleteCard = async (listIdx, cardId) => {
-        const { board } = this.props;
-        await this.props.deleteCard(this.props.board._id, listIdx, cardId);
-        await this.props.setBoard(board._id);
-    }
-
-    onUpdateCard = async (card) => {
-        const { board } = this.props;
-        await this.props.updateCard(card);
-        await this.props.setBoard(board._id)
-        eventBus.emit('notification', {
-            title: 'Card updated',
-            card: card,
             by: this.props.user
         })
     }
@@ -301,9 +290,7 @@ class _TrellerApp extends Component {
                                                                             isDraggingOver={snapshot.isDraggingOver}
                                                                             onCopyList={this.onCopyList}
                                                                             onDeleteList={this.onDeleteList}
-                                                                            onUpdateList={this.onUpdateList}
-                                                                            onDeleteCard={this.onDeleteCard}
-                                                                            onUpdateCard={this.onUpdateCard} />
+                                                                            onUpdateList={this.onUpdateList} />
                                                                     </div>
                                                                 )}
                                                             </Droppable>

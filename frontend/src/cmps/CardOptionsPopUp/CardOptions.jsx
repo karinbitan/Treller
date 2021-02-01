@@ -8,28 +8,26 @@ export function CardOptions(props) {
     const [todo, newTodo] = useState('');
     const [date, setDate] = useState(props.card.dueDate);
 
+    useEffect(() => {
+        console.log('something');
+    })
+
     function Members({ type, board }) {
+        console.log(board.members)
         return (
             <div className="members-container">
                 <p className="headline-option">{type}</p>
-                <span>Board Members</span>
+                <h4>Board Members</h4>
                 {board.members && <div>
                     {board.members.map(member => {
                         return (
-                            <div onClick={addMember} className="member flex" key={member._id}>
+                            <div onClick={(ev) => addMember(ev, member)} className="member flex" key={member._id}>
                                 <Avatar className="avatar-logo" name={member.fullName} round={true}
                                     size={30} />
-                                    {member.fullName}
-                            </div>
-                        )
+                                {member.fullName}
+                            </div>)
                     })}
                 </div>}
-
-                {/* {props.card.members && <div>
-                    {props.card.members.map(member => {
-                        return <Avatar name={member} />
-                    })}
-                </div>} */}
             </div>
         )
     }
@@ -62,7 +60,7 @@ export function CardOptions(props) {
         return (
             <div>
                 <p className="headline-option">{props.type}</p>
-                <span>Add Todo:</span>
+                <h4>Add Todo:</h4>
                 <form onSubmit={(ev) => props.addTodo(ev, { title: todo, isDone: false })}>
                     <input type="text" name="todo" value={todo} onChange={ev => newTodo(ev.target.value)} />
                     <br />
@@ -89,7 +87,7 @@ export function CardOptions(props) {
         props.closePopUp();
     }
 
-    const addMember = (ev, val) =>{
+    const addMember = (ev, val) => {
         props.func(ev, val)
     }
 

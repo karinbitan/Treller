@@ -15,7 +15,7 @@ function Boards(props) {
     return (
         <div className="boards">
             <p>{props.type}</p>
-            {(favBoards && favBoards.length) && <div className="fav-boards">
+            {(favBoards && favBoards.length > 0) && <div className="fav-boards">
                 <h5>Starred Boards</h5>
                 <ul>
                     {favBoards.map(board => {

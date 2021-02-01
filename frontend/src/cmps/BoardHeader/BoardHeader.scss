@@ -1,57 +1,68 @@
 .board-header {
     margin-left: 5px;
     margin-top: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
     & .board-name {
         // padding: 10px 8px;
-        background-color: hsla(0, 0%, 100%, 0.24);
         border-radius: 3px;
-        height: 35px;
-        border: none;
         font-weight: bold;
         font-size: x-large;
         color: white;
-        margin: 0;
+    }
+    & .favorite-board{
+        cursor: pointer;
+    }
+    
+    & .board-header-icon {
+        border: none;
+        font-size: larger;
+        color: white;
+        margin-right: 5px;
+        height: 35px;
+        background-color: hsla(0, 0%, 100%, 0.3);
+        &:not:first-child {
+            margin-left: 5px;
+        }
         &:hover {
             background-color: rgba(255, 255, 255, 0.171);
         }
     }
-    & .board-header-icon {
-        font-size: larger;
-        color: white;
-        margin-right: 5px;
-    }
     & .avatar-container {
-        margin-left: 5px;
+        background-color: unset;
+        cursor: pointer;
+        &:hover {
+            background-color: unset;
+        }
+        & .member-avatar {
+            cursor: pointer;
+            margin-left: 2px;
+            cursor: pointer;
+        }
     }
 
     & .invite-btn {
+        cursor: pointer;
         width: 50px;
         color: white;
-        background-color: hsla(0, 0%, 100%, 0.3);
-        height: 35px;
-        margin-left: 5px;
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 16px;
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.171);
-        }
+        margin-left: 5px;
     }
 
     & .menu-container {
+        cursor: pointer;
         position: relative;
         & .pop-up {
             top: 35px;
-            right: 0;
         }
         & .show-menu-icon {
+            cursor: pointer;
             color: white;
             float: right;
-            background-color: hsla(0, 0%, 100%, 0.3);
             height: 35px;
-            margin-left: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -61,9 +72,6 @@
             & span {
                 margin-left: 4px;
                 font-size: 16px;
-            }
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.171);
             }
         }
         & .color-sample {

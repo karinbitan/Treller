@@ -18,7 +18,8 @@ export class _CardDetails extends Component {
         cardOptionType: '',
         cardOptionFunc: '',
         isComplete: false,
-        isTodoDeleteBtnShow: false
+        isTodoDeleteBtnShow: false,
+        currTodoIdx: ''
     }
 
     async componentDidMount() {
@@ -30,8 +31,8 @@ export class _CardDetails extends Component {
 
     // CARD //
 
-    closeModal() {
-        eventBus.emit('close-details-modal');
+    onCloseModal = () => {
+        this.props.onCloseDetailsModal();
     }
 
     handleChangeCard = ({ target }) => {
@@ -59,7 +60,7 @@ export class _CardDetails extends Component {
     deleteCard = async () => {
         const { cardId, board, listIdx } = this.props;
         await this.props.deleteCard(board._id, listIdx, cardId);
-        this.closeModal();
+        this.onCloseModal();
         eventBus.emit('cardChanged');
     }
 
@@ -94,6 +95,7 @@ export class _CardDetails extends Component {
         this.setState({ cardToEdit });
         await this.props.updateCard(cardToEdit);
         await this.props.setCard(cardToEdit._id);
+        eventBus.emit('invite-to-card', { 'membet': member, 'card': cardToEdit })
     }
 
     // CHECKLIST //
@@ -120,14 +122,14 @@ export class _CardDetails extends Component {
         });
         await this.props.setCard(cardToEdit._id)
     }
-    showTodoDeleteBtn = (ev) => {
+    showTodoDeleteBtn = (ev, idx) => {
         ev.stopPropagation();
-        this.setState({ isTodoDeleteBtnShow: true })
+        this.setState({ isTodoDeleteBtnShow: true, currTodoIdx: idx })
     }
 
-    hideTodoDeleteBtn = (ev) => {
+    hideTodoDeleteBtn = (ev, idx) => {
         ev.stopPropagation();
-        this.setState({ isTodoDeleteBtnShow: false })
+        this.setState({ isTodoDeleteBtnShow: false, currTodoIdx: idx })
     }
 
     deleteTodo = async (idx) => {
@@ -155,6 +157,13 @@ export class _CardDetails extends Component {
         } else {
             this.setState(({ cardToEdit: { ...this.state.cardToEdit, [field]: false } }));
         }
+    }
+
+    deleteDueDate = async () => {
+        const { cardToEdit } = this.state;
+        cardToEdit.dueDate = '';
+        await this.props.updateCard(cardToEdit)
+        await this.props.setCard(cardToEdit._id);
     }
 
     // LABEL //
@@ -198,11 +207,11 @@ export class _CardDetails extends Component {
     render() {
         const { user, board, list, card } = this.props;
         const { cardToEdit, showingDescirptionForm, isCardOptionOpen, cardOptionType,
-            cardOptionFunc, isTodoDeleteBtnShow } = this.state;
+            cardOptionFunc, isTodoDeleteBtnShow, currTodoIdx } = this.state;
         return (
             <section className="card-details modal">
                 {(card && cardToEdit) && <section className="modal-content">
-                    <button className="close-btn" onClick={this.closeModal}>
+                    <button className="close-btn" onClick={this.onCloseModal}>
                         <i className="fas fa-times"></i>
                     </button>
                     <div className="title-container">
@@ -220,7 +229,7 @@ export class _CardDetails extends Component {
                     </div>
                     <div className="flex">
                         <div className="main-container">
-                            <div className="flex">
+                            <div className="other-details flex">
                                 {(card.members && card.members.length > 0) &&
                                     <div className="members-containers">
                                         <h4>Members</h4>
@@ -237,10 +246,8 @@ export class _CardDetails extends Component {
                                         <h4>Labels</h4>
                                         <div className="flex">
                                             {card.labels.map(label => {
-                                                if (label || label.length) {
-                                                    return <div className={`label ${label.color}`}
-                                                        key={label.color}>{label.title}</div>
-                                                }
+                                                return <div className={`label ${label.color}`}
+                                                    key={label.color}>{label.title}</div>
                                             })}
                                         </div>
                                     </div>}
@@ -252,6 +259,9 @@ export class _CardDetails extends Component {
                                         {card.isComplete && <span className="due-status complete">Complete</span>}
                                         {new Date() > new Date(card.dueDate) &&
                                             <span className="due-status over-due">Over Due</span>}
+                                    </button>
+                                    <button className="delete-due-date" onClick={this.deleteDueDate}>
+                                        <i className="far fa-calendar-times"></i>
                                     </button>
                                 </div>}
                             </div>
@@ -298,18 +308,18 @@ export class _CardDetails extends Component {
                                     <ul>
                                         {card.checklist.map((todo, idx) => {
                                             return <li className="todo flex space-between" key={idx}
-                                                onMouseEnter={this.showTodoDeleteBtn}
-                                                onMouseLeave={this.hideTodoDeleteBtn}>
+                                                onMouseEnter={(ev) => this.showTodoDeleteBtn(ev, idx)}
+                                                onMouseLeave={(ev) => this.hideTodoDeleteBtn(ev, idx)}>
                                                 <label style={{ textDecoration: todo.isDone ? 'line-through' : 'none' }}>
                                                     <input type="checkbox"
                                                         onChange={ev => this.handleCheckChecklist(ev, todo, idx)}
                                                         checked={todo.isDone} />
                                                     {todo.title}
                                                 </label>
-                                                {isTodoDeleteBtnShow &&
-                                                    <button onClick={() => this.deleteTodo(idx)} className="delete-todo">
-                                                        <i className="fas fa-trash"></i>
-                                                    </button>}
+                                                <button onClick={() => this.deleteTodo(idx)} className="delete-todo"
+                                                    style={{ display: isTodoDeleteBtnShow && currTodoIdx === idx ? 'block' : 'none' }}>
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
                                             </li>
                                         })}
                                     </ul>
@@ -320,7 +330,7 @@ export class _CardDetails extends Component {
                         </div>
                         <div className="side-container flex column">
                             <h4>ADD TO CARD</h4>
-                            <button onClick={() => this.openPopUp('Members'), this.addMember} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('Members', this.addMember)} className="card-details-btn">
                                 <i className="fas fa-user-friends"></i> Members</button>
                             <button onClick={() => this.openPopUp('Labels', this.saveLabels)} className="card-details-btn">
                                 <i className="fas fa-tags"></i> Labels</button>

@@ -1,89 +1,120 @@
 import { Component } from 'react';
-import { CardDetails } from '../../pages/CardDetails/CardDetails';
+import { connect } from 'react-redux';
+import { deleteCard, updateCard, addCard } from '../../store/actions/cardActions';
 import { eventBus } from '../../services/eventBusService';
 
+import Avatar from 'react-avatar';
+import { CardDetails } from '../../pages/CardDetails/CardDetails';
+import { CardEditModal } from '../CardEditModal/CardEditModal';
 
 import './CardPreview.scss';
 
-export class CardPreview extends Component {
+export class _CardPreview extends Component {
 
     state = {
         isEditModalOpen: false,
         isDetailsModalOpen: false,
-        cardToEdit: null
+        showEditBtn: false,
+        screenCard: {
+            top: null,
+            left: null
+        }
     }
 
-    componentDidMount = () => {
-        eventBus.on('close-details-modal', () => {
-            this.setState({ isDetailsModalOpen: false })
-        });
-        const cardToEdit = this.props.card;
-        this.setState({ cardToEdit })
+    onDeleteCard = async () => {
+        const { board, listIdx, card } = this.props;
+        await this.props.deleteCard(board._id, listIdx, card._id);
+        this.setState({ isEditModalOpen: false })
+        eventBus.emit('cardChanged');
     }
 
-    handleChange = ({ target }) => {
-        const field = target.name;
-        const value = target.value;
-        this.setState(prevState => ({ cardToEdit: { ...prevState.cardToEdit, [field]: value } }));
+    onUpdateCard = async (cardToEdit) => {
+        await this.props.updateCard(cardToEdit);
+        this.setState({ isEditModalOpen: false });
+        eventBus.emit('cardChanged');
+        // eventBus.emit('notification', {
+        //     title: 'Card updated',
+        //     card: cardToEdit,
+        //     by: this.props.user
+        // })
+    }
+
+    onCopyCard = async () => {
+        const { board, list, listIdx, card } = this.props;
+        await this.props.addCard(board._id, list._id, listIdx, card);
+        eventBus.emit('cardChanged');
+        this.setState({ isEditModalOpen: false })
+    }
+
+    // EDIT //
+    showEditBtn = () => {
+        this.setState({ showEditBtn: true })
+    }
+
+    hideEditBtn = () => {
+        this.setState({ showEditBtn: false })
     }
 
     openEditModal = (ev) => {
         ev.stopPropagation();
-        this.setState({ isEditModalOpen: true })
+        let { screenCard } = this.state;
+        screenCard.top = ev.screenY;
+        screenCard.left = ev.screenX;
+        this.setState({ isEditModalOpen: true, screenCard })
     }
 
-    closeEditModal = (ev) => {
-        ev.stopPropagation();
+    closeEditModal = () => {
         this.setState({ isEditModalOpen: false })
     }
 
-    openDetailsModal = (ev) => {
-        ev.stopPropagation();
+    // DETAILS //
+    openDetailsModal = () => {
         this.setState({ isDetailsModalOpen: true })
     }
 
-    onDeleteCard = () => {
-        this.props.onDeleteCard(this.props.card._id);
-        this.setState({ isEditModalOpen: false })
-    }
-
-    onUpdateCard = (ev) => {
-        ev.preventDefault();
-        this.props.onUpdateCard(this.state.cardToEdit);
-        this.setState({ isEditModalOpen: false })
+    onCloseDetailsModal = () => {
+        this.setState({ isDetailsModalOpen: false })
     }
 
     render() {
         const { card, list, listIdx } = this.props;
-        const { cardToEdit, isEditModalOpen, isDetailsModalOpen } = this.state;
+        const { isEditModalOpen, isDetailsModalOpen, showEditBtn, screenCard } = this.state;
         return (
-            <section className="card-preview">
+            <section className="card-preview" onMouseEnter={this.showEditBtn}
+                onMouseLeave={this.hideEditBtn}>
                 {card.labels && <div className="flex">
                     {card.labels.map(label => {
                         return <div className={`label ${label.color}`} key={label.color}></div>
                     })}
                 </div>}
-                {card && <p onClick={this.openDetailsModal} className="card-title">{card.title}</p>}
-                {isDetailsModalOpen && <CardDetails cardId={card._id} list={list} listIdx={listIdx} />}
-                <button className="edit-icon-btn" onClick={this.openEditModal}><i className="fas fa-pen edit-icon"></i></button>
-                {isEditModalOpen && <section className="card-option modal">
-                    <div className="card-option modal-content">
-                        {cardToEdit && <form onSubmit={this.onUpdateCard}>
-                            <textarea name="title" value={cardToEdit.title} onChange={this.handleChange}></textarea>
-                            <button className="add-form-btn">Save card</button>
-                        </form>}
-                        <div>
-                            <p className="modal-content txt">Move card</p>
-                            <p className="modal-content txt">Copy card</p>
-                            <p onClick={this.onDeleteCard} className="modal-content txt">Delete card</p>
-                        </div>
-                        <button className="modal-close-btn" onClick={this.closeEditModal}><i className="fas fa-times"></i></button>
-                    </div>
-                </section>}
+                <p onClick={this.openDetailsModal} className="card-title">{card.title}</p>
+                {card.members &&
+                    <div className="members flex flex-end">
+                        {card.members.map(member => {
+                            return (
+                                <Avatar name={member.fullName} round={true} size={25} key={member._id} />
+                            )
+                        })}
+                    </div>}
+                <button className="edit-icon-btn" onClick={this.openEditModal}
+                    style={{ display: showEditBtn ? 'block' : 'none' }} ref={el => this.myBtnaRef = el} >
+                    <i className="fas fa-pen edit-icon"></i>
+                </button>
+                {isEditModalOpen && <CardEditModal card={card} screenCard={screenCard}
+                    onCloseEditModal={this.closeEditModal} onUpdateCard={this.onUpdateCard} onDeleteCard={this.onDeleteCard}
+                    onCopyCard={this.onCopyCard} />}
+                {isDetailsModalOpen && <CardDetails cardId={card._id} list={list}
+                    listIdx={listIdx} onCloseDetailsModal={this.onCloseDetailsModal} />}
             </section>
         )
     }
 
 }
 
-// onMouseOver={this.showIcon}
+const mapDispatchToProps = {
+    deleteCard,
+    updateCard,
+    addCard
+
+}
+export const CardPreview = connect(null, mapDispatchToProps)(_CardPreview)

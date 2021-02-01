@@ -1,95 +1,83 @@
-// header {
-//     &.blue {
-//         background-color: rgb(5, 97, 150);
-//     }
-//     &.green {
-//         background-color: rgb(55, 105, 39);
-//     }
-//     &.orange {
-//         background-color: rgb(156, 108, 40);
-//     }
-// }
 .main-header {
     margin-left: 5px;
     margin-right: 5px;
-}
-
-.logo {
-    width: 100px;
-    font-family: "Yellowtail";
-    color: white;
-    font-size: 1.75rem;
-    opacity: 0.6;
-    &:hover {
-        opacity: 0.8;
+    flex-wrap: wrap;
+   & .logo {
+        width: 100px;
+        font-family: "Yellowtail";
+        color: white;
+        font-size: 1.75rem;
+        opacity: 0.6;
+        &:hover {
+            opacity: 0.8;
+        }
     }
-}
-
-.icon {
-    width: 20px;
-}
-
-.icon-container {
-    background-color: hsla(0, 0%, 100%, 0.3);
-    width: 35px;
-    height: 35px;
-    margin-left: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.171);
+    
+   & .icon {
+        width: 20px;
     }
-}
-
-.icon-container:last-of-type {
-    margin-right: 5px;
-}
-
-.menu-container {
-    flex-grow: 1;
-}
-
-.no-button {
-    padding: 0;
-    border: none;
-}
-
-// .avatar-options {
-//     border: 1px solid black;
-//     background: white;
-//     position: absolute;
-//     top: 40px;
-//     width: 100px;
-//     height: 100px;
-// }
-
-.avatar-options {
-    background: #fff;
-    border-radius: 3px;
-    box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
-    overflow: hidden;
-    position: absolute;
-    width: 100px;
-    z-index: 70;
-    top: 40px;
-    min-height: 150px;
-    & p {
-        border-bottom: 1px solid rgba(9, 30, 66, 0.13);
-        color: #5e6c84;
-        text-align: center;
+    
+   & .icon-container {
+        background-color: hsla(0, 0%, 100%, 0.3);
+        width: 35px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        & :not:first-child{
+            margin-left: 5px;
+        }
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.171);
+        }
     }
-    & ul {
-        text-align: center;
-        color: #172b4d;
-        & li {
-            cursor: pointer;
-            padding: 5px;
-            &:hover {
-                background-color: rgba(9, 30, 66, 0.04);
+    
+   & .icon-container:last-of-type {
+        margin-right: 5px;
+    }
+    
+   & .menu-container {
+        flex-grow: 1;
+    }
+
+    & .avatar-member{
+        cursor: pointer;
+    }
+    
+   & .avatar-options {
+        background: #fff;
+        border-radius: 3px;
+        box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+        overflow: hidden;
+        position: absolute;
+        width: 100px;
+        z-index: 70;
+        top: 40px;
+        min-height: 150px;
+        & p {
+            border-bottom: 1px solid rgba(9, 30, 66, 0.13);
+            color: #5e6c84;
+            text-align: center;
+        }
+        & ul {
+            text-align: center;
+            color: #172b4d;
+            & li {
+                cursor: pointer;
+                padding: 5px;
+                &:hover {
+                    background-color: rgba(9, 30, 66, 0.04);
+                }
             }
         }
     }
+}
+
+
+@media screen and (max-width: 480px) {
+    // .logo {
+    //     display: none;
+    // }
 }

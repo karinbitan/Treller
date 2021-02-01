@@ -97,7 +97,7 @@ class _MainHeader extends Component {
                                 onAddBoard={this.onAddBoard}
                             />}
                         </div>}
-                        {user && <Avatar name={user.fullName} size="40" round={true} onClick={this.toggleAvatarOptions} />}
+                        {user && <Avatar className="avatar-member" name={user.fullName} size="40" round={true} onClick={this.toggleAvatarOptions} />}
                         {(user && isAvatarOptionsOpen) && <div className="avatar-options">
                             <p>Account</p>
                             <ul>
