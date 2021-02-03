@@ -41,15 +41,11 @@ export class _Login extends Component {
     login = async (ev) => {
         ev.preventDefault();
         const user = await this.props.login(this.state.login);
-        try {
-            if (!user) {
-                alert('Login failed!')
-            } else {
-                this.props.history.push(`/user/${user._id}/boards`);
-                // this.props.history.push(`/user/${user._id}`);
-            }
-        } catch (err) {
-            console.log(err)
+        if (!user) {
+            alert('Login failed!')
+        } else {
+            this.props.history.push(`/user/${user._id}/boards`);
+            // this.props.history.push(`/user/${user._id}`);
         }
     }
 

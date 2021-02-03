@@ -1,4 +1,5 @@
 import { cardService } from '../../services/cardService';
+import { socketService } from '../../services/socketService';
 
 // Action Dispatcher
 
@@ -51,7 +52,7 @@ export function updateCard(card) {
     try {
       debugger
       const savedCard = await cardService.updateCard(card)
-      dispatch({ type: 'UPDATE_CARD', card: savedCard })
+      dispatch(_cardUpdate(savedCard));
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -63,7 +64,7 @@ export function addComment(cardId, comment) {
     try {
       const realCard = await cardService.addComment(cardId, comment);
       const savedCard = await cardService.updateCard(realCard);
-      dispatch({ type: 'UPDATE_CARD', card: savedCard });
+      dispatch(_cardUpdate(savedCard));
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -75,9 +76,17 @@ export function deleteComment(cardId, commentId) {
     try {
       const realCard = await cardService.deleteComment(cardId, commentId);
       const savedCard = await cardService.updateCard(realCard);
-      dispatch({ type: 'UPDATE_CARD', card: savedCard });
+      dispatch(_cardUpdate(savedCard));
     } catch (err) {
       console.log('ERROR!', err);
     }
+  }
+}
+
+function _cardUpdate(card) {
+  socketService.emit('savedCard', card._id);
+  return {
+    type: 'UPDATE_CARD',
+    card
   }
 }

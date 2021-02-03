@@ -2,7 +2,6 @@ import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 import { HomePage } from './pages/HomePage';
 import { TrellerApp } from './pages/TrellerApp/TrellerApp';
-import { CardDetails } from './pages/CardDetails';
 import { UserProfile } from './pages/UserProfile/UserProfile';
 import { Login } from './pages/Login';
 import { Boards } from './pages/Boards/Boards';
@@ -14,7 +13,6 @@ function App() {
     <section className="App">
       <Router>
         <Switch>
-          <Route exact component={CardDetails} path="/treller/card/:id"></Route>
           <Route exact component={TrellerApp} path="/treller/board/:id"></Route>
           <Route exact component={Boards} path="/user/:id/boards"></Route>
           <Route exact component={UserProfile} path="/user/:id"></Route>

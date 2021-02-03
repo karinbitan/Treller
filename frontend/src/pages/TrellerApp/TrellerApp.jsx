@@ -31,7 +31,9 @@ class _TrellerApp extends Component {
             await this.props.setBoard(boardId);
         })
         socketService.setup();
-        socketService.emit('boardId topic', boardId);
+        socketService.emit('register board', boardId);
+        socketService.on('newBoard', (boardId) => this.setBoard(boardId));
+        socketService.emit('register board', boardId);
         socketService.on('newBoard', (boardId) => this.setBoard(boardId));
     }
 

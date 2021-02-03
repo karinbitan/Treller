@@ -4,7 +4,7 @@ import { deleteCard, updateCard, addCard } from '../../store/actions/cardActions
 import { eventBus } from '../../services/eventBusService';
 
 import Avatar from 'react-avatar';
-import { CardDetails } from '../../pages/CardDetails/CardDetails';
+import { CardDetails } from '../../pages/CardDetails';
 import { CardEditModal } from '../CardEditModal/CardEditModal';
 
 import './CardPreview.scss';

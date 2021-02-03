@@ -47,49 +47,54 @@ export class _Boards extends Component {
             }
         }
         return (
-            <section className="boards">
-                <MainHeader isUserPage={true} user={user} />
-                <h2>Check out our popular templates..</h2>
-                <ul className="flex">
-                    {templates.map(template => {
-                        return (
-                            <li className="template-img" style={{ backgroundImage: `url(${template.smallImg})` }}
-                                key={template.name} onClick={() => this.addBoardWithTemplate(template.largImg)}>
-                                <span>Template</span>
-                                <h3 className="template-name">{template.name}</h3>
-                            </li>
-                        )
-                    })}
-                </ul>
-                {user && <div className="user-boards-container">
-                    <h3>Starred Boards</h3>
-                    {favBoards ? <ul className="starred-boards">
-                        {favBoards.map(board => {
+            <section>
+                {user && <section className="boards">
+                    <MainHeader isUserPage={true} user={user} />
+                    <h2>Check out our popular templates..</h2>
+                    <ul className="flex">
+                        {templates.map(template => {
                             return (
-                                <li key={board._id} className="board-link"
-                                    style={{ backgroundColor: board.style.backgroundColor.header }}>
-                                    <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
-                                    <i style={{ color: "#f2d600" }} className="far fa-star"></i>
+                                <li className="template-img" style={{ backgroundImage: `url(${template.smallImg})` }}
+                                    key={template.name} onClick={() => this.addBoardWithTemplate(template.largImg)}>
+                                    <span>Template</span>
+                                    <h3 className="template-name">{template.name}</h3>
                                 </li>
                             )
                         })}
                     </ul>
-                        : <p>You don't have starred boards yet...</p>}
-                    <h3>Your Boards</h3>
-                    {(user.boardsMember && user.boardsMember.length > 0) &&
-                        <ul className="other-boards">
-                            {user.boardsMember.map(board => {
-                                if (board) {
-                                    return (
-                                        <li key={board._id} className="board-link"
-                                            style={{ backgroundColor: board.style.backgroundColor.header ? board.style.backgroundColor.header : '' }}>
-                                            <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
-                                        </li>
-                                    )
-                                }
+                    <div className="user-boards-container">
+                        <h3>Starred Boards</h3>
+                        {favBoards ? <ul className="starred-boards">
+                            {favBoards.map(board => {
+                                return (
+                                    <li key={board._id} className="board-link"
+                                        style={{ backgroundColor: board.style.backgroundColor.header }}>
+                                        <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
+                                        <i style={{ color: "#f2d600" }} className="far fa-star"></i>
+                                    </li>
+                                )
                             })}
-                        </ul>}
-                </div>}
+                        </ul>
+                            : <p>You don't have starred boards yet...</p>}
+                        <h3>Your Boards</h3>
+                        {(user.boardsMember && user.boardsMember.length > 0) &&
+                            <ul className="other-boards">
+                                {user.boardsMember.map(board => {
+                                    if (!board.style) {
+                                        return;
+                                    } else {
+                                        return (
+                                            <li key={board._id} className="board-link"
+                                                style={{ backgroundColor: board.style.backgroundColor ? board.style.backgroundColor.header : '' }}>
+                                                <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
+                                            </li>
+                                        )
+                                    }
+
+                                })}
+                            </ul>}
+                    </div>
+                </section>}
             </section>
         )
     }

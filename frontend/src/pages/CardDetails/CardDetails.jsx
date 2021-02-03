@@ -9,6 +9,7 @@ import { CardOptions } from '../../cmps/CardOptionsPopUp/CardOptions';
 
 import './CardDetails.scss';
 import Avatar from 'react-avatar';
+import { socketService } from '../../services/socketService';
 
 export class _CardDetails extends Component {
     state = {
@@ -27,6 +28,16 @@ export class _CardDetails extends Component {
         const { cardId } = this.props;
         await this.props.setCard(cardId);
         this.setState({ cardToEdit: this.props.card });
+
+        socketService.emit('register card', cardId);
+        socketService.on('newCard', (cardId) => this.setCard(cardId));
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.card !== this.props.card) {
+            const cardToEdit = this.props.card;
+            this.setState({ cardToEdit });
+        }
     }
 
     // CARD //
@@ -52,7 +63,7 @@ export class _CardDetails extends Component {
     updateTitle = async (ev) => {
         ev.preventDefault();
         const { cardToEdit } = this.state;
-        this.props.updateCard(cardToEdit);
+        await this.props.updateCard(cardToEdit);
         await this.props.setCard(cardToEdit._id);
         this.myTextareaRef.blur();
     }
