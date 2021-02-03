@@ -14,20 +14,22 @@ import { socketService } from '../../services/socketService';
 export class _CardDetails extends Component {
     state = {
         cardToEdit: null,
-        showingDescirptionForm: false,
+        showingDescriptionForm: false,
+        isDescriptionFormShow: 'fake',
         isCardOptionOpen: false,
         cardOptionType: '',
         cardOptionFunc: '',
-        isComplete: false,
+        isCardComplete: false,
         isTodoDeleteBtnShow: false,
         currTodoIdx: ''
     }
 
     async componentDidMount() {
-        await this.props.getLoggedInUser()
-        const { cardId } = this.props;
+        const cardId = this.props.match.params.id;
         await this.props.setCard(cardId);
+        await this.props.getLoggedInUser();
         this.setState({ cardToEdit: this.props.card });
+        console.log(this.props)
 
         socketService.emit('register card', cardId);
         socketService.on('newCard', (cardId) => this.setCard(cardId));
@@ -42,8 +44,13 @@ export class _CardDetails extends Component {
 
     // CARD //
 
+    setCard = async (cardId) => {
+        await this.props.setCard(cardId);
+        this.setState({ cardToEdit: this.props.card });
+    }
+
     onCloseModal = () => {
-        this.props.onCloseDetailsModal();
+        this.props.history.goBack();
     }
 
     handleChangeCard = ({ target }) => {
@@ -83,9 +90,15 @@ export class _CardDetails extends Component {
 
 
     // DESCRIPTION //
+    // The onFocus and onBlur doesnt work
     toggleDescriptionForm = (ev) => {
         ev.stopPropagation();
-        this.setState({ showingDescirptionForm: !this.state.showingDescirptionForm })
+        this.setState({ showingDescriptionForm: !this.state.showingDescriptionForm })
+        if(this.state.showingDescriptionForm){
+            this.setState({ isDescriptionFormShow: 'textarea' })
+        } else {
+            this.setState({ isDescriptionFormShow: 'fake' })
+        }
     }
 
     updateDescription = async (ev) => {
@@ -94,7 +107,7 @@ export class _CardDetails extends Component {
         const { cardToEdit } = this.state;
         await this.props.updateCard(cardToEdit);
         await this.props.setCard(cardToEdit._id);
-        this.setState({ showingDescirptionForm: false });
+        this.setState({ showingDescriptionForm: false });
     }
 
     // MEMBERS //
@@ -162,7 +175,7 @@ export class _CardDetails extends Component {
     }
 
     handleCheckDueDate = ({ target }) => {
-        const field = 'isComplete';
+        const field = 'isCardComplete';
         if (target.checked) {
             this.setState(({ cardToEdit: { ...this.state.cardToEdit, [field]: true } }));
         } else {
@@ -179,8 +192,6 @@ export class _CardDetails extends Component {
 
     // LABEL //
     saveLabels = async (ev, labels) => {
-        // const field = 'labels';
-        // this.setState({cardToEdit: {...this.state.cardToEdit, [field]: [labels]} });
         let { cardToEdit } = this.state;
         cardToEdit.labels.push(labels);
         this.setState(cardToEdit);
@@ -226,9 +237,10 @@ export class _CardDetails extends Component {
     //
 
     render() {
-        const { user, board, list, card } = this.props;
-        const { cardToEdit, showingDescirptionForm, isCardOptionOpen, cardOptionType,
-            cardOptionFunc, isTodoDeleteBtnShow, currTodoIdx } = this.state;
+        // const { user, board, list, card } = this.props;
+        const { user, board, card } = this.props;
+        const { cardToEdit, showingDescriptionForm, isCardOptionOpen, cardOptionType,
+            cardOptionFunc, isTodoDeleteBtnShow, currTodoIdx, isDescriptionFormShow } = this.state;
 
         return (
             <section className="card-details modal">
@@ -238,7 +250,7 @@ export class _CardDetails extends Component {
                     </button>
                     {card.style.cover &&
                         <div className={`cover ${card.style.cover.color ?
-                         card.style.cover.color : card.style.cover.picture}`}>
+                            card.style.cover.color : card.style.cover.picture}`}>
                         </div>}
                     <div className="title-container">
                         <div className="headline flex align-center">
@@ -251,7 +263,7 @@ export class _CardDetails extends Component {
                                 <button className="not-show"></button>
                             </form>
                         </div>
-                        <p className="list-name">in list {list.title}</p>
+                        {/* <p className="list-name">in list {list.title}</p> */}
                     </div>
                     <div className="flex">
                         <div className="main-container">
@@ -282,7 +294,7 @@ export class _CardDetails extends Component {
                                     <input type="checkbox" onChange={this.handleCheckDueDate} />
                                     <button className="due-date">
                                         {card.dueDate.replace('T', ' at ')}
-                                        {card.isComplete && <span className="due-status complete">Complete</span>}
+                                        {card.isCardComplete && <span className="due-status complete">Complete</span>}
                                         {new Date() > new Date(card.dueDate) &&
                                             <span className="due-status over-due">Over Due</span>}
                                     </button>
@@ -295,36 +307,28 @@ export class _CardDetails extends Component {
                                 <div className="headline flex align-center">
                                     <i className="fas fa-align-left icon"></i>
                                     <h3>Description</h3>
-                                    {(card.description && !showingDescirptionForm) &&
+                                    {(card.description && !showingDescriptionForm) &&
                                         <button className="edit-description" onClick={this.toggleDescriptionForm}>Edit</button>}
                                 </div>
-                                {!showingDescirptionForm ? <div>
-                                    {!card.description ? <div
-                                        onClick={this.toggleDescriptionForm}
-                                        className="description-text-area-fake">
-                                        Add more detailed description...
-                                </div>
-                                        : <div onClick={this.toggleDescriptionForm}
-                                            className="description-text-area">
-                                            {card.description}
-                                        </div>}
-                                </div>
-                                    : <form className="description-form"
-                                        onSubmit={this.updateDescription}>
-                                        <textarea name="description"
-                                            value={card.description}
-                                            onChange={this.handleChangeCard}
-                                            placeholder="Add more detailed description...">
-                                        </textarea>
-                                        <br />
-                                        <div className="btn flex justify-start">
-                                            <button className="add-form-btn">Save</button>
-                                            <button className="exit-btn"
-                                                onClick={this.toggleDescriptionForm}>
-                                                <i className="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </form>}
+                                <form className="description-form"
+                                    onSubmit={this.updateDescription}>
+                                    <textarea onFocus={(ev)=>this.toggleDescriptionForm(ev)}
+                                        onBlur={(ev)=>this.toggleDescriptionForm(ev)}
+                                        className={`description ${isDescriptionFormShow}`}
+                                        placeholder="Add more detailed description..."
+                                        onChange={this.handleChangeCard}
+                                        value={cardToEdit.description}
+                                        name="description">
+                                    </textarea>
+                                    <br />
+                                    <div className="btn flex justify-start">
+                                        <button className="add-form-btn">Save</button>
+                                        <button className="exit-btn"
+                                            onClick={this.toggleDescriptionForm}>
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                             {card.checklist.length > 0 &&
                                 <div className="checklist-container">

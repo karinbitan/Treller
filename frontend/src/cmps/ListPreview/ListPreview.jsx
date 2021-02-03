@@ -140,7 +140,9 @@ export class ListPreview extends Component {
                                             <CardPreview card={card}
                                                 listIdx={listIdx}
                                                 key={card._id}
-                                                list={list} />
+                                                list={list}
+                                                onDeleteCard={this.onDeleteCard}
+                                                onUpdateCard={this.onUpdateCard} />
                                         </div>
                                     )}
                                 </Draggable>

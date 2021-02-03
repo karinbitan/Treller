@@ -27,9 +27,7 @@ class _TrellerApp extends Component {
         await this.props.setBoard(boardId);
         this.setState({ boardToEdit: this.props.board })
         await this.props.getLoggedInUser();
-        eventBus.on('cardChanged', async () => {
-            await this.props.setBoard(boardId);
-        })
+
         socketService.setup();
         socketService.emit('register board', boardId);
         socketService.on('newBoard', (boardId) => this.setBoard(boardId));

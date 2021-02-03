@@ -14,6 +14,7 @@ function connectSockets(io) {
             io.to(socket.myTopic).emit('newCard', cardId)
         })
         socket.on('register card', cardId => {
+            console.log(cardId, 'socket work!')
             socket.join(cardId)
         });
 

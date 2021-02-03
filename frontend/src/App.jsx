@@ -1,27 +1,50 @@
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+// import { BrowserRouter as Router, Route, Switch, useLocation, } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useHistory,
+  useLocation,
+  useParams
+} from "react-router-dom";
 
 import { HomePage } from './pages/HomePage';
 import { TrellerApp } from './pages/TrellerApp/TrellerApp';
+import { CardDetails } from './pages/CardDetails';
 import { UserProfile } from './pages/UserProfile/UserProfile';
 import { Login } from './pages/Login';
 import { Boards } from './pages/Boards/Boards';
 
 import './App.scss';
+import { _CardDetails } from "./pages/CardDetails/CardDetails";
+
+
+export default function ModalGalleryExample() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
 
 function App() {
+  const location = useLocation();
+  const background = location.state && location.state.background;
+
   return (
     <section className="App">
-      <Router>
-        <Switch>
-          <Route exact component={TrellerApp} path="/treller/board/:id"></Route>
-          <Route exact component={Boards} path="/user/:id/boards"></Route>
-          <Route exact component={UserProfile} path="/user/:id"></Route>
-          <Route exact component={Login} path="/login"></Route>
+        <Switch location={background || location}>
           <Route exact component={HomePage} path="/"></Route>
+          <Route component={Login} path="/login"></Route>
+          <Route component={UserProfile} path="/user/:id"></Route>
+          <Route component={Boards} path="/user/:id/boards"></Route>
+          <Route component={TrellerApp} path="/treller/board/:id"></Route>
+          <Route component={CardDetails} path="/treller/card/:id"></Route>
         </Switch>
-      </Router>
+        {background && <Route component={CardDetails} path="/treller/card/:id"></Route>}
     </section >
   );
 }
 
-export default App;
+// export default App;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 
 import './CardOptions.scss';

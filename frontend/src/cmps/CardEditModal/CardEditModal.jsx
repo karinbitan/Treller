@@ -45,7 +45,8 @@ export class CardEditModal extends Component {
             <section className="card-edit modal">
                 <button className="close-btn" onClick={this.onCloseEditModal}><i className="fas fa-times"></i></button>
                 <div className="card-edit modal-content"
-                    style={{ top: screenCard.top - 99, left: screenCard.left - 214 }}>
+                    // style={{ top: screenCard.top - 99, left: screenCard.left - 214 }}
+                    >
                     {cardToEdit && <form onSubmit={this.onUpdateCard}>
                         <textarea name="title" value={cardToEdit.title} onChange={this.handleChange}></textarea>
                         <button className="add-form-btn">Save card</button>
