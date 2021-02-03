@@ -45,10 +45,11 @@ export class _Login extends Component {
             if (!user) {
                 alert('Login failed!')
             } else {
-                this.props.history.push(`/user/${user._id}`);
+                this.props.history.push(`/user/${user._id}/boards`);
+                // this.props.history.push(`/user/${user._id}`);
             }
         } catch (err) {
-            alert('Login failed!!!')
+            console.log(err)
         }
     }
 

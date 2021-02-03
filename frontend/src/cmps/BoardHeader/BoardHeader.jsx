@@ -28,6 +28,15 @@ export class BoardHeader extends Component {
         const value = boardToEdit.style.backgroundColor;
         this.setState(({ style: { ...this.state.style, [field]: value } }))
         this.setState({ isStarred: this.props.board.isFavorite });
+
+        console.log('mount', this.props.board.title)
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.board !== this.props.board) {
+            const boardToEdit = this.props.board;
+            this.setState({ boardToEdit });
+        }
     }
 
     handleChangeBoard = ({ target }) => {
@@ -63,6 +72,7 @@ export class BoardHeader extends Component {
     }
 
     onFavoriteBoard = async () => {
+        debugger
         this.setState({ isStarred: !this.state.isStarred }, () => {
             this.props.onFavoriteBoard(this.state.isStarred);
         });
@@ -85,15 +95,17 @@ export class BoardHeader extends Component {
     }
 
     render() {
+        //debugger;
         const { board } = this.props;
-        const { boardToEdit, isStarred, isMenuOpen, isInviteMenuOpen, isStyleMenuOpen } = this.state;
+        const { boardToEdit, isStarred, isMenuOpen,
+            isInviteMenuOpen, isStyleMenuOpen } = this.state;
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
                     <form onSubmit={this.onUpdateBoard}>
-                        {boardToEdit && <input type="text" ref={el => this.myTextRef = el} className="board-header-icon board-name" name="title"
+                        <input type="text" ref={el => this.myTextRef = el} className="board-header-icon board-name" name="title"
                             placeholder="Enter your board name here..."
-                            value={boardToEdit.title} onChange={this.handleChangeBoard} />}
+                            value={boardToEdit.title} onChange={this.handleChangeBoard} />
                     </form>
                     <button onClick={this.onFavoriteBoard} className="board-header-icon favorite-board">
                         <i style={isStarred ? { color: "#f2d600" } : {}} className="far fa-star"></i></button>

@@ -48,6 +48,14 @@ export class ListPreview extends Component {
         this.setState({ listToEdit });
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.list !== this.props.list) {
+            const listToEdit = this.props.list;
+            this.setState({ listToEdit });
+        }
+    }
+
+
     handleChange = ({ target }) => {
         const field = target.name;
         const value = target.value;
@@ -66,13 +74,6 @@ export class ListPreview extends Component {
         ev.preventDefault();
         this.props.onUpdateList(this.state.listToEdit);
         this.myTextareaRef.blur();
-    }
-
-    onCopyList = () => {
-        debugger
-        const { list } = this.props;
-        this.props.onCopyList(list)
-        this.setState({ listActionOpen: !this.state.listActionOpen })
     }
 
     onDeleteList = () => {
@@ -116,7 +117,6 @@ export class ListPreview extends Component {
                 {listActionOpen && <div className="list-actions">
                     <p>List Actions</p>
                     <ul>
-                        <li onClick={this.onCopyList}>Copy List</li>
                         <li onClick={this.onDeleteList}>Delete List</li>
                     </ul>
                     <button className="close-btn" onClick={this.closeListOptionModel}>X</button>

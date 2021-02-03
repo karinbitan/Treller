@@ -1,0 +1,33 @@
+.boards {
+    & .template-img {
+        width: 170px;
+        height: 100px;
+        border-radius: 3px;
+        margin-right: 10px;
+        cursor: pointer;
+        & span {
+            border-radius: 3px;
+            background-color: hsla(0, 0%, 100%, 0.69);
+            padding: 3px 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #172b4d;
+            font-size: 11px;
+        }
+        & .template-name {
+            color: white;
+            font-weight: 700;
+        }
+    }
+    & .user-boards-container {
+        & .board-link {
+            width: 170px;
+            height: 100px;
+            & a {
+                color: white;
+                font-weight: 700;
+                font-size: 1rem;
+            }
+        }
+    }
+}

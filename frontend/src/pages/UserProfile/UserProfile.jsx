@@ -67,7 +67,7 @@ export class _UserProfile extends Component {
         const { isLoading, userToEdit } = this.state;
         return (
             <section className="user-profile">
-                <MainHeader isUserPage={true} />
+                <MainHeader isUserPage={true} user={user} />
                 {user && <section className="user-profile-container">
                     <h1 className="headline">Welcome {user.fullName}!</h1>
                     <h2>Your personal info:</h2>

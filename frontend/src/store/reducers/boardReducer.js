@@ -35,3 +35,5 @@ export function boardReducer(state = INITIAL_STATE, action) {
   }
 }
 
+console.log(INITIAL_STATE.currBoard)
+

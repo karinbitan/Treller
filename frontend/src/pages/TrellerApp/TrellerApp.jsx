@@ -7,7 +7,7 @@ import { deleteCard, updateCard } from '../../store/actions/cardActions';
 import { getUsers } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
-import {socketService} from '../../services/socketService.js';
+import { socketService } from '../../services/socketService.js';
 
 import { ListPreview } from './../../cmps/ListPreview';
 import { AddList } from '../../cmps/AddList/AddList';
@@ -32,9 +32,7 @@ class _TrellerApp extends Component {
         })
         socketService.setup();
         socketService.emit('boardId topic', boardId);
-        socketService.on('newBoard', async () => {
-            await this.props.setBoard(boardId)
-        });
+        socketService.on('newBoard', (boardId) => this.setBoard(boardId));
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -44,9 +42,20 @@ class _TrellerApp extends Component {
         }
     }
 
+    componentWillUnmount() {
+        socketService.off('newBoard');
+        socketService.terminate();
+    }
+
+    setBoard = async (boardId) => {
+        console.log(boardId);
+        await this.props.setBoard(boardId);
+        this.setState({ boardToEdit: this.props.board })
+    }
+
     onUpdateBoard = async (boardToEdit) => {
         await this.props.updateBoard(boardToEdit);
-        socketService.emit('savedBoard');
+        await this.props.setBoard(boardToEdit._id)
     }
 
     onChangeStyle = async (style) => {
@@ -58,14 +67,15 @@ class _TrellerApp extends Component {
     }
 
     onFavoriteBoard = async (isStarred) => {
-        await this.props.favoriteBoard(this.props.board._id, isStarred);
-        await this.props.setBoard(this.state.boardToEdit._id);
+        debugger
+        const { board } = this.props;
+        await this.props.favoriteBoard(board._id, isStarred);
+        await this.props.setBoard(board._id);
     }
 
     onAddBoard = async () => {
         const emptyBoard = boardService.getEmptyBoard();
         const board = await this.props.addBoard(emptyBoard);
-        console.log(board)
         await this.props.setBoard(board._id);
     }
 
@@ -86,22 +96,21 @@ class _TrellerApp extends Component {
     }
 
     onCopyList = async (list) => {
-        debugger
         const { board } = this.props;
         await this.props.addList(board._id, list);
         await this.props.setBoard(board._id);
     }
 
     onUpdateList = async (savedList) => {
-        const { boardToEdit } = this.state;
-        const lists = boardToEdit.lists;
+        const { board } = this.props;
+        const lists = board.lists;
         const idx = lists.findIndex(list => {
             return list._id === savedList._id;
         })
         lists.splice(idx, 1, savedList);
-        boardToEdit.lists = lists;
-        this.setState({ boardToEdit }, async () => {
-            await this.props.updateBoard(boardToEdit)
+        board.lists = lists;
+        this.setState({ board }, async () => {
+            await this.props.updateBoard(board)
         })
         eventBus.emit('notification', {
             title: 'List updated',
@@ -117,6 +126,24 @@ class _TrellerApp extends Component {
         eventBus.emit('notification', {
             title: 'List deleted',
             list: list,
+            by: this.props.user
+        })
+    }
+
+    // CARD //
+    onDeleteCard = async (listIdx, cardId) => {
+        const { board } = this.props;
+        await this.props.deleteCard(board._id, listIdx, cardId);
+        await this.props.setBoard(board._id);
+    }
+
+    onUpdateCard = async (card) => {
+        const { board } = this.props;
+        await this.props.updateCard(card);
+        await this.props.setBoard(board._id)
+        eventBus.emit('notification', {
+            title: 'Card updated',
+            card: card,
             by: this.props.user
         })
     }
@@ -245,19 +272,21 @@ class _TrellerApp extends Component {
 
     render() {
         const { board, user } = this.props;
-        const { boardToEdit, isStarred, isMenuOpen, isInviteMenuOpen } = this.state;
+        const { boardToEdit } = this.state;
         return (
             <section>
                 {(board && user) && <MainHeader board={board} user={user} onAddBoard={this.onAddBoard} />}
-                {board && <section className="treller-app" style={{ backgroundColor: board.style.backgroundColor.app }}>
+                {(board && boardToEdit) && <section className="treller-app"
+                    style={{
+                        backgroundColor: board.style.backgroundColor.app ? board.style.backgroundColor.app : '',
+                        backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
+                    }}>
                     <BoardHeader onUpdateBoard={this.onUpdateBoard}
                         onFavoriteBoard={this.onFavoriteBoard}
-                        board={board} boardToEdit={boardToEdit}
-                        isStarred={isStarred}
-                        isMenuOpen={isMenuOpen}
-                        isInviteMenuOpen={isInviteMenuOpen}
+                        board={board}
                         onChangeStyle={this.onChangeStyle}
-                        onFilterUsers={this.onFilterUsers} />
+                    // onFilterUsers={this.onFilterUsers} 
+                    />
                     <section className="lists flex column">
                         <DragDropContext onDragEnd={this.onDragEnd}>
                             <Droppable droppableId="dropable-list" direction="horizontal" type="list">
@@ -288,9 +317,10 @@ class _TrellerApp extends Component {
                                                                             innerRef={provided.innerRef}
                                                                             provided={provided}
                                                                             isDraggingOver={snapshot.isDraggingOver}
-                                                                            onCopyList={this.onCopyList}
                                                                             onDeleteList={this.onDeleteList}
-                                                                            onUpdateList={this.onUpdateList} />
+                                                                            onUpdateList={this.onUpdateList}
+                                                                            onDeleteCard={this.onDeleteCard}
+                                                                            onUpdateCard={this.onUpdateCard} />
                                                                     </div>
                                                                 )}
                                                             </Droppable>

@@ -9,10 +9,14 @@ const app = express()
 
 const http = require('http').createServer(app, {
     cors: {
-      origin: '*',
+        origin: '*',
     }
 });
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+    cors: {
+        origin: "*"
+    }
+})
 
 module.exports = {
     socketConnection: io

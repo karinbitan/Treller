@@ -1,4 +1,5 @@
 import { boardService } from '../../services/boardService';
+import { socketService } from '../../services/socketService';
 
 // Action Dispatcher
 
@@ -28,8 +29,8 @@ export function getBoardById(boardId) {
 export function setBoard(boardId) {
   return async dispatch => {
     try {
-      const board = await boardService.getBoardById(boardId)
-      dispatch({ type: 'SET_BOARD', board })
+      const board = await boardService.getBoardById(boardId);
+      dispatch({ type: 'SET_BOARD', board });
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -62,8 +63,9 @@ export function addBoard(board) {
 export function updateBoard(board) {
   return async dispatch => {
     try {
-      const savedBoard = await boardService.updateBoard(board)
-      dispatch({ type: 'UPDATE_BOARD', board: savedBoard })
+      const savedBoard = await boardService.updateBoard(board);
+      dispatch(_boardUpdate(savedBoard));
+      dispatch({ type: 'SET_BOARD', board: savedBoard })
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -74,9 +76,9 @@ export function favoriteBoard(boardId, isStarred) {
   return async dispatch => {
     try {
       await boardService.favoriteBoard(boardId, isStarred);
-      const savedBoard = boardService.getBoardById(boardId);
-      dispatch({ type: 'UPDATE_BOARD', board: savedBoard });
-      return savedBoard;
+      const board = boardService.getBoardById(boardId);
+      dispatch(_boardUpdate(board));
+      return board;
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -90,7 +92,7 @@ export function addList(boardId, list) {
     try {
       await boardService.addList(boardId, list);
       const board = await boardService.getBoardById(boardId);
-      dispatch({ type: 'UPDATE_BOARD', board })
+      dispatch(_boardUpdate(board));
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -102,9 +104,18 @@ export function deleteList(boardId, listId) {
     try {
       await boardService.deleteList(boardId, listId);
       const board = await boardService.getBoardById(boardId);
-      dispatch({ type: 'UPDATE_BOARD', board })
+      dispatch(_boardUpdate(board));
     } catch (err) {
       console.log('ERROR!', err);
     }
+  }
+}
+
+
+function _boardUpdate(board) {
+  socketService.emit('savedBoard', board._id);
+  return {
+    type: 'UPDATE_BOARD',
+    board
   }
 }

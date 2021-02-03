@@ -167,7 +167,7 @@ export class _CardDetails extends Component {
     }
 
     // LABEL //
-    saveLabels = async (labels) => {
+    saveLabels = async (ev, labels) => {
         // const field = 'labels';
         // this.setState({cardToEdit: {...this.state.cardToEdit, [field]: [labels]} });
         let { cardToEdit } = this.state;
