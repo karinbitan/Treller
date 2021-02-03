@@ -19,8 +19,6 @@
         position: relative;
         background-color: #f4f5f7;
         margin: auto;
-        padding: 10px;
-        border: 1px solid #888;
         width: 800px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         -webkit-animation-name: animatetop;
@@ -84,6 +82,52 @@
 
     .headline {
         margin-left: 40px;
+    }
+
+    & .cover {
+        height: 200px;
+        &.green {
+            background-color: #7bc86c;
+        }
+        &.yellow {
+            background-color: #f5dd29;
+        }
+        &.orange {
+            background-color: #ffaf3f;
+        }
+        &.red {
+            background-color: #ef7564;
+        }
+        &.purple {
+            background-color: #cd8de5;
+        }
+        &.blue {
+            background-color: #5ba4cf;
+        }
+        &.pink {
+            background-color: #ff8ed4;
+        }
+        &.pic1 {
+            background-image: url("../../assets/covers/1.jpg");
+        }
+        &.pic2 {
+            background-image: url("../../assets/covers/2.jpg");
+        }
+        &.pic3 {
+            background-image: url("../../assets/covers/3.jpg");
+        }
+        &.pic4 {
+            background-image: url("../../assets/covers/4.jpg");
+        }
+        &.pic5 {
+            background-image: url("../../assets/covers/5.jpg");
+        }
+        &.pic6 {
+            background-image: url("../../assets/covers/6.jpg");
+        }
+        &.pic7 {
+            background-image: url("../../assets/covers/7.jpg");
+        }
     }
 
     .title-container {

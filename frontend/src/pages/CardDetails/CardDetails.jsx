@@ -175,7 +175,17 @@ export class _CardDetails extends Component {
         this.setState(cardToEdit);
         await this.props.updateCard(cardToEdit);
         await this.props.setCard(cardToEdit._id);
-        eventBus.emit('cardChanged');
+    }
+
+    // COVER //
+    saveCover = async (ev, cover) => {
+        console.log(cover)
+        debugger
+        let { cardToEdit } = this.state;
+        cardToEdit.style = { cover };
+        this.setState(cardToEdit);
+        await this.props.updateCard(cardToEdit);
+        await this.props.setCard(cardToEdit._id);
     }
 
     // COMMENTS //
@@ -208,12 +218,17 @@ export class _CardDetails extends Component {
         const { user, board, list, card } = this.props;
         const { cardToEdit, showingDescirptionForm, isCardOptionOpen, cardOptionType,
             cardOptionFunc, isTodoDeleteBtnShow, currTodoIdx } = this.state;
+
         return (
             <section className="card-details modal">
                 {(card && cardToEdit) && <section className="modal-content">
                     <button className="close-btn" onClick={this.onCloseModal}>
                         <i className="fas fa-times"></i>
                     </button>
+                    {card.style.cover &&
+                        <div className={`cover ${card.style.cover.color ?
+                         card.style.cover.color : card.style.cover.picture}`}>
+                        </div>}
                     <div className="title-container">
                         <div className="headline flex align-center">
                             <i className="far fa-file-alt icon"></i>
@@ -332,6 +347,8 @@ export class _CardDetails extends Component {
                             <h4>ADD TO CARD</h4>
                             <button onClick={() => this.openPopUp('Members', this.addMember)} className="card-details-btn">
                                 <i className="fas fa-user-friends"></i> Members</button>
+                            <button onClick={() => this.openPopUp('Cover', this.saveCover)} className="card-details-btn">
+                                <i className="fas fa-palette"></i> Cover</button>
                             <button onClick={() => this.openPopUp('Labels', this.saveLabels)} className="card-details-btn">
                                 <i className="fas fa-tags"></i> Labels</button>
                             <button onClick={() => this.openPopUp('CheckList', this.addToChecklist)} className="card-details-btn">

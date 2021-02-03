@@ -61,7 +61,7 @@ function getEmptyCard() {
             boardId: '',
             listId: '',
         },
-        style: ''
+        style: {}
     }
     return card;
 }

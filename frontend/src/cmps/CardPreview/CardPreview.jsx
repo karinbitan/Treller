@@ -80,7 +80,12 @@ export class _CardPreview extends Component {
         const { card, list, listIdx } = this.props;
         const { isEditModalOpen, isDetailsModalOpen, showEditBtn, screenCard } = this.state;
         return (
-            <section className="card-preview" onMouseEnter={this.showEditBtn}
+            <section>
+                {card.style.cover && <div className="cover-container">
+                    <div className={card.style.cover.color ? 'color ' + card.style.cover.color :
+                        'picture ' + card.style.cover.picture}></div>
+                </div>}
+                <section className="card-preview" onMouseEnter={this.showEditBtn}
                 onMouseLeave={this.hideEditBtn}>
                 {card.labels && <div className="flex">
                     {card.labels.map(label => {
@@ -105,6 +110,7 @@ export class _CardPreview extends Component {
                     onCopyCard={this.onCopyCard} />}
                 {isDetailsModalOpen && <CardDetails cardId={card._id} list={list}
                     listIdx={listIdx} onCloseDetailsModal={this.onCloseDetailsModal} />}
+                </section>
             </section>
         )
     }

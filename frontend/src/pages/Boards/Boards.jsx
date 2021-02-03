@@ -76,17 +76,19 @@ export class _Boards extends Component {
                     </ul>
                         : <p>You don't have starred boards yet...</p>}
                     <h3>Your Boards</h3>
-                    {/* {(user.boardsMember && user.boardsMember.length > 0) &&
+                    {(user.boardsMember && user.boardsMember.length > 0) &&
                         <ul className="other-boards">
                             {user.boardsMember.map(board => {
-                                return (
-                                    <li key={board._id} className="board-link"
-                                        style={{ backgroundColor: board.style.backgroundColor.header ? board.style.backgroundColor.header : ''  }}>
-                                        <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
-                                    </li>
-                                )
+                                if (board) {
+                                    return (
+                                        <li key={board._id} className="board-link"
+                                            style={{ backgroundColor: board.style.backgroundColor.header ? board.style.backgroundColor.header : '' }}>
+                                            <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
+                                        </li>
+                                    )
+                                }
                             })}
-                        </ul>} */}
+                        </ul>}
                 </div>}
             </section>
         )
