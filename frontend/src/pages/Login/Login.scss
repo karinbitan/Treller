@@ -1,35 +1,66 @@
-.login {
+.login-container {
+    background-color: rgba(32, 81, 167, 0.08);
+    background-image: url("../../assets/login-banner.png");
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    text-align: center;
+    color: #5e6c84;
     & header {
         background-color: rgb(5, 97, 150);
     }
-    & h1 {
-        text-align: center;
-        font-size: 2rem;
-        color: #056196 
-    }
-    & .signup-container {
-        margin-right: 10px;
-        border-right: 1px solid gray;
-        padding: 20px;
-        color: #0c3953;
-    }
-    & .login-container {
-        margin-left: 10px;
-        padding: 20px;
-        color: #0c3953;
-    }
-    & .logo {
-        width: 100px;
-        font-family: "Yellowtail";
-        color: white;
-        font-size: 1.75rem;
-        opacity: 0.6;
+    & .cred-type {
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
         &:hover {
-            opacity: 0.8;
+            color: #2b323d;
         }
     }
-
-    & .icon {
-        width: 20px;
+    & .account {
+        background-color: #ffffff;
+        border-radius: 3px;
+        padding: 10px 40px;
+        max-width: 400px;
+        margin: 0 auto;
+        box-shadow: 0 0 5px #888888;
+        & h3 {
+            margin: 0;
+            padding: 10px;
+        }
+        & button {
+            background: #056196;
+    width: 100%;
+    padding: 10px;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+        }
+        & .signup {
+            margin-right: 10px;
+            border-right: 1px solid gray;
+            padding: 20px;
+            color: #0c3953;
+        }
+        & .login {
+            margin-left: 10px;
+            padding: 20px;
+            color: #0c3953;
+        }
+    }
+    & input {
+        font-size: 14px;
+        background-color: #fafbfc;
+        border: 2px solid #dfe1e6;
+        border-radius: 3px;
+        height: 44px;
+    }
+    & .logo {
+        font-family: "Yellowtail";
+        font-size: 3rem;
+        color: #056196;
+        text-align: center;
+        font-weight: 500;
+        margin: 0;
     }
 }

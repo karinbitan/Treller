@@ -2,7 +2,7 @@
     margin-left: 5px;
     margin-right: 5px;
     flex-wrap: wrap;
-   & .logo {
+    & .logo {
         width: 100px;
         font-family: "Yellowtail";
         color: white;
@@ -12,12 +12,12 @@
             opacity: 0.8;
         }
     }
-    
-   & .icon {
+
+    & .icon {
         width: 20px;
     }
-    
-   & .icon-container {
+
+    & .icon-container {
         background-color: hsla(0, 0%, 100%, 0.3);
         width: 35px;
         height: 35px;
@@ -26,27 +26,27 @@
         align-items: center;
         cursor: pointer;
         position: relative;
-        & :not:first-child{
+        & :not:first-child {
             margin-left: 5px;
         }
         &:hover {
             background-color: rgba(255, 255, 255, 0.171);
         }
     }
-    
-   & .icon-container:last-of-type {
+
+    & .icon-container:last-of-type {
         margin-right: 5px;
     }
-    
-   & .menu-container {
+
+    & .menu-container {
         flex-grow: 1;
     }
 
-    & .avatar-member{
+    & .avatar-member {
         cursor: pointer;
     }
-    
-   & .avatar-options {
+
+    & .avatar-options {
         background: #fff;
         border-radius: 3px;
         box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
@@ -74,7 +74,6 @@
         }
     }
 }
-
 
 @media screen and (max-width: 480px) {
     // .logo {

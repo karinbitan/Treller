@@ -68,6 +68,19 @@ async function updateCard(req, res) {
     }
 }
 
+async function updateCardCollection(req, res) {
+    const cardId = req.params.id;
+    const updateObject = req.body
+    try {
+        await cardService.updateCardCollection(cardId, updateObject);
+        const realCard = await cardService.getCardById(cardId)
+        res.send(realCard);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+
 async function addComment(req, res) {
     const cardId = req.params.id;
     let comment = req.body;
@@ -93,7 +106,7 @@ async function addComment(req, res) {
 }
 
 async function deleteComment(req, res) {
-    const {id, commentId} = req.params;
+    const { id, commentId } = req.params;
     try {
         const card = await cardService.deleteComment(id, commentId);
         res.send(card);
@@ -103,18 +116,29 @@ async function deleteComment(req, res) {
     }
 }
 
-// async function addCard(req, res) {
-//     // const cardId = req.params.id;
-//     const cardId = "5ff1b13c36eed552e70fec47";
-//     let { listIdx, card } = req.body;
-//     try {
-//         await cardService.addCard(cardId, listIdx, card);
-//         res.json(card);
-//     } catch (err) {
-//         console.log(`ERROR: ${err}`)
-//         throw err;
-//     }
-// }
+async function addTodo(req, res) {
+    const { id, checklistIdx } = req.params;
+    let todo = req.body;
+    todo._id = utilService._makeId();
+    try {
+        const card = await cardService.addTodo(id, checklistIdx, todo);
+        res.send(card);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+
+async function deleteTodo(req, res) {
+    const { id, checklistIdx, todoId } = req.params;
+    try {
+        const card = await cardService.deleteTodo(id, checklistIdx, todoId);
+        res.send(card);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
 
 module.exports = {
     getCard,
@@ -122,6 +146,9 @@ module.exports = {
     deleteCard,
     addCard,
     updateCard,
+    updateCardCollection,
     addComment,
-    deleteComment
+    deleteComment,
+    addTodo,
+    deleteTodo
 }

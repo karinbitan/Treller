@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { setBoard, addBoard, updateBoard, addList, deleteList, favoriteBoard } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { boardService } from '../../services/boardService';
 import { deleteCard, updateCard } from '../../store/actions/cardActions';
 import { getUsers } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
@@ -28,9 +27,11 @@ class _TrellerApp extends Component {
         this.setState({ boardToEdit: this.props.board })
         await this.props.getLoggedInUser();
 
+        eventBus.on('newBoardAdded', async (boardId) => {
+            await this.props.setBoard(boardId);
+        })
+
         socketService.setup();
-        socketService.emit('register board', boardId);
-        socketService.on('newBoard', (boardId) => this.setBoard(boardId));
         socketService.emit('register board', boardId);
         socketService.on('newBoard', (boardId) => this.setBoard(boardId));
     }
@@ -43,6 +44,7 @@ class _TrellerApp extends Component {
     }
 
     componentWillUnmount() {
+        console.log('unmount')
         socketService.off('newBoard');
         socketService.terminate();
     }
@@ -73,11 +75,11 @@ class _TrellerApp extends Component {
         await this.props.setBoard(board._id);
     }
 
-    onAddBoard = async () => {
-        const emptyBoard = boardService.getEmptyBoard();
-        const board = await this.props.addBoard(emptyBoard);
-        await this.props.setBoard(board._id);
-    }
+    // onAddBoard = async () => {
+    //     const emptyBoard = boardService.getEmptyBoard();
+    //     const board = await this.props.addBoard(emptyBoard);
+    //     await this.props.setBoard(board._id);
+    // }
 
     // onFilterUsers = async (filter) => {
     //     debugger
@@ -173,7 +175,7 @@ class _TrellerApp extends Component {
 
     //
     getListStyle = isDraggingOver => ({
-        background: isDraggingOver ? this.props.board.style.backgroundColor.header : this.props.board.style.backgroundColor.app,
+        background: isDraggingOver ? 'rgba(0,0,0,.15)' : this.props.board.style.backgroundColor,
         // display: 'flex',
     });
 
@@ -275,12 +277,12 @@ class _TrellerApp extends Component {
         const { boardToEdit } = this.state;
         return (
             <section>
-                {(board && user) && <MainHeader board={board} user={user} onAddBoard={this.onAddBoard} />}
                 {(board && boardToEdit) && <section className="treller-app"
                     style={{
-                        backgroundColor: board.style.backgroundColor.app ? board.style.backgroundColor.app : '',
+                        backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
                         backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
                     }}>
+                    {(board && user) && <MainHeader board={board} user={user} onAddBoard={this.onAddBoard} />}
                     <BoardHeader onUpdateBoard={this.onUpdateBoard}
                         onFavoriteBoard={this.onFavoriteBoard}
                         board={board}

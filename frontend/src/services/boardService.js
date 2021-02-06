@@ -1,4 +1,4 @@
-import {httpService} from './httpService';
+import { httpService } from './httpService';
 
 export const boardService = {
     query,
@@ -44,10 +44,8 @@ function getEmptyBoard() {
         createdAt: Date.now(),
         createdBy: {},
         style: {
-            backgroundColor: {
-                app: "rgb(137, 96, 158)",
-                header: "rgb(68, 48, 78)"
-            }
+            backgroundColor: 'rgb(0, 121, 191)',
+            backgroundImg: null
         },
         members: [],
         lists: [],

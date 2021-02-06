@@ -45,6 +45,10 @@ async function addBoard(req, res) {
                 fullName: req.session.user.fullName
                 // imgUrl: req.session.user.imgUrl
             }
+            board.members.push({
+                _id: req.session.user._id,
+                fullName: req.session.user.fullName
+            })
         }
         await boardService.addBoard(board);
         await userService.addBoard(req.session.user._id, board._id);

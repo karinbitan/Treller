@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getLoggedInUser } from '../../store/actions/authActions';
-import { setCard, updateCard, deleteCard, addCard, addComment, deleteComment } from '../../store/actions/cardActions';
+import { setCard, updateCard, updateCardCollection, deleteCard, addCard, addComment, deleteComment } from '../../store/actions/cardActions';
 import { eventBus } from '../../services/eventBusService';
+import Avatar from 'react-avatar';
+import { socketService } from '../../services/socketService';
 
 import { CardComments } from '../../cmps/CardComments/CardComments';
 import { CardOptions } from '../../cmps/CardOptionsPopUp/CardOptions';
 
 import './CardDetails.scss';
-import Avatar from 'react-avatar';
-import { socketService } from '../../services/socketService';
+import { utilService } from '../../services/utilService';
+import { CardChecklists } from '../../cmps/CardChecklists/CardChecklists';
 
 export class _CardDetails extends Component {
     state = {
         cardToEdit: null,
         showingDescriptionForm: false,
-        isDescriptionFormShow: 'fake',
+        isDescriptionFormShow: '',
         isCardOptionOpen: false,
         cardOptionType: '',
         cardOptionFunc: '',
@@ -29,10 +31,11 @@ export class _CardDetails extends Component {
         await this.props.setCard(cardId);
         await this.props.getLoggedInUser();
         this.setState({ cardToEdit: this.props.card });
-        console.log(this.props)
 
+        socketService.setup();
         socketService.emit('register card', cardId);
         socketService.on('newCard', (cardId) => this.setCard(cardId));
+        socketService.emit('savedBoard', this.props.card.boardId);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -45,6 +48,7 @@ export class _CardDetails extends Component {
     // CARD //
 
     setCard = async (cardId) => {
+        debugger
         await this.props.setCard(cardId);
         this.setState({ cardToEdit: this.props.card });
     }
@@ -79,26 +83,35 @@ export class _CardDetails extends Component {
         const { cardId, board, listIdx } = this.props;
         await this.props.deleteCard(board._id, listIdx, cardId);
         this.onCloseModal();
-        eventBus.emit('cardChanged');
     }
 
     copyCard = async () => {
         const { card, board, list, listIdx } = this.props;
         await this.props.addCard(board._id, list._id, listIdx, card);
-        eventBus.emit('cardChanged');
     }
 
 
     // DESCRIPTION //
-    // The onFocus and onBlur doesnt work
     toggleDescriptionForm = (ev) => {
         ev.stopPropagation();
         this.setState({ showingDescriptionForm: !this.state.showingDescriptionForm })
-        if(this.state.showingDescriptionForm){
+        if (this.state.showingDescriptionForm) {
             this.setState({ isDescriptionFormShow: 'textarea' })
         } else {
-            this.setState({ isDescriptionFormShow: 'fake' })
+            this.setState({ isDescriptionFormShow: '' })
         }
+    }
+
+    openDescriptionForm = (ev) => {
+        ev.stopPropagation();
+        this.setState({ showingDescriptionForm: true });
+        this.setState({ isDescriptionFormShow: 'textarea' })
+    }
+
+    closeDescriptionForm = (ev) => {
+        ev.stopPropagation();
+        this.setState({ showingDescriptionForm: false })
+        this.setState({ isDescriptionFormShow: '' })
     }
 
     updateDescription = async (ev) => {
@@ -112,7 +125,6 @@ export class _CardDetails extends Component {
 
     // MEMBERS //
     addMember = async (ev, member) => {
-        ev.preventDefault();
         const { cardToEdit } = this.state;
         let members = cardToEdit.members;
         members.push(member);
@@ -123,13 +135,13 @@ export class _CardDetails extends Component {
     }
 
     // CHECKLIST //
-    addToChecklist = async (ev, todo) => {
+    addChecklist = async (ev, checklist) => {
         ev.preventDefault();
         const { cardToEdit } = this.state;
-        let checklist = cardToEdit.checklist;
-        checklist.push(todo);
-        this.setState({ cardToEdit })
-        await this.props.updateCard(cardToEdit);
+        let checklists = cardToEdit.checklists;
+        checklists.push(checklist);
+        this.setState({ cardToEdit });
+        await this.props.updateCardCollection(cardToEdit._id, { 'checklists': cardToEdit.checklists });
         await this.props.setCard(cardToEdit._id);
     }
 
@@ -146,15 +158,7 @@ export class _CardDetails extends Component {
         });
         await this.props.setCard(cardToEdit._id)
     }
-    showTodoDeleteBtn = (ev, idx) => {
-        ev.stopPropagation();
-        this.setState({ isTodoDeleteBtnShow: true, currTodoIdx: idx })
-    }
 
-    hideTodoDeleteBtn = (ev, idx) => {
-        ev.stopPropagation();
-        this.setState({ isTodoDeleteBtnShow: false, currTodoIdx: idx })
-    }
 
     deleteTodo = async (idx) => {
         let { cardToEdit } = this.state;
@@ -191,30 +195,30 @@ export class _CardDetails extends Component {
     }
 
     // LABEL //
-    saveLabels = async (ev, labels) => {
+    addLabel = async (label) => {
+        debugger
         let { cardToEdit } = this.state;
-        cardToEdit.labels.push(labels);
+        cardToEdit.labels.push(label);
         this.setState(cardToEdit);
-        await this.props.updateCard(cardToEdit);
+        await this.props.updateCardCollection(cardToEdit._id, { label });
         await this.props.setCard(cardToEdit._id);
     }
 
     // COVER //
-    saveCover = async (ev, cover) => {
-        console.log(cover)
-        debugger
+    addCover = async (cover) => {
         let { cardToEdit } = this.state;
         cardToEdit.style = { cover };
         this.setState(cardToEdit);
-        await this.props.updateCard(cardToEdit);
+        await this.props.updateCardCollection(cardToEdit._id, { cover });
         await this.props.setCard(cardToEdit._id);
     }
 
     // COMMENTS //
     onAddComment = async (comment) => {
-        const { cardId } = this.props;
-        await this.props.addComment(cardId, comment);
-        await this.props.setCard(cardId);
+        debugger
+        const { card } = this.props;
+        await this.props.addComment(card._id, comment);
+        await this.props.setCard(card._id);
     }
 
     onDeleteComment = async (commentId) => {
@@ -255,7 +259,7 @@ export class _CardDetails extends Component {
                     <div className="title-container">
                         <div className="headline flex align-center">
                             <i className="far fa-file-alt icon"></i>
-                            <form onSubmit={this.updateTitle}>
+                            <form onSubmit={this.updateTitle} className="card-title-form">
                                 <textarea className="card-title" ref={el => this.myTextareaRef = el}
                                     name="title" value={cardToEdit.title}
                                     onChange={this.handleChangeCard} onKeyDown={this.onEnterPress}>
@@ -284,8 +288,8 @@ export class _CardDetails extends Component {
                                         <h4>Labels</h4>
                                         <div className="flex">
                                             {card.labels.map(label => {
-                                                return <div className={`label ${label.color}`}
-                                                    key={label.color}>{label.title}</div>
+                                                return <div className={`label ${label}`}
+                                                    key={label}></div>
                                             })}
                                         </div>
                                     </div>}
@@ -308,67 +312,48 @@ export class _CardDetails extends Component {
                                     <i className="fas fa-align-left icon"></i>
                                     <h3>Description</h3>
                                     {(card.description && !showingDescriptionForm) &&
-                                        <button className="edit-description" onClick={this.toggleDescriptionForm}>Edit</button>}
+                                        <button className="edit-description" onClick={this.openDescriptionForm}>Edit</button>}
                                 </div>
                                 <form className="description-form"
                                     onSubmit={this.updateDescription}>
-                                    <textarea onFocus={(ev)=>this.toggleDescriptionForm(ev)}
-                                        onBlur={(ev)=>this.toggleDescriptionForm(ev)}
-                                        className={`description ${isDescriptionFormShow}`}
+                                    <textarea
+                                        onFocus={(ev) => this.openDescriptionForm(ev)}
+                                        onBlur={(ev) => this.closeDescriptionForm(ev)}
+                                        className={`description ${cardToEdit.description ? 'value' : 'no-value'}
+                                         ${isDescriptionFormShow}`}
                                         placeholder="Add more detailed description..."
                                         onChange={this.handleChangeCard}
                                         value={cardToEdit.description}
                                         name="description">
                                     </textarea>
                                     <br />
-                                    <div className="btn flex justify-start">
-                                        <button className="add-form-btn">Save</button>
-                                        <button className="exit-btn"
-                                            onClick={this.toggleDescriptionForm}>
-                                            <i className="fas fa-times"></i>
-                                        </button>
-                                    </div>
+                                    {showingDescriptionForm &&
+                                        <div className="btn flex justify-start">
+                                            <button className="add-form-btn">Save</button>
+                                            <button className="exit-btn"
+                                                onClick={this.closeDescriptionForm}>
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>}
                                 </form>
                             </div>
-                            {card.checklist.length > 0 &&
-                                <div className="checklist-container">
-                                    <div className="headline flex align-center">
-                                        <i className="fas fa-tasks icon"></i><h3>Checklist</h3>
-                                    </div>
-                                    <ul>
-                                        {card.checklist.map((todo, idx) => {
-                                            return <li className="todo flex space-between" key={idx}
-                                                onMouseEnter={(ev) => this.showTodoDeleteBtn(ev, idx)}
-                                                onMouseLeave={(ev) => this.hideTodoDeleteBtn(ev, idx)}>
-                                                <label style={{ textDecoration: todo.isDone ? 'line-through' : 'none' }}>
-                                                    <input type="checkbox"
-                                                        onChange={ev => this.handleCheckChecklist(ev, todo, idx)}
-                                                        checked={todo.isDone} />
-                                                    {todo.title}
-                                                </label>
-                                                <button onClick={() => this.deleteTodo(idx)} className="delete-todo"
-                                                    style={{ display: isTodoDeleteBtnShow && currTodoIdx === idx ? 'block' : 'none' }}>
-                                                    <i className="fas fa-trash"></i>
-                                                </button>
-                                            </li>
-                                        })}
-                                    </ul>
-                                </div>}
+                            {(card.checklists && card.checklists.length > 0) &&
+                                <CardChecklists checklists={card.checklists} onAddTodo={this.addTodo} />}
                             <CardComments comments={card.comments} user={user}
                                 onAddComment={this.onAddComment}
                                 onDeleteComment={this.onDeleteComment} />
                         </div>
                         <div className="side-container flex column">
                             <h4>ADD TO CARD</h4>
-                            <button onClick={() => this.openPopUp('Members', this.addMember)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('members', this.addMember)} className="card-details-btn">
                                 <i className="fas fa-user-friends"></i> Members</button>
-                            <button onClick={() => this.openPopUp('Cover', this.saveCover)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('cover', this.addCover)} className="card-details-btn">
                                 <i className="fas fa-palette"></i> Cover</button>
-                            <button onClick={() => this.openPopUp('Labels', this.saveLabels)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('labels', this.addLabel)} className="card-details-btn">
                                 <i className="fas fa-tags"></i> Labels</button>
-                            <button onClick={() => this.openPopUp('CheckList', this.addToChecklist)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('checklists', this.addChecklist)} className="card-details-btn">
                                 <i className="fas fa-tasks"></i> Checklist</button>
-                            <button onClick={() => this.openPopUp('DueDate', this.setDate)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('dueDate', this.setDate)} className="card-details-btn">
                                 <i className="fas fa-calendar-week"></i> Due Date</button>
                             <br />
                             <h4>ACTIONS</h4>
@@ -397,6 +382,7 @@ const mapDispatchToProps = {
     getLoggedInUser,
     setCard,
     updateCard,
+    updateCardCollection,
     deleteCard,
     addCard,
     addComment,

@@ -37,8 +37,8 @@ function App() {
         <Switch location={background || location}>
           <Route exact component={HomePage} path="/"></Route>
           <Route component={Login} path="/login"></Route>
-          <Route component={UserProfile} path="/user/:id"></Route>
           <Route component={Boards} path="/user/:id/boards"></Route>
+          <Route component={UserProfile} path="/user/:id"></Route>
           <Route component={TrellerApp} path="/treller/board/:id"></Route>
           <Route component={CardDetails} path="/treller/card/:id"></Route>
         </Switch>

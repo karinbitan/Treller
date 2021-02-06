@@ -11,7 +11,7 @@ function connectSockets(io) {
         })
         // CARD //
         socket.on('savedCard', (cardId) => {
-            io.to(socket.myTopic).emit('newCard', cardId)
+            io.to(cardId).emit('newCard', cardId)
         })
         socket.on('register card', cardId => {
             console.log(cardId, 'socket work!')

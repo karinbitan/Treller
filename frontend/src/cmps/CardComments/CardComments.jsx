@@ -45,6 +45,7 @@ export class CardComments extends Component {
     }
 
     onAddComment = async (ev) => {
+        debugger
         ev.preventDefault();
         ev.stopPropagation();
         this.setState({ onComment: false })

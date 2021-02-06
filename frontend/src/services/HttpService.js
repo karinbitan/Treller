@@ -19,6 +19,9 @@ export const httpService = {
     },
     delete(endpoint, data) {
         return ajax(endpoint, 'DELETE', data)
+    },
+    patch(endpoint, data) {
+        return ajax(endpoint, 'PATCH', (data))
     }
 }
 

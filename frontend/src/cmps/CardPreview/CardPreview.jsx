@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { utilService } from '../../services/utilService';
 
 import Avatar from 'react-avatar';
 import { CardEditModal } from '../CardEditModal/CardEditModal';
@@ -11,9 +12,9 @@ export function CardPreview(props) {
     const [isEditModalOpen, toggleEditModal] = useState(false);
     const [isEditBtnShow, toggleEditBtn] = useState(false);
 
-    useEffect(() => {
-        console.log('something');
-    })
+    // useEffect(() => {
+    //     console.log('something');
+    // })
     // state = {
     //     isEditModalOpen: false,
     //     showEditBtn: false,
@@ -30,7 +31,7 @@ export function CardPreview(props) {
     }
 
     const onUpdateCard = async (cardToEdit) => {
-        await this.props.updateCard(cardToEdit);
+        await props.onUpdateCard(cardToEdit);
         toggleEditModal(false)
         // eventBus.emit('notification', {
         //     title: 'Card updated',
@@ -111,6 +112,18 @@ export function CardPreview(props) {
                 >
                     <i className="fas fa-pen edit-icon"></i>
                 </button>
+                <div className="info-btn-container flex flex-end">
+                    {card.description && <button className="info-btn" title="This card has description"><i className="fas fa-align-left"></i></button>}
+                    {(card.comments && card.comments.length > 0) && <button className="info-btn" title="This card has comments"><i className="far fa-comment"></i></button>}
+                    {(card.checklist && card.checklist.length > 0) && <button className="info-btn" title="This card has checklist"><i className="fas fa-tasks"></i></button>}
+                    {card.dueDate && <button className="info-btn due-date">
+                        <i className="far fa-clock"></i>
+                        {` ${utilService.convertToMonthString(card.dueDate)}  ${new Date(card.dueDate).getDate()}`}
+                        {card.isCardComplete && <span className="due-status complete">Complete</span>}
+                        {new Date() > new Date(card.dueDate) &&
+                            <span className="due-status over-due">Over Due</span>}
+                    </button>}
+                </div>
                 {isEditModalOpen && <CardEditModal card={card}
                     onCloseEditModal={() => toggleEditModal(false)} onUpdateCard={onUpdateCard}
                     onDeleteCard={onDeleteCard}

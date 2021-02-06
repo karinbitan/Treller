@@ -8,11 +8,14 @@ import LoginIcon from './../../assets/login-icon.png';
 
 import { connect } from 'react-redux';
 import { logout } from '../../store/actions/authActions';
+import { addBoard } from '../../store/actions/boardActions';
 import { Link, NavLink } from 'react-router-dom';
 
 import './MainHeader.scss';
 import { MainHeaderOptions } from '../MainHeaderOptions/MainHeaderOptions';
 import { Filter } from '../Filter/Filter';
+import { boardService } from '../../services/boardService';
+import { eventBus } from '../../services/eventBusService';
 
 class _MainHeader extends Component {
 
@@ -49,9 +52,10 @@ class _MainHeader extends Component {
         this.setState({ isAvatarOptionsOpen: !this.state.isAvatarOptionsOpen })
     }
 
-    onAddBoard = () => {
-        debugger
-        this.props.onAddBoard();
+    onAddBoard = async () => {
+        const emptyBoard = boardService.getEmptyBoard();
+        const board = await this.props.addBoard(emptyBoard);
+        eventBus.emit('newBoardAddes', board._id)
     }
 
     test = () => {
@@ -62,11 +66,11 @@ class _MainHeader extends Component {
         const { user, board, isHomePage, isUserPage } = this.props;
         const { isAvatarOptionsOpen, isBoardOptionOpen, isNotifOptionOpen, mainHeaderOptionsType } = this.state;
         return (
-            <header style={{ backgroundColor: board ? board.style.backgroundColor.header : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
+            <header style={{ backgroundColor: board ? 'rgba(0,0,0,.15)' : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
                 <section className="main-header flex align-center">
                     {!isHomePage && <div className="menu-container flex align-center">
                         <button className="icon-container no-button">
-                            <NavLink to="/treller"><img className="icon" src={Home} alt="home" /></NavLink>
+                            <NavLink to={`/user/${user._id}/boards`}><img className="icon" src={Home} alt="home" /></NavLink>
                         </button>
                         <div>
                             <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Boards')}>
@@ -74,8 +78,7 @@ class _MainHeader extends Component {
                             </button>
                             {(isBoardOptionOpen && user) && <MainHeaderOptions
                                 type={mainHeaderOptionsType} boards={user.boardsMember}
-                                closePopUp={this.toggleMainHeaderOptions}
-                                onAddBoard={this.onAddBoard} />}
+                                closePopUp={this.toggleMainHeaderOptions} />}
                         </div>
                         <Filter />
                     </div>}
@@ -118,6 +121,7 @@ class _MainHeader extends Component {
 }
 
 const mapDispatchToProps = {
-    logout
+    logout,
+    addBoard
 }
 export const MainHeader = connect(null, mapDispatchToProps)(_MainHeader)

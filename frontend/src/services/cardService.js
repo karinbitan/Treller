@@ -1,4 +1,4 @@
-import {httpService} from './httpService';
+import { httpService } from './httpService';
 
 export const cardService = {
     query,
@@ -6,9 +6,12 @@ export const cardService = {
     deleteCard,
     addCard,
     updateCard,
+    updateCardCollection,
     getEmptyCard,
     addComment,
-    deleteComment
+    deleteComment,
+    addTodo,
+    deleteTodo
 }
 
 function query(filter = null) {
@@ -18,7 +21,7 @@ function query(filter = null) {
         const searchStr = (filter.txt) ? `&txt=${filter.txt}` : '';
         filterStr = searchStr;
     }
-    return httpService.get(`card?_sort=${filterStr}`);
+    return httpService.get(`card?=${filterStr}`);
 }
 
 function getCardById(cardId) {
@@ -37,13 +40,27 @@ function updateCard(card) {
     return httpService.put(`card/${card._id}`, card);
 }
 
+function updateCardCollection(cardId, updateObject) {
+    debugger
+    return httpService.patch(`card/${cardId}`, updateObject);
+}
+
 function addComment(cardId, comment) {
     return httpService.post(`card/${cardId}/comments`, comment);
 }
 
 function deleteComment(cardId, commentId) {
-    return httpService.post(`card/${cardId}/comments/${commentId}`);
+    return httpService.delete(`card/${cardId}/comments/${commentId}`);
 }
+
+function addTodo(cardId, checklistIdx, todo) {
+    return httpService.post(`card/${cardId}/${checklistIdx}/todos`, todo);
+}
+
+function deleteTodo(cardId, checklistIdx, todoIdx) {
+    return httpService.delete(`card/${cardId}/${checklistIdx}/todos/${todoIdx}`);
+}
+
 
 function getEmptyCard() {
     const card = {
@@ -51,7 +68,7 @@ function getEmptyCard() {
         description: '',
         members: [],
         comments: [],
-        checklist: [],
+        checklists: [],
         labels: [],
         dueDate: '',
         isComplete: false,

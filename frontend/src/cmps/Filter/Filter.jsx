@@ -8,7 +8,7 @@ export class _Filter extends Component {
 
     state = {
         filterBy: {
-            title: ''
+            txt: ''
         },
         isFormOpen: false
     }
@@ -41,7 +41,7 @@ export class _Filter extends Component {
         return (
             <section className="filter">
                 <form onSubmit={this.setFilter}>
-                    <input type="search" className="search" name="title"
+                    <input type="search" className="search" name="txt"
                         onChange={this.handleChange} onFocus={this.toggleForm} onBlur={this.toggleForm} />
                     <button className="search-btn"><i className="fa fa-search"></i></button>
                 </form>

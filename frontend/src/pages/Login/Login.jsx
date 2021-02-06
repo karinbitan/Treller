@@ -2,8 +2,6 @@ import { Component } from 'react';
 import { userService } from '../../services/userSercvice';
 import { connect } from 'react-redux';
 import { login, signup } from '../../store/actions/authActions';
-import { Link } from 'react-router-dom';
-import Logo from './../../assets/treller-logo.png';
 
 import './Login.scss'
 
@@ -14,12 +12,18 @@ export class _Login extends Component {
         login: {
             userName: '',
             password: ''
-        }
+        },
+        isLogin: false,
+        isSignup: false
     }
 
     componentDidMount() {
         const newUser = userService.getEmptyUser();
         this.setState({ signup: newUser })
+    }
+
+    componentWillUnmount() {
+        this.setState({ isLogin: false, isSignup: false })
     }
 
     handleChangeSignUp = ({ target }) => {
@@ -59,36 +63,29 @@ export class _Login extends Component {
 
 
     render() {
+        const { isLogin, isSignup } = this.state;
         return (
-            <section className="login">
-                <header>
-                    <div className="logo">
-                        <Link to="/" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
-                    </div>
-                </header>
-                <h1>Welcome to Treller!</h1>
-                <div className="flex justify-center">
-                    <div className="signup-container">
-                        <p>If you don't have an account yet..</p>
-                        <h3>Sign up</h3>
-                        <form onSubmit={this.signup}>
-                            <label>Full name: <input type="text" name="fullName" onChange={this.handleChangeSignUp} /></label><br />
-                            <label>User name: <input type="text" name="userName" onChange={this.handleChangeSignUp} /></label><br />
-                            <label>Password: <input type="password" name="password" onChange={this.handleChangeSignUp} /></label><br />
-                            <button>Sign Up</button>
-                        </form>
-
-                    </div>
-                    <div className="login-container">
-                        <p>If you already have an account..</p>
-                        <h3>Login</h3>
-                        <form onSubmit={this.login}>
-                            <label>User name: <input type="text" name="userName" onChange={this.handleChangeLogin} /></label><br />
-                            <label>Password: <input type="password" name="password" onChange={this.handleChangeLogin} /></label><br />
-                            <button>Login</button>
-                        </form>
-                    </div>
-                </div>
+            <section className="login-container container">
+                <h1 className="logo">Treller</h1>
+                <p><span className="cred-type" onClick={() => this.setState({ isSignup: true, isLogin: false })}>Sign Up </span>
+                     || <span className="cred-type" onClick={() => this.setState({ isLogin: true, isSignup: false })}>Login</span></p>
+                {isLogin && <div className="account login">
+                    <h3>Log In To Treller</h3>
+                    <form onSubmit={this.login} className="flex column">
+                        <input type="text" name="userName" onChange={this.handleChangeLogin} placeholder="Enter user name" /><br />
+                        <input type="password" name="password" onChange={this.handleChangeLogin} placeholder="Enter password" /><br />
+                        <button>Login</button>
+                    </form>
+                </div>}
+                {isSignup && <div className="account signup">
+                    <h3>Sign Up To Treller</h3>
+                    <form onSubmit={this.signup} className="flex column">
+                        <input type="text" name="fullName" onChange={this.handleChangeSignUp} placeholder="Enter full name" /><br />
+                        <input type="text" name="userName" onChange={this.handleChangeSignUp} placeholder="Enter user name" /><br />
+                        <input type="password" name="password" onChange={this.handleChangeSignUp} placeholder="Enter password" /><br />
+                        <button>Sign Up</button>
+                    </form>
+                </div>}
             </section>
         )
     }

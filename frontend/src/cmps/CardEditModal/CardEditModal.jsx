@@ -1,7 +1,7 @@
 
-import { Component } from 'react'
+import { Component } from 'react';
 
-import './CardEditModal.scss'
+import './CardEditModal.scss';
 
 export class CardEditModal extends Component {
 

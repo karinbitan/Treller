@@ -52,6 +52,20 @@ export function updateCard(card) {
     try {
       const savedCard = await cardService.updateCard(card)
       dispatch(_cardUpdate(savedCard));
+      dispatch({ type: 'SET_CARD', card: savedCard })
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
+
+export function updateCardCollection(cardId, updateObject) {
+  return async dispatch => {
+    try {
+      debugger
+      const savedCard = await cardService.updateCardCollection(cardId, updateObject)
+      dispatch(_cardUpdate(savedCard));
+      dispatch({ type: 'SET_CARD', card: savedCard })
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -61,6 +75,7 @@ export function updateCard(card) {
 export function addComment(cardId, comment) {
   return async dispatch => {
     try {
+      debugger
       const realCard = await cardService.addComment(cardId, comment);
       const savedCard = await cardService.updateCard(realCard);
       dispatch(_cardUpdate(savedCard));
