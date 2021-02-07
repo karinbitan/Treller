@@ -5,12 +5,12 @@ import './CardOptions.scss';
 
 
 export function CardOptions(props) {
-    const [checklist, newChecklist] = useState({title: ''});
+    const [checklist, newChecklist] = useState({ title: '', todos: [] });
     const [date, setDate] = useState(props.card.dueDate);
 
-    useEffect(() => {
-        console.log(checklist);
-    })
+    // useEffect(() => {
+    //     console.log(checklist);
+    // })
 
     const closePopUp = () => {
         props.closePopUp();
@@ -28,27 +28,7 @@ export function CardOptions(props) {
     //     console.log(checklist)
     // }
 
-    const addCheklist = (ev) => {
-        // ev.preventDefault();
-        // props.func(checklist);
-        // newChecklist({title: ''});
-        console.log('submit')
-    }
-
-
-    // const func = (ev, val) => {
-    //     props.func(ev, val);
-    // }
-
-    // FIX THE MESS!!! BOTH LABELS AND COVERS //
     const { type, card, board } = props;
-    // const pic1 = { picture: 'pic1' };
-    // const pic2 = { picture: 'pic2' };
-    // const pic3 = { picture: 'pic3' };
-    // const pic4 = { picture: 'pic4' };
-    // const pic5 = { picture: 'pic5' };
-    // const pic6 = { picture: 'pic6' };
-    // const pic7 = { picture: 'pic7' };  
 
     return (
         <div className="card-options">
@@ -79,16 +59,16 @@ export function CardOptions(props) {
                     <li className="cover blue" onClick={() => props.func('blue')}></li>
                     <li className="cover pink" onClick={() => props.func('pink')}></li>
                 </ul>
-                {/* <span>Pictures</span>
+                <span>Pictures</span>
                 <ul className="flex wrap justify-center">
-                    <li className="cover pic1" onClick={() => props.func(pic1)}></li>
-                    <li className="cover pic2" onClick={() => props.func(pic2)}></li>
-                    <li className="cover pic3" onClick={() => props.func(pic3)}></li>
-                    <li className="cover pic4" onClick={() => props.func(pic4)}></li>
-                    <li className="cover pic5" onClick={() => props.func(pic5)}></li>
-                    <li className="cover pic6" onClick={() => props.func(pic6)}></li>
-                    <li className="cover pic7" onClick={() => props.func(pic7)}></li>
-                </ul> */}
+                    <li className="cover pic1" onClick={() => props.func('pic1')}></li>
+                    <li className="cover pic2" onClick={() => props.func('pic2')}></li>
+                    <li className="cover pic3" onClick={() => props.func('pic3')}></li>
+                    <li className="cover pic4" onClick={() => props.func('pic4')}></li>
+                    <li className="cover pic5" onClick={() => props.func('pic5')}></li>
+                    <li className="cover pic6" onClick={() => props.func('pic6')}></li>
+                    <li className="cover pic7" onClick={() => props.func('pic7')}></li>
+                </ul>
                 <span>Add picture..</span>
             </div>}
             {type === 'labels' && <div className="labels-container">
@@ -109,7 +89,7 @@ export function CardOptions(props) {
                 <h4>Add Checklist:</h4>
                 <form onSubmit={(ev) => props.func(ev, checklist)}>
                     <input type="text" name="title" value={checklist.title}
-                        onChange={(ev) => newChecklist({[ev.target.name]: ev.target.value})} />
+                        onChange={(ev) => newChecklist({ ...checklist, [ev.target.name]: ev.target.value })} />
                     <br />
                     <button>Add</button>
                 </form>

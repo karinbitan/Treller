@@ -98,7 +98,7 @@ export function CardPreview(props) {
                     state: { background: location }
                 }}>{card.title}</Link>
                 {card.members &&
-                    <div className="members flex flex-start">
+                    <div className="members flex flex-end">
                         {card.members.map(member => {
                             return (
                                 <Avatar name={member.fullName} round={true} size={25} key={member._id} />
@@ -112,10 +112,10 @@ export function CardPreview(props) {
                 >
                     <i className="fas fa-pen edit-icon"></i>
                 </button>
-                <div className="info-btn-container flex flex-end">
+                <div className="info-btn-container flex flex-start">
                     {card.description && <button className="info-btn" title="This card has description"><i className="fas fa-align-left"></i></button>}
                     {(card.comments && card.comments.length > 0) && <button className="info-btn" title="This card has comments"><i className="far fa-comment"></i></button>}
-                    {(card.checklist && card.checklist.length > 0) && <button className="info-btn" title="This card has checklist"><i className="fas fa-tasks"></i></button>}
+                    {(card.checklists && card.checklists.length > 0) && <button className="info-btn" title="This card has checklist"><i className="fas fa-tasks"></i></button>}
                     {card.dueDate && <button className="info-btn due-date">
                         <i className="far fa-clock"></i>
                         {` ${utilService.convertToMonthString(card.dueDate)}  ${new Date(card.dueDate).getDate()}`}

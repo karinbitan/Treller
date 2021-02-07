@@ -1,0 +1,20 @@
+.invite-container {
+    & .invite-form {
+        margin: 0 8px;
+        & .invite-search {
+            font-size: 14px;
+            background-color: #fafbfc;
+            border: 2px solid #dfe1e6;
+            border-radius: 3px;
+            height: 44px;
+            width: 100%;
+        }
+    }
+    & .result-container {
+        box-shadow: 0 8px 16px -4px #dfe1e6, 0 0 0 1px #dfe1e6;
+        margin: 10px;
+        & .user-name{
+            margin: 5px;
+        }
+    }
+}

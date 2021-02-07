@@ -1,5 +1,4 @@
 import { cardService } from '../../services/cardService';
-import { socketService } from '../../services/socketService';
 
 // Action Dispatcher
 
@@ -95,8 +94,31 @@ export function deleteComment(cardId, commentId) {
   }
 }
 
+export function addTodo(cardId, checklistIdx, todo) {
+  return async dispatch => {
+    try {
+      const realCard = await cardService.addTodo(cardId, checklistIdx, todo);
+      const savedCard = await cardService.updateCard(realCard);
+      dispatch(_cardUpdate(savedCard));
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
+
+export function deleteTodo(cardId, checklistIdx, todoId) {
+  return async dispatch => {
+    try {
+      const realCard = await cardService.deleteTodo(cardId, checklistIdx, todoId);
+      const savedCard = await cardService.updateCard(realCard);
+      dispatch(_cardUpdate(savedCard));
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
+
 function _cardUpdate(card) {
-  socketService.emit('savedCard', card._id);
   return {
     type: 'UPDATE_CARD',
     card

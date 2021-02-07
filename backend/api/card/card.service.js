@@ -28,23 +28,7 @@ async function query(filterBy = {}) {
 }
 
 function _setFilter(filterBy) {
-    const filter = {};
-    if (filterBy.txt) {
-        filter.title = filterBy.txt
-    }
-    // if (filterBy.minBalance) {
-    //     filter.balance = { $gte: +filterBy.minBalance }
-    // }
-    if (filterBy.cardIds) {
-        filter._id = { $in: filterBy.cardIds };
-    }
-    return filter;
-}
-
-function _setFilter(filterBy) {
     const filter = [];
-    
-
     if (filterBy.cardIds) {
         filter.push({ _id: { $in: filterBy.cardIds }})
     }
@@ -70,35 +54,6 @@ function _setFilter(filterBy) {
         $and: filter
     }
 }
-
-// function _setFilter(filterBy) {
-//     const filter = {};
-//     let mainFilter = []
-
-//     if (filterBy.cardIds) {
-//         filter._id = { $in: filterBy.cardIds };
-//         // mainFilter.push(filter._id)
-//     }
-
-//     // TODO: Support lowercase
-//     // TODO: Support search by all
-//     if (filterBy.txt) {
-//         let textFields = []
-//         textFields.push({ "title": { $regex: `.*${filterBy.txt}.*` } });
-//         textFields.push({ "description": { $regex: `.*${filterBy.txt}.*` } });
-//         // textFields.push({ "about": { $regex: `.*${requestQuery.txt}.*` } });
-
-//         mainFilter.push({
-//             $or: textFields
-//         });
-//         filter.txt = mainFilter;
-//     }
-
-//     // return mainFilter;
-//     return filter;
-// }
-
-
 
 async function getCardById(cardId) {
     const collection = await dbService.getCollection('card');
@@ -189,7 +144,7 @@ async function deleteComment(cardId, commentId) {
 
 async function addTodo(cardId, checklistIdx, todo) {
     const collection = await dbService.getCollection('card');
-    const field = 'checklist.' + checklistIdx + '.todos';
+    const field = 'checklists.' + checklistIdx + '.todos';
     try {
         const res = await collection.updateOne({ _id: ObjectId(cardId) },
         { $push: { [field]: todo} });
@@ -204,7 +159,7 @@ async function addTodo(cardId, checklistIdx, todo) {
 
 async function deleteTodo(cardId, checklistIdx, todoId) {
     const collection = await dbService.getCollection('card');
-    const field = 'checklist.' + checklistIdx + '.todos';
+    const field = 'checklists.' + checklistIdx + '.todos';
     try {
         const res = await collection.updateOne({ _id: ObjectId(cardId) },
             { $pull: { [field]: { _id: todoId } } });

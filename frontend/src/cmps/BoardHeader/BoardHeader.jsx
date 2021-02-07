@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import Avatar from 'react-avatar';
+import { InviteMembers } from '../InviteMembers/InviteMembers';
 
 import './BoardHeader.scss';
 
@@ -8,13 +9,9 @@ export class BoardHeader extends Component {
         boardToEdit: null,
         isStarred: false,
         isMenuOpen: false,
-        isInviteMenuOpen: false,
         isStyleMenuOpen: false,
         style: {
             backgroundColor: null
-        },
-        filter: {
-            txt: ''
         }
     }
 
@@ -41,15 +38,6 @@ export class BoardHeader extends Component {
         const value = target.value;
         this.setState(prevState => ({ boardToEdit: { ...prevState.boardToEdit, [field]: value } }));
     }
-
-    handleChangeInvite = ({ target }) => {
-        const field = target.name;
-        const value = target.value;
-        this.setState(prevState => ({ filter: { ...prevState.filter, [field]: value } }), () => {
-            this.props.onFilterUsers(this.state.filter);
-        });
-    }
-
 
     changeStyle = (color) => {
         const { style } = this.state;
@@ -78,10 +66,6 @@ export class BoardHeader extends Component {
         this.setState({ isMenuOpen: !this.state.isMenuOpen })
     }
 
-    toggleInviteMenu = () => {
-        this.setState({ isInviteMenuOpen: !this.state.isInviteMenuOpen })
-    }
-
     toggleStyleMenu = () => {
         this.setState({ isStyleMenuOpen: !this.state.isStyleMenuOpen })
     }
@@ -90,11 +74,14 @@ export class BoardHeader extends Component {
         this.props.onDeleteBoard();
     }
 
+    onAddMemberToBoard = (member) => {
+        this.props.onAddMemberToBoard(member);
+    }
+
     render() {
         //debugger;
         const { board } = this.props;
-        const { boardToEdit, isStarred, isMenuOpen,
-            isInviteMenuOpen, isStyleMenuOpen } = this.state;
+        const { boardToEdit, isStarred, isMenuOpen, isStyleMenuOpen } = this.state;
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
@@ -112,19 +99,7 @@ export class BoardHeader extends Component {
                         })}
                     </div>
         |
-                <div className="invite-container">
-                        <button onClick={this.toggleInviteMenu} className="board-header-icon invite-btn">Invite</button>
-                        {isInviteMenuOpen && <div className="invite pop-up">
-                            <button onClick={this.toggleInviteMenu}>X</button>
-                            <p>Invite</p>
-                            <form>
-                                <input type="search" name="txt" onChange={this.handleChangeInvite} />
-                                <button>
-                                    <i className="fa fa-search search-icon"></i>
-                                </button>
-                            </form>
-                        </div>}
-                    </div>
+        <InviteMembers board={board} onAddMemberToBoard={this.onAddMemberToBoard} />
                     <div className="menu-container flex">
                         <button className="board-header-icon show-menu-icon" onClick={this.toggleMenu}>
                             <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getLoggedInUser } from '../../store/actions/authActions';
-import { setCard, updateCard, updateCardCollection, deleteCard, addCard, addComment, deleteComment } from '../../store/actions/cardActions';
+import {
+    setCard, updateCard, updateCardCollection, deleteCard, addCard,
+    addComment, deleteComment, addTodo, deleteTodo
+} from '../../store/actions/cardActions';
 import { eventBus } from '../../services/eventBusService';
 import Avatar from 'react-avatar';
 import { socketService } from '../../services/socketService';
@@ -39,6 +42,13 @@ export class _CardDetails extends Component {
             const cardToEdit = this.props.card;
             this.setState({ cardToEdit });
         }
+    }
+
+    componentWillUnmount() {
+        console.log('unmount')
+        socketService.off('newCard');
+        socketService.off('newBoard');
+        socketService.terminate();
     }
 
     // CARD //
@@ -110,12 +120,19 @@ export class _CardDetails extends Component {
     // CHECKLIST //
     addChecklist = async (ev, checklist) => {
         ev.preventDefault();
+        debugger
         const { cardToEdit } = this.state;
         let checklists = cardToEdit.checklists;
         checklists.push(checklist);
         this.setState({ cardToEdit });
         await this.props.updateCardCollection(cardToEdit._id, { 'checklists': cardToEdit.checklists });
         await this.props.setCard(cardToEdit._id);
+    }
+
+    onAddTodo = async (checklistIdx, todo) => {
+        const { card } = this.props;
+        debugger
+        await this.props.addTodo(card._id, checklistIdx, todo);
     }
 
     handleCheckChecklist = async ({ target }, todo, idx) => {
@@ -131,7 +148,6 @@ export class _CardDetails extends Component {
         });
         await this.props.setCard(cardToEdit._id)
     }
-
 
     deleteTodo = async (idx) => {
         let { cardToEdit } = this.state;
@@ -234,7 +250,6 @@ export class _CardDetails extends Component {
                                     name="title" value={cardToEdit.title}
                                     onChange={this.handleChangeCard} onKeyDown={this.onEnterPress}>
                                 </textarea>
-                                <button className="not-show"></button>
                             </form>
                         </div>
                         {/* <p className="list-name">in list {list.title}</p> */}
@@ -279,7 +294,7 @@ export class _CardDetails extends Component {
                             </div>
                             <CardDescription description={card.description} onUpdateDescription={this.onUpdateDescription} />
                             {(card.checklists && card.checklists.length > 0) &&
-                                <CardChecklists checklists={card.checklists} onAddTodo={this.addTodo} />}
+                                <CardChecklists checklists={card.checklists} onAddTodo={this.onAddTodo} />}
                             <CardComments comments={card.comments} user={user}
                                 onAddComment={this.onAddComment}
                                 onDeleteComment={this.onDeleteComment} />
@@ -327,6 +342,8 @@ const mapDispatchToProps = {
     deleteCard,
     addCard,
     addComment,
-    deleteComment
+    deleteComment,
+    addTodo,
+    deleteTodo
 }
 export const CardDetails = connect(mapStateToProps, mapDispatchToProps)(_CardDetails)

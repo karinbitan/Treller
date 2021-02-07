@@ -6,7 +6,6 @@ async function getSearchResult(req, res) {
     try {
         const result = await cardService.query(req.query);
         res.send(result);
-        console.log(result)
     } catch (err) {
         console.log(`ERROR: ${err}`)
         throw err;

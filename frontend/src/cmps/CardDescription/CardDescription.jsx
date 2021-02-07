@@ -23,7 +23,7 @@ export function CardDescription(props) {
                 <i className="fas fa-align-left icon"></i>
                 <h3>Description</h3>
                 {(description && !isDescriptionFormShow) &&
-                    <button className="edit-description"
+                    <button className="card-details-btn"
                         onClick={() => toggleDescriptionForm(true),
                             () => changeDescriptionForm('textarea')}>
                         Edit

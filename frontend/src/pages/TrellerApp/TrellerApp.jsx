@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { setBoard, addBoard, updateBoard, addList, deleteList, favoriteBoard } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { deleteCard, updateCard } from '../../store/actions/cardActions';
-import { getUsers } from './../../store/actions/userActions';
+import { getUsers, updateUser } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService.js';
@@ -14,6 +14,7 @@ import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
 
 import './TrellerApp.scss';
+import { userService } from '../../services/userSercvice';
 
 class _TrellerApp extends Component {
 
@@ -69,7 +70,6 @@ class _TrellerApp extends Component {
     }
 
     onFavoriteBoard = async (isStarred) => {
-        debugger
         const { board } = this.props;
         await this.props.favoriteBoard(board._id, isStarred);
         await this.props.setBoard(board._id);
@@ -81,11 +81,17 @@ class _TrellerApp extends Component {
     //     await this.props.setBoard(board._id);
     // }
 
-    // onFilterUsers = async (filter) => {
-    //     debugger
-    //     await this.props.getUsers(filter);
-    //     console.log(this.props.users)
-    // }
+    onAddMemberToBoard = async (member) => {
+        let { boardToEdit } = this.state;
+        let members = boardToEdit.members;
+        members.push({ _id: member._id, fullName: member.fullName });
+        boardToEdit.members = members;
+        await this.props.updateBoard(boardToEdit);
+        let user = await userService.getUserById(member._id);
+        user.boardsMember = boardToEdit._id;
+        await this.props.updateUser(user);
+    }
+
 
     // LIST //
     onAddList = async (list) => {
@@ -287,7 +293,7 @@ class _TrellerApp extends Component {
                         onFavoriteBoard={this.onFavoriteBoard}
                         board={board}
                         onChangeStyle={this.onChangeStyle}
-                    // onFilterUsers={this.onFilterUsers} 
+                        onAddMemberToBoard={this.onAddMemberToBoard}
                     />
                     <section className="lists flex column">
                         <DragDropContext onDragEnd={this.onDragEnd}>
@@ -361,6 +367,7 @@ const mapDispatchToProps = {
     updateCard,
     favoriteBoard,
     getUsers,
-    getLoggedInUser
+    getLoggedInUser,
+    updateUser
 }
 export const TrellerApp = connect(mapStateToProps, mapDispatchToProps)(_TrellerApp)

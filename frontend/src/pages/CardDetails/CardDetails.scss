@@ -32,9 +32,13 @@
             font-size: 20px;
             position: absolute;
             left: 20px;
+            color: #42526e;
         }
         & h3 {
             font-size: 18px;
+            color: #172b4d;
+            font-size: 16px;
+            font-weight: 600;
         }
     }
 
@@ -63,7 +67,7 @@
 
     /* The Close Button */
 
-    .close-btn {
+   & .close-btn {
         font-size: 1rem;
         margin: 10px;
         font-family: quicksand;
@@ -75,12 +79,7 @@
     }
 
     // Main //
-
-    .not-show {
-        display: none;
-    }
-
-    .headline {
+    & .headline {
         margin-left: 40px;
     }
 
@@ -146,7 +145,7 @@
     }
 
     .title-container {
-        padding: 10px;
+        margin: 12px 40px 8px 0;
         & .card-title-form {
             width: 100%;
             & .card-title {
@@ -155,8 +154,8 @@
                 background-color: transparent;
                 resize: none;
                 border: none;
-                font-weight: 700;
-                font-size: 1.4rem;
+                font-weight: 600;
+                font-size: 20px;
                 overflow: hidden;
                 max-height: 40px;
                 color: #172b4d;

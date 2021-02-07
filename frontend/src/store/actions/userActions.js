@@ -4,6 +4,7 @@ export function getUsers(filter) {
   return async dispatch => {
     const users = await userService.query(filter);
     dispatch({ type: 'SET_USERS', users });
+    return users;
   }
 }
 

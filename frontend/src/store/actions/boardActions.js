@@ -85,7 +85,6 @@ export function favoriteBoard(boardId, isStarred) {
   }
 }
 
-
 // LIST //
 export function addList(boardId, list) {
   return async dispatch => {

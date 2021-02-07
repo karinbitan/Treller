@@ -26,20 +26,27 @@ async function query(filterBy = {}) {
 }
 
 function _setFilter(filterBy) {
-    let mainFilter = []
-    // TODO: Support lowercase
-    // TODO: Support search by all
+    const filter = [];
+     // TODO: Support lowercase
+     // TODO: Support search by all
     if (filterBy.txt) {
         let textFields = []
-        textFields.push({ "fullName": { $regex: `.*${requestQuery.txt}.*` } });
-        textFields.push({ "userName": { $regex: `.*${requestQuery.txt}.*` } });
+        textFields.push({ "fullName": { $regex: `.*${filterBy.txt}.*` } });
+        textFields.push({ "userName": { $regex: `.*${filterBy.txt}.*` } });
+        // textFields.push({ "about": { $regex: `.*${requestQuery.txt}.*` } });
 
-        mainFilter.push({
+        filter.push({
             $or: textFields
         });
     }
 
-    return mainFilter;
+    if (!filter.length) {
+        return {}
+    }
+
+    return mainFilter = {
+        $and: filter
+    }
 }
 
 async function getUserById(userId) {

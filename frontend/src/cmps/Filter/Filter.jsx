@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { getSearchResult } from './../../store/actions/searchActions';
+import { Link } from 'react-router-dom';
+import { CardPreview } from './../CardPreview/CardPreview';
 
 import './Filter.scss';
 
@@ -11,7 +13,8 @@ export class _Filter extends Component {
             txt: ''
         },
         isFormOpen: false,
-        searchResult: []
+        searchResult: [],
+        isSearch: false
     }
 
     async componentDidMount() {
@@ -23,6 +26,15 @@ export class _Filter extends Component {
         this.setState({ isFormOpen: !this.state.isFormOpen })
     }
 
+    openForm = () => {
+        this.setState({ isFormOpen: true })
+    }
+
+    closeForm = () => {
+        this.setState({ isFormOpen: false })
+    }
+
+
     handleChange = ({ target }) => {
         const field = target.name;
         const value = target.value;
@@ -33,27 +45,41 @@ export class _Filter extends Component {
         ev.preventDefault();
         const res = await this.props.getSearchResult(this.state.filterBy);
         this.setState({ searchResult: res })
+        this.setState({ isSearch: true })
+        console.log(this.state.isSearch)
     }
 
     render() {
-        const { isFormOpen, searchResult } = this.state;
+        const { isFormOpen, searchResult, isSearch } = this.state;
         // const { searchResult } = this.props;
         return (
             <section className="filter">
                 <form onSubmit={this.setFilter}>
                     <input type="search" className="search" name="txt"
-                        onChange={this.handleChange} onFocus={this.toggleForm} onBlur={this.toggleForm} />
+                        onChange={this.handleChange} onFocus={this.openForm} />
                     <button className="search-btn"><i className="fa fa-search"></i></button>
                 </form>
                 {isFormOpen && <div className="search-tab pop-up" >
+                    <button onClick={this.closeForm}><i className="fas fa-times"></i></button>
                     <p>Search Results</p>
-                    {(searchResult && searchResult.length > 0) ? <ul>
-                        {searchResult.map(result => {
-                            return <li key={result._id}>{result.title}</li>
-                        })}
-                    </ul>
-                        : <p>Can't found result...</p>
-                    }
+                    {isSearch &&
+                        <div>
+                            {(searchResult && searchResult.length > 0) ? <ul>
+                                {searchResult.map(result => {
+                                    return (
+                                        <li key={result._id}>
+                                            <div>
+                                                {/* <CardPreview card={result._id} /> */}
+                                                <Link to={`/treller/card/${result._id}`}>
+                                                    {result.title}
+                                                </Link>
+                                            </div>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                                : <span>Can't find search result...</span>}
+                        </div>}
                 </div>}
             </section>
         )

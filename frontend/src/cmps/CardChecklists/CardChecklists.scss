@@ -22,5 +22,26 @@
                 }
             }
         }
+        & .open-form{
+            margin-left: 40px;
+        }
+        & .add-todo {
+            margin-left: 40px;
+            & textarea {
+                resize: none;
+                width: 100%;
+                font-size: 16px;
+                text-align: start;
+                box-shadow: none;
+                border: none;
+                border-radius: 3px;
+                min-height: 50px;
+                text-align: start;
+                margin-top: 10px;
+                font-family: unset;
+                box-shadow: inset 0 0 0 2px #0079bf;
+                background-color: white;
+            }
+        }
     }
 }

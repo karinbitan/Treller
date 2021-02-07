@@ -1,4 +1,5 @@
 import { httpService } from './httpService';
+import { socketService } from './socketService';
 
 export const cardService = {
     query,
@@ -37,6 +38,7 @@ function addCard(boardId, listId, listIdx, card) {
 }
 
 function updateCard(card) {
+    socketService.emit('savedCard', card._id);
     return httpService.put(`card/${card._id}`, card);
 }
 
@@ -53,6 +55,7 @@ function deleteComment(cardId, commentId) {
 }
 
 function addTodo(cardId, checklistIdx, todo) {
+    debugger
     return httpService.post(`card/${cardId}/${checklistIdx}/todos`, todo);
 }
 
