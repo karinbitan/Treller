@@ -8,22 +8,18 @@ import { socketService } from '../../services/socketService';
 
 import { CardComments } from '../../cmps/CardComments/CardComments';
 import { CardOptions } from '../../cmps/CardOptionsPopUp/CardOptions';
+import { CardChecklists } from '../../cmps/CardChecklists/CardChecklists';
+import { CardDescription } from '../../cmps/CardDescription/CardDescription';
 
 import './CardDetails.scss';
-import { utilService } from '../../services/utilService';
-import { CardChecklists } from '../../cmps/CardChecklists/CardChecklists';
 
 export class _CardDetails extends Component {
     state = {
         cardToEdit: null,
-        showingDescriptionForm: false,
-        isDescriptionFormShow: '',
         isCardOptionOpen: false,
         cardOptionType: '',
         cardOptionFunc: '',
-        isCardComplete: false,
-        isTodoDeleteBtnShow: false,
-        currTodoIdx: ''
+        isCardComplete: false
     }
 
     async componentDidMount() {
@@ -92,35 +88,12 @@ export class _CardDetails extends Component {
 
 
     // DESCRIPTION //
-    toggleDescriptionForm = (ev) => {
-        ev.stopPropagation();
-        this.setState({ showingDescriptionForm: !this.state.showingDescriptionForm })
-        if (this.state.showingDescriptionForm) {
-            this.setState({ isDescriptionFormShow: 'textarea' })
-        } else {
-            this.setState({ isDescriptionFormShow: '' })
-        }
-    }
-
-    openDescriptionForm = (ev) => {
-        ev.stopPropagation();
-        this.setState({ showingDescriptionForm: true });
-        this.setState({ isDescriptionFormShow: 'textarea' })
-    }
-
-    closeDescriptionForm = (ev) => {
-        ev.stopPropagation();
-        this.setState({ showingDescriptionForm: false })
-        this.setState({ isDescriptionFormShow: '' })
-    }
-
-    updateDescription = async (ev) => {
-        ev.preventDefault();
-        // this.setState(prevState => ({ cardToEdit: { ...prevState.cardToEdit, [field]: checklist } }));
+    onUpdateDescription = async (description) => {
+        const field = description;
+        this.setState(prevState => ({ cardToEdit: { ...prevState.cardToEdit, [field]: description } }));
         const { cardToEdit } = this.state;
-        await this.props.updateCard(cardToEdit);
+        await this.props.updateCardCollection(cardToEdit._id, { description });
         await this.props.setCard(cardToEdit._id);
-        this.setState({ showingDescriptionForm: false });
     }
 
     // MEMBERS //
@@ -196,7 +169,6 @@ export class _CardDetails extends Component {
 
     // LABEL //
     addLabel = async (label) => {
-        debugger
         let { cardToEdit } = this.state;
         cardToEdit.labels.push(label);
         this.setState(cardToEdit);
@@ -215,7 +187,6 @@ export class _CardDetails extends Component {
 
     // COMMENTS //
     onAddComment = async (comment) => {
-        debugger
         const { card } = this.props;
         await this.props.addComment(card._id, comment);
         await this.props.setCard(card._id);
@@ -243,8 +214,7 @@ export class _CardDetails extends Component {
     render() {
         // const { user, board, list, card } = this.props;
         const { user, board, card } = this.props;
-        const { cardToEdit, showingDescriptionForm, isCardOptionOpen, cardOptionType,
-            cardOptionFunc, isTodoDeleteBtnShow, currTodoIdx, isDescriptionFormShow } = this.state;
+        const { cardToEdit, isCardOptionOpen, cardOptionType, cardOptionFunc } = this.state;
 
         return (
             <section className="card-details modal">
@@ -307,36 +277,7 @@ export class _CardDetails extends Component {
                                     </button>
                                 </div>}
                             </div>
-                            <div className="description-container">
-                                <div className="headline flex align-center">
-                                    <i className="fas fa-align-left icon"></i>
-                                    <h3>Description</h3>
-                                    {(card.description && !showingDescriptionForm) &&
-                                        <button className="edit-description" onClick={this.openDescriptionForm}>Edit</button>}
-                                </div>
-                                <form className="description-form"
-                                    onSubmit={this.updateDescription}>
-                                    <textarea
-                                        onFocus={(ev) => this.openDescriptionForm(ev)}
-                                        onBlur={(ev) => this.closeDescriptionForm(ev)}
-                                        className={`description ${cardToEdit.description ? 'value' : 'no-value'}
-                                         ${isDescriptionFormShow}`}
-                                        placeholder="Add more detailed description..."
-                                        onChange={this.handleChangeCard}
-                                        value={cardToEdit.description}
-                                        name="description">
-                                    </textarea>
-                                    <br />
-                                    {showingDescriptionForm &&
-                                        <div className="btn flex justify-start">
-                                            <button className="add-form-btn">Save</button>
-                                            <button className="exit-btn"
-                                                onClick={this.closeDescriptionForm}>
-                                                <i className="fas fa-times"></i>
-                                            </button>
-                                        </div>}
-                                </form>
-                            </div>
+                            <CardDescription description={card.description} onUpdateDescription={this.onUpdateDescription} />
                             {(card.checklists && card.checklists.length > 0) &&
                                 <CardChecklists checklists={card.checklists} onAddTodo={this.addTodo} />}
                             <CardComments comments={card.comments} user={user}

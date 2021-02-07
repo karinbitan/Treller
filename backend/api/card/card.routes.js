@@ -7,7 +7,6 @@ const router = express.Router();
 // middleware that is specific to this router
 // router.use(requireAuth)
 
-//BOARD
 router.get('/', getCards);
 router.get('/:id', getCard);
 router.delete('/:boardId/:listIdx/:id', deleteCard);

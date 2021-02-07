@@ -69,7 +69,6 @@ export class BoardHeader extends Component {
     }
 
     onFavoriteBoard = async () => {
-        debugger
         this.setState({ isStarred: !this.state.isStarred }, () => {
             this.props.onFavoriteBoard(this.state.isStarred);
         });

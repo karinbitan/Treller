@@ -98,7 +98,7 @@ export function CardPreview(props) {
                     state: { background: location }
                 }}>{card.title}</Link>
                 {card.members &&
-                    <div className="members flex flex-end">
+                    <div className="members flex flex-start">
                         {card.members.map(member => {
                             return (
                                 <Avatar name={member.fullName} round={true} size={25} key={member._id} />

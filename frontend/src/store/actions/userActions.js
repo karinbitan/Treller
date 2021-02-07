@@ -2,7 +2,6 @@ import { userService } from "../../services/userSercvice";
 
 export function getUsers(filter) {
   return async dispatch => {
-    debugger
     const users = await userService.query(filter);
     dispatch({ type: 'SET_USERS', users });
   }

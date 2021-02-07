@@ -141,7 +141,7 @@ async function updateCardCollection(cardId, updateObject) {
     const id = cardId;
     delete cardId
     try {
-        await collection.update({ _id: ObjectId(id) }, { $set: updateObject });
+        await collection.updateOne({ _id: ObjectId(id) }, { $set: updateObject });
         cardId = ObjectId(id);
         return updateObject;
     } catch (err) {

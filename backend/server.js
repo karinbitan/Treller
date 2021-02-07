@@ -53,6 +53,7 @@ const authRoutes = require('./api/auth/auth.routes');
 const userRoutes = require('./api/user/user.routes');
 const boardRoutes = require('./api/board/board.routes');
 const cardRoutes = require('./api/card/card.routes');
+const searchRoutes = require('./api/search/search.routes');
 const connectSockets = require('./api/socket/socket.routes');
 
 
@@ -61,6 +62,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/board', boardRoutes);
 app.use('/api/card', cardRoutes);
+app.use('/api/search', searchRoutes);
 
 connectSockets(io)
 

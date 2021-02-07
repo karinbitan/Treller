@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { loadCards } from '../../store/actions/cardActions';
+import { getSearchResult } from './../../store/actions/searchActions';
 
 import './Filter.scss';
 
@@ -10,7 +10,8 @@ export class _Filter extends Component {
         filterBy: {
             txt: ''
         },
-        isFormOpen: false
+        isFormOpen: false,
+        searchResult: []
     }
 
     async componentDidMount() {
@@ -30,14 +31,13 @@ export class _Filter extends Component {
 
     setFilter = async (ev) => {
         ev.preventDefault();
-        debugger
-        await this.props.loadCards(this.state.filterBy);
-        console.log(this.props.cards)
+        const res = await this.props.getSearchResult(this.state.filterBy);
+        this.setState({ searchResult: res })
     }
 
     render() {
-        // const { cards } = this.props;
-        const { isFormOpen } = this.state;
+        const { isFormOpen, searchResult } = this.state;
+        // const { searchResult } = this.props;
         return (
             <section className="filter">
                 <form onSubmit={this.setFilter}>
@@ -46,16 +46,14 @@ export class _Filter extends Component {
                     <button className="search-btn"><i className="fa fa-search"></i></button>
                 </form>
                 {isFormOpen && <div className="search-tab pop-up" >
-                    <p>Seatch Results</p>
-                    <ul>
-                        {/* {cards.map(card => {
-                            if (card) {
-                                return <li key={card._id}>{card}</li>
-                            } else {
-                                <li>No cards found...</li>
-                            }
-                        })} */}
+                    <p>Search Results</p>
+                    {(searchResult && searchResult.length > 0) ? <ul>
+                        {searchResult.map(result => {
+                            return <li key={result._id}>{result.title}</li>
+                        })}
                     </ul>
+                        : <p>Can't found result...</p>
+                    }
                 </div>}
             </section>
         )
@@ -64,11 +62,10 @@ export class _Filter extends Component {
 
 function mapStateToProps(state) {
     return {
-        cards: state.cardReducer.cards
+        searchResult: state.searchReducer.searchResult
     }
 }
 const mapDispatchToProps = {
-    loadCards,
-
+    getSearchResult
 }
 export const Filter = connect(mapStateToProps, mapDispatchToProps)(_Filter)

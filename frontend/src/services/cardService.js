@@ -15,13 +15,13 @@ export const cardService = {
 }
 
 function query(filter = null) {
-    debugger
-    var filterStr = '';
-    if (filter) {
-        const searchStr = (filter.txt) ? `&txt=${filter.txt}` : '';
-        filterStr = searchStr;
-    }
-    return httpService.get(`card?=${filterStr}`);
+    // var filterStr = '';
+    // if (filter) {
+    //     const searchStr = (filter.txt) ? `&txt=${filter.txt}` : '';
+    //     filterStr = searchStr;
+    // }
+    // return httpService.get(`card?=${filterStr}`);
+    return httpService.get(`card`);
 }
 
 function getCardById(cardId) {
@@ -41,7 +41,6 @@ function updateCard(card) {
 }
 
 function updateCardCollection(cardId, updateObject) {
-    debugger
     return httpService.patch(`card/${cardId}`, updateObject);
 }
 

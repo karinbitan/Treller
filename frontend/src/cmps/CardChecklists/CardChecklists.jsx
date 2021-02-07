@@ -46,8 +46,8 @@ export function CardChecklists(props) {
 
     return (
         <section>
-                <div className="checklists-container">
-                    <div className="checklist">
+                <div className="card-checklists">
+                    <div className="checklist-container">
                         {props.checklists.map((checklist, idx) => {
                             return (<div key={idx}>
                                 <div className="headline flex align-center space-between">

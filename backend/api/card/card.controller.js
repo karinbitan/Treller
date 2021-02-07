@@ -3,8 +3,6 @@ const boardService = require('./../board/board.service');
 const logger = require('../../services/logger.service');
 const utilService = require('./../../services/util.service');
 
-// BOARD CRUD //
-
 async function getCards(req, res) {
     try {
         const cards = await cardService.query(req.query);
