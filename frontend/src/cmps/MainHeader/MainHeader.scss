@@ -56,7 +56,8 @@
         z-index: 70;
         top: 40px;
         min-height: 150px;
-        & p {
+        & .options-headline {
+            margin-top: 10px;
             border-bottom: 1px solid rgba(9, 30, 66, 0.13);
             color: #5e6c84;
             text-align: center;
@@ -67,6 +68,9 @@
             & li {
                 cursor: pointer;
                 padding: 5px;
+                & a{
+                    color: #172b4d;
+                }
                 &:hover {
                     background-color: rgba(9, 30, 66, 0.04);
                 }

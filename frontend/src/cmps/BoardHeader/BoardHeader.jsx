@@ -78,6 +78,11 @@ export class BoardHeader extends Component {
         this.props.onAddMemberToBoard(member);
     }
 
+    onAddBoardWithTemplate = () => {
+        const { board } = this.props;
+        this.props.onAddBoard(board);
+    }
+
     render() {
         //debugger;
         const { board } = this.props;
@@ -107,7 +112,7 @@ export class BoardHeader extends Component {
                         {isMenuOpen && <div className="menu pop-up">
                             <button onClick={this.toggleMenu}>X</button>
                             {!isStyleMenuOpen ? <div>
-                                <p>Menu</p>
+                                <p className="headline">Menu</p>
                                 <ul>
                                     <li onClick={this.toggleStyleMenu}>Change Style
                                      <div className="color-sample" style={{ backgroundColor: board.style.backgroundColor }}></div>
@@ -128,6 +133,9 @@ export class BoardHeader extends Component {
                                 </div>}
                         </div>}
                     </div>
+                    <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
+                        Create Board From Template
+                        </button>
                 </section>}
             </section>
         )

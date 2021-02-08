@@ -1,17 +1,44 @@
 .user-profile {
     color: #0c3953;
-    & .user-profile-container{
+    background-color: rgba(32, 81, 167, 0.08);
+    & .user-profile-container {
         margin-left: 10px;
     }
     & .headline {
-        font-size: xx-large;
-        text-align: center;
+        font-size: x-large;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
-    & .profile-picture{
+    & .profile-picture {
         width: 200px;
         height: 200px;
         margin-bottom: 10px;
     }
-    & label {
+    & .info-container {
+        background-color: #ffffff;
+        border-radius: 3px;
+        padding: 10px 40px;
+        max-width: 400px;
+        margin: 0 auto;
+        box-shadow: 0 0 5px #888888;
+        & input[type="text"] {
+            font-size: 14px;
+            background-color: #fafbfc;
+            border: 2px solid #dfe1e6;
+            border-radius: 3px;
+            height: 44px;
+            margin-bottom: 15px;
+        }
+    }
+    & .save-profile {
+        background-color: #5aac44;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        align-self: center;
+        &:hover {
+            background-color: #6cb459;
+        }
     }
 }

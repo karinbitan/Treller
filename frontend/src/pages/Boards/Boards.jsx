@@ -9,29 +9,47 @@ import { connect } from 'react-redux';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { addBoard } from '../../store/actions/boardActions';
 import { Link } from 'react-router-dom';
-import { boardService } from '../../services/boardService';
 
 import './Boards.scss';
 import Avatar from 'react-avatar';
+import { boardService } from '../../services/boardService';
+import { eventBus } from '../../services/eventBusService';
 
 export class _Boards extends Component {
+
     async componentDidMount() {
         await this.props.getLoggedInUser();
     }
 
-    addBoardWithTemplate = async (img) => {
-        let emptyBoard = boardService.getEmptyBoard();
-        emptyBoard.style.backgroundImage = img;
-        await this.props.addBoard(emptyBoard);
+    // Why it stops after add board? //
+    addBoard = async () => {
+        debugger
+        const boardToAdd = boardService.getEmptyBoard();
+        const board = await this.props.addBoard(boardToAdd);
+        eventBus.emit('newBoardAdded', board._id);
+        this.props.history.push(`/treller/board/${board._id}`);
     }
+
 
     render() {
         const { user } = this.props;
         const templates = [
-            { name: 'Nature', smallImg: Template1, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large1_kxtkq8.jpg" },
-            { name: 'Relax', smallImg: Template4, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large4_b6g9p0.jpg" },
-            { name: 'Work', smallImg: Template3, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large3_dq1hat.jpg" },
-            { name: 'Animals', smallImg: Template2, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large2_zr62xq.jpg" }
+            {
+                name: 'Nature', boardId: "5ff1b13c36eed552e70fec47",
+                smallImg: Template1, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large1_kxtkq8.jpg"
+            },
+            {
+                name: 'Animals', boardId: "60040605a5297b5978123a93",
+                smallImg: Template2, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large4_b6g9p0.jpg"
+            },
+            {
+                name: 'Work', boardId: "600432fba5297b59781ba1d4",
+                smallImg: Template3, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large3_dq1hat.jpg"
+            },
+            {
+                name: 'Relax', boardId: "60197399331a92cde9ce9f7d",
+                smallImg: Template4, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large2_zr62xq.jpg"
+            }
         ];
         if (user) {
             if (user.boardsMember && user.boardsMember.length > 0) {
@@ -54,9 +72,11 @@ export class _Boards extends Component {
                             {templates.map(template => {
                                 return (
                                     <li className="template-img" style={{ backgroundImage: `url(${template.smallImg})` }}
-                                        key={template.name} onClick={() => this.addBoardWithTemplate(template.largImg)}>
-                                        <span>Template</span>
-                                        <h3 className="template-name">{template.name}</h3>
+                                        key={template.name}>
+                                        <Link to={`/treller/board/${template.boardId}`}>
+                                            <span>Template</span>
+                                            <h3 className="template-name">{template.name}</h3>
+                                        </Link>
                                     </li>
                                 )
                             })}
@@ -69,8 +89,10 @@ export class _Boards extends Component {
                                 {favBoards.map(board => {
                                     return (
                                         <li key={board._id} className="board-link flex column space-between"
-                                            style={{ backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : ''
-                                            , backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})`: '' }}>
+                                            style={{
+                                                backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : ''
+                                                , backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
+                                            }}>
                                             <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
                                             <i style={{ color: "#f2d600" }} className="far fa-star"></i>
                                             <div className="flex flex-end">
@@ -96,8 +118,10 @@ export class _Boards extends Component {
                                         } else {
                                             return (
                                                 <li key={board._id} className="board-link flex column space-between"
-                                                    style={{ backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
-                                                     backgroundImage:  board.style.backgroundImg ? `url(${board.style.backgroundImg})`: '' }}>
+                                                    style={{
+                                                        backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
+                                                        backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
+                                                    }}>
                                                     <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
                                                     <div className="flex flex-end">
                                                         {board.members.map(member => {
@@ -111,6 +135,10 @@ export class _Boards extends Component {
                                         }
 
                                     })}
+                                    <li className="board-link empty flex justify-center align-center"
+                                        onClick={this.addBoard}>
+                                        Create new board
+                                        </li>
                                 </ul>}
                         </div>
                     </div>

@@ -45,7 +45,7 @@ class _InviteMembers extends Component {
                 <button onClick={this.toggleInviteMenu} className="board-header-icon invite-btn">Invite</button>
                 {isInviteMenuOpen && <div className="invite pop-up">
                     <button onClick={this.toggleInviteMenu}><i className="fas fa-times"></i></button>
-                    <p>Invite</p>
+                    <p className="headline">Invite</p>
                     <form className="invite-form">
                         <input className="invite-search" type="search" name="txt" onChange={this.handleChangeInvite}
                             placeholder="Enter full name or user name" />

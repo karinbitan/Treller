@@ -11,18 +11,11 @@ export function CardPreview(props) {
     const location = useLocation();
     const [isEditModalOpen, toggleEditModal] = useState(false);
     const [isEditBtnShow, toggleEditBtn] = useState(false);
+    const [screenCard, setScreenCard] = useState({ top: null, left: null })
 
     // useEffect(() => {
     //     console.log('something');
     // })
-    // state = {
-    //     isEditModalOpen: false,
-    //     showEditBtn: false,
-    //     screenCard: {
-    //         top: null,
-    //         left: null
-    //     }
-    // }
 
     const onDeleteCard = async () => {
         const { board, listIdx, card } = this.props;
@@ -33,11 +26,6 @@ export function CardPreview(props) {
     const onUpdateCard = async (cardToEdit) => {
         await props.onUpdateCard(cardToEdit);
         toggleEditModal(false)
-        // eventBus.emit('notification', {
-        //     title: 'Card updated',
-        //     card: cardToEdit,
-        //     by: this.props.user
-        // })
     }
 
     const onCopyCard = async () => {
@@ -46,35 +34,10 @@ export function CardPreview(props) {
         toggleEditModal(false);
     }
 
-    // EDIT //
-    // const showEditBtn = () => {
-    //     this.setState({ showEditBtn: true })
-    // }
-
-    // const hideEditBtn = () => {
-    //     this.setState({ showEditBtn: false })
-    // }
-
-    // const openEditModal = (ev) => {
-    //     ev.stopPropagation();
-    //     let { screenCard } = this.state;
-    //     screenCard.top = ev.screenY;
-    //     screenCard.left = ev.screenX;
-    //     this.setState({ isEditModalOpen: true, screenCard })
-    // }
-
-    // const closeEditModal = () => {
-    //     this.setState({ isEditModalOpen: false })
-    // }
-
-    // DETAILS //
-    // const openDetailsModal = () => {
-    //     this.setState({ isDetailsModalOpen: true })
-    // }
-
-    // const onCloseDetailsModal = () => {
-    //     this.setState({ isDetailsModalOpen: false })
-    // }
+    const openEditModal = (ev) => {
+        setScreenCard({ top: ev.screenY, left: ev.screenX });
+        toggleEditModal(true)
+    }
 
     const { card, list, listIdx } = props;
     return (
@@ -92,7 +55,6 @@ export function CardPreview(props) {
                         return <div className={`label ${label.color}`} key={label.color}></div>
                     })}
                 </div>}
-                {/* <p onClick={this.openDetailsModal} className="card-title">{card.title}</p> */}
                 <Link to={{
                     pathname: `/treller/card/${card._id}`,
                     state: { background: location }
@@ -106,7 +68,7 @@ export function CardPreview(props) {
                         })}
                     </div>}
                 <button className="edit-icon-btn"
-                    onClick={() => toggleEditModal(true)}
+                    onClick={(ev) => openEditModal(ev)}
                     style={{ display: isEditBtnShow ? 'block' : 'none' }}
                 //  ref={el => this.myBtnaRef = el} 
                 >
@@ -127,12 +89,9 @@ export function CardPreview(props) {
                 {isEditModalOpen && <CardEditModal card={card}
                     onCloseEditModal={() => toggleEditModal(false)} onUpdateCard={onUpdateCard}
                     onDeleteCard={onDeleteCard}
-                    onCopyCard={onCopyCard} />}
-                {/* {isDetailsModalOpen && <CardDetails cardId={card._id} list={list}
-                    listIdx={listIdx} onCloseDetailsModal={this.onCloseDetailsModal} />} */}
+                    onCopyCard={onCopyCard}
+                    screenCard={screenCard} />}
             </section>
         </section>
     )
 }
-
-// TO ADD SCREEN CARD // 

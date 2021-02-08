@@ -50,7 +50,8 @@ function getEmptyBoard() {
         members: [],
         lists: [],
         activities: [],
-        isFavorite: false
+        isFavorite: false,
+        isTemplate: false
     }
     return board;
 }

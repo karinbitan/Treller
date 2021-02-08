@@ -16,7 +16,7 @@
         background-size: cover;
         &:hover {
             opacity: 0.8;
-         }
+        }
         & span {
             border-radius: 3px;
             background-color: hsla(0, 0%, 100%, 0.69);
@@ -45,7 +45,12 @@
                 font-size: 1rem;
             }
             &:hover {
-               opacity: 0.8;
+                opacity: 0.8;
+            }
+            &.empty {
+                border: 1px solid #b3bac5;
+                background-color: rgba(9, 30, 66, 0.04);
+                cursor: pointer;
             }
         }
     }

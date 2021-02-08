@@ -55,13 +55,13 @@ export class _Filter extends Component {
         return (
             <section className="filter">
                 <form onSubmit={this.setFilter}>
-                    <input type="search" className="search" name="txt"
+                    <input type="search" className="search-input" name="txt"
                         onChange={this.handleChange} onFocus={this.openForm} />
-                    <button className="search-btn"><i className="fa fa-search"></i></button>
+                    {!isFormOpen && <button type="button" className="search-btn"><i className="fa fa-search"></i></button>}
                 </form>
                 {isFormOpen && <div className="search-tab pop-up" >
-                    <button onClick={this.closeForm}><i className="fas fa-times"></i></button>
-                    <p>Search Results</p>
+                    <button onClick={this.closeForm} className="close-btn"><i className="fas fa-times"></i></button>
+                    <p className="headline">Search Results</p>
                     {isSearch &&
                         <div>
                             {(searchResult && searchResult.length > 0) ? <ul>
@@ -71,7 +71,8 @@ export class _Filter extends Component {
                                             <div>
                                                 {/* <CardPreview card={result._id} /> */}
                                                 <Link to={`/treller/card/${result._id}`}>
-                                                    {result.title}
+                                                    <h4>{result.title}</h4>
+                                                    <p>In List on Board</p>
                                                 </Link>
                                             </div>
                                         </li>

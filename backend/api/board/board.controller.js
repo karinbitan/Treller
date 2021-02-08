@@ -39,6 +39,11 @@ async function deleteBoard(req, res) {
 async function addBoard(req, res) {
     let board = req.body;
     try {
+        if (board.isTemplate) {
+            board.isTemplate = false;
+            delete board._id;
+        }
+        
         if (req.session.user) {
             board.createdBy = {
                 _id: req.session.user._id,
@@ -88,9 +93,9 @@ async function favoriteBoard(req, res) {
 async function addList(req, res) {
     const boardId = req.params.id;
     let list = req.body;
-    list._id = utilService._makeId(); 
+    list._id = utilService._makeId();
     try {
-       const realList =  await boardService.addList(boardId, list);
+        const realList = await boardService.addList(boardId, list);
         res.send(realList);
     } catch (err) {
         console.log(`ERROR: ${err}`)

@@ -2,15 +2,14 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { setUser, updateUser } from '../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
-import { Link } from 'react-router-dom';
 import { uploadImg } from './../../services/img-upload-service';
+import Avatar from 'react-avatar';
 
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
 import Loading from './../../assets/loading.gif';
 import profilePic from './../../assets/profile-logo.png';
 
 import './UserProfile.scss';
-import { eventBus } from '../../services/eventBusService';
 
 export class _UserProfile extends Component {
 
@@ -26,17 +25,6 @@ export class _UserProfile extends Component {
         await this.props.getLoggedInUser();
         let { user } = this.props;
         this.setState({ userToEdit: user });
-
-        eventBus.on('invite-to-card', (info => {
-            if (info.member._id === user._id) {
-                user.cardMember = info.card._id;
-                this.setState({ userToEdit: user }, async () => {
-                    await this.props.updateUser(user)
-                })
-                // eventBus.emit('add-to-notification', {txt: `You were added to card - ${info.card.title}
-                // as a member`});
-            }
-        }))
     }
 
     uploadImgProfile = async (ev) => {
@@ -68,40 +56,37 @@ export class _UserProfile extends Component {
         return (
             <section className="user-profile">
                 <MainHeader isUserPage={true} user={user} />
-                {user && <section className="user-profile-container">
-                    <h1 className="headline">Welcome {user.fullName}!</h1>
-                    <h2>Your personal info:</h2>
-                    <form onSubmit={this.updateUser}>
-                        {!isLoading ?
-                            <label>Choose your profile picture:
+                {user && <section className="user-profile-container container">
+                    <h1 className="headline flex justify-center">
+                        <Avatar name={user.fullName} round={true} size={40} />
+                        {user.fullName}
+                    </h1>
+                    <div className="info-container flex column align-center">
+                        <h3>Your personal info:</h3>
+                        <form onSubmit={this.updateUser} className="flex column">
+                            {!isLoading ?
+                                <label>Choose your profile picture:
                                 <br />
-                                {userToEdit && <img className="profile-picture"
-                                    src={userToEdit.imgUrl ? userToEdit.imgUrl : profilePic} alt="profile-pic" />}
-                                <br />
-                                <input type="file" name="imgUrl" id="imgUploader" onChange={this.uploadImgProfile} />
-                            </label>
-                            : <img src={Loading} width="200" height="200" alt="loading-gif" />}
-                        <br />
-                        <label>Full name:
+                                    {userToEdit && <img className="profile-picture"
+                                        src={userToEdit.imgUrl ? userToEdit.imgUrl : profilePic} alt="profile-pic" />}
+                                    <br />
+                                    <input type="file" name="imgUrl" id="imgUploader" onChange={this.uploadImgProfile} />
+                                </label>
+                                : <img src={Loading} width="200" height="200" alt="loading-gif" />}
+                            <br />
+                            <label>Full name:
                             <input type="text" value={user.fullName} onChange={this.handleChange}
-                                name="fullName" />
-                        </label>
-                        <br />
-                        <label>User name:
+                                    name="fullName" />
+                            </label>
+                            <br />
+                            <label>User name:
                             <input type="text" value={user.userName} onChange={this.handleChange}
-                                name="userName" />
-                        </label>
-                        <br />
-                        <button>Save</button>
-                    </form>
-                    <h3>Your Boards:</h3>
-                    {user.boardsMember && user.boardsMember.length ? <ul>
-                        {user.boardsMember.map((board, idx) => {
-                            return <li key={idx}>
-                                Board title: <Link to={`/treller/board/${board._id}`}>{board.title}</Link></li>
-                        })}
-                    </ul>
-                        : <p>You don't have any board yet.. <Link to="/treller">Add one!</Link></p>}
+                                    name="userName" />
+                            </label>
+                            <br />
+                            <button className="save-profile">Save</button>
+                        </form>
+                    </div>
                 </section>}
             </section>
         )

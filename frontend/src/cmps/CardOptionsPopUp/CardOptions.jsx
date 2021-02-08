@@ -51,23 +51,23 @@ export function CardOptions(props) {
                 <p className="headline-option">{props.type}</p>
                 <span>Colors</span>
                 <ul className="flex wrap justify-center">
-                    <li className="cover green" onClick={() => props.func('green')}></li>
-                    <li className="cover yellow" onClick={() => props.func('yellow')}></li>
-                    <li className="cover orange" onClick={() => props.func('orange')}></li>
-                    <li className="cover red" onClick={() => props.func('red')}></li>
-                    <li className="cover purple" onClick={() => props.func('purple')}></li>
-                    <li className="cover blue" onClick={() => props.func('blue')}></li>
-                    <li className="cover pink" onClick={() => props.func('pink')}></li>
+                    <li className="cover color green" onClick={() => props.func('green')}></li>
+                    <li className="cover color yellow" onClick={() => props.func('yellow')}></li>
+                    <li className="cover color orange" onClick={() => props.func('orange')}></li>
+                    <li className="cover color red" onClick={() => props.func('red')}></li>
+                    <li className="cover color purple" onClick={() => props.func('purple')}></li>
+                    <li className="cover color blue" onClick={() => props.func('blue')}></li>
+                    <li className="cover color pink" onClick={() => props.func('pink')}></li>
                 </ul>
                 <span>Pictures</span>
                 <ul className="flex wrap justify-center">
-                    <li className="cover pic1" onClick={() => props.func('pic1')}></li>
-                    <li className="cover pic2" onClick={() => props.func('pic2')}></li>
-                    <li className="cover pic3" onClick={() => props.func('pic3')}></li>
-                    <li className="cover pic4" onClick={() => props.func('pic4')}></li>
-                    <li className="cover pic5" onClick={() => props.func('pic5')}></li>
-                    <li className="cover pic6" onClick={() => props.func('pic6')}></li>
-                    <li className="cover pic7" onClick={() => props.func('pic7')}></li>
+                    <li className="cover pic pic1" onClick={() => props.func('pic1')}></li>
+                    <li className="cover pic pic2" onClick={() => props.func('pic2')}></li>
+                    <li className="cover pic pic3" onClick={() => props.func('pic3')}></li>
+                    <li className="cover pic pic4" onClick={() => props.func('pic4')}></li>
+                    <li className="cover pic pic5" onClick={() => props.func('pic5')}></li>
+                    <li className="cover pic pic6" onClick={() => props.func('pic6')}></li>
+                    <li className="cover pic pic7" onClick={() => props.func('pic7')}></li>
                 </ul>
                 <span>Add picture..</span>
             </div>}

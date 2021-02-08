@@ -10,10 +10,10 @@
         font-size: x-large;
         color: white;
     }
-    & .favorite-board{
+    & .favorite-board {
         cursor: pointer;
     }
-    
+
     & .board-header-icon {
         border: none;
         font-size: larger;
@@ -55,9 +55,6 @@
     & .menu-container {
         cursor: pointer;
         position: relative;
-        & .pop-up {
-            top: 35px;
-        }
         & .show-menu-icon {
             cursor: pointer;
             color: white;
@@ -100,6 +97,17 @@
                     background-color: rgb(137, 96, 158);
                 }
             }
+        }
+    }
+    & .add-from-template {
+        border: unset;
+        font-size: larger;
+        color: white;
+        height: 35px;
+        background-color: #172b4d;
+        cursor: pointer;
+        &:hover {
+            background-color: #14223b;
         }
     }
 }

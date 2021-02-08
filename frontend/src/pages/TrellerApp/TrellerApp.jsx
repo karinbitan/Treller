@@ -15,6 +15,7 @@ import { MainHeader } from '../../cmps/MainHeader/MainHeader';
 
 import './TrellerApp.scss';
 import { userService } from '../../services/userSercvice';
+import { boardService } from '../../services/boardService';
 
 class _TrellerApp extends Component {
 
@@ -30,6 +31,7 @@ class _TrellerApp extends Component {
 
         eventBus.on('newBoardAdded', async (boardId) => {
             await this.props.setBoard(boardId);
+            this.props.history.push(`/treller/board/${boardId}`);
         })
 
         socketService.setup();
@@ -75,11 +77,17 @@ class _TrellerApp extends Component {
         await this.props.setBoard(board._id);
     }
 
-    // onAddBoard = async () => {
-    //     const emptyBoard = boardService.getEmptyBoard();
-    //     const board = await this.props.addBoard(emptyBoard);
-    //     await this.props.setBoard(board._id);
-    // }
+    // Why it stop after add board? //
+    onAddBoard = async (boardToAdd = null) => {
+        if (!boardToAdd) {
+            boardToAdd = boardService.getEmptyBoard();
+        }
+        debugger
+        const board = await this.props.addBoard(boardToAdd);
+        await this.props.setBoard(board._id);
+        this.props.history.push(`/treller/board/${board._id}`);
+
+    }
 
     onAddMemberToBoard = async (member) => {
         let { boardToEdit } = this.state;
@@ -288,12 +296,13 @@ class _TrellerApp extends Component {
                         backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
                         backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
                     }}>
-                    {(board && user) && <MainHeader board={board} user={user} onAddBoard={this.onAddBoard} />}
+                    {(board && user) && <MainHeader board={board} user={user} />}
                     <BoardHeader onUpdateBoard={this.onUpdateBoard}
                         onFavoriteBoard={this.onFavoriteBoard}
                         board={board}
                         onChangeStyle={this.onChangeStyle}
                         onAddMemberToBoard={this.onAddMemberToBoard}
+                        onAddBoard={this.onAddBoard}
                     />
                     <section className="lists flex column">
                         <DragDropContext onDragEnd={this.onDragEnd}>

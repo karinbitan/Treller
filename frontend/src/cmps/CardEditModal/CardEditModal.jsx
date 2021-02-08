@@ -41,20 +41,22 @@ export class CardEditModal extends Component {
     render() {
         const { cardToEdit } = this.state;
         const { screenCard } = this.props;
+        console.log(screenCard)
         return (
             <section className="card-edit modal">
                 <button className="close-btn" onClick={this.onCloseEditModal}><i className="fas fa-times"></i></button>
                 <div className="card-edit modal-content"
-                    // style={{ top: screenCard.top - 99, left: screenCard.left - 214 }}
+                    style={{ top: screenCard.top - 99, left: screenCard.left - 214 }}
                     >
                     {cardToEdit && <form onSubmit={this.onUpdateCard}>
-                        <textarea name="title" value={cardToEdit.title} onChange={this.handleChange}></textarea>
+                        <textarea name="title" value={cardToEdit.title} onChange={this.handleChange}
+                        className="card-title-textarea"></textarea>
                         <button className="add-form-btn">Save card</button>
                     </form>}
-                    <div>
-                        <p>Cover</p>
-                        <p onClick={this.onCopyCard} className="modal-content txt">Copy card</p>
-                        <p onClick={this.onDeleteCard} className="modal-content txt">Delete card</p>
+                    <div className="card-edit-options">
+                        <p>Change Cover</p>
+                        <p onClick={this.onCopyCard}>Copy card</p>
+                        <p onClick={this.onDeleteCard}>Delete card</p>
                     </div>
                 </div>
             </section>

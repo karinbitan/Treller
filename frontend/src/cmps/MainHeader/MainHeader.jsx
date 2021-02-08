@@ -64,21 +64,18 @@ class _MainHeader extends Component {
 
     render() {
         const { user, board, isHomePage, isUserPage } = this.props;
-        const { isAvatarOptionsOpen, isBoardOptionOpen, isNotifOptionOpen, mainHeaderOptionsType } = this.state;
+        const { isAvatarOptionsOpen, isNotifOptionOpen, mainHeaderOptionsType } = this.state;
         return (
             <header style={{ backgroundColor: board ? 'rgba(0,0,0,.15)' : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
-                <section className="main-header flex align-center">
+                {user && <section className="main-header flex align-center">
                     {!isHomePage && <div className="menu-container flex align-center">
                         <button className="icon-container no-button">
-                            <NavLink to={`/user/${user._id}/boards`}><img className="icon" src={Home} alt="home" /></NavLink>
+                            <NavLink to="/"><img className="icon" src={Home} alt="home" /></NavLink>
                         </button>
                         <div>
-                            <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Boards')}>
-                                <img className="icon" src={Logo} alt="boards" />
+                            <button className="icon-container no-button">
+                                <Link to={`/user/${user._id}/boards`}><img className="icon" src={Logo} alt="boards" /></Link>
                             </button>
-                            {(isBoardOptionOpen && user) && <MainHeaderOptions
-                                type={mainHeaderOptionsType} boards={user.boardsMember}
-                                closePopUp={this.toggleMainHeaderOptions} />}
                         </div>
                         <Filter />
                     </div>}
@@ -97,14 +94,14 @@ class _MainHeader extends Component {
                                 type={mainHeaderOptionsType}
                                 boards={user.boardsMember}
                                 closePopUp={this.toggleMainHeaderOptions}
-                                onAddBoard={this.onAddBoard}
                             />}
                         </div>}
                         {user && <Avatar className="avatar-member" name={user.fullName} size="40" round={true} onClick={this.toggleAvatarOptions} />}
                         {(user && isAvatarOptionsOpen) && <div className="avatar-options">
-                            <p>Account</p>
+                            <h4 className="options-headline">Account</h4>
                             <ul>
                                 <li onClick={this.toggleAvatarOptions}><Link to={`/user/${user._id}`}>Profile</Link></li>
+                                <li><Link to={`user/${user._id}`}>Boards</Link></li>
                                 <li onClick={this.logout}><Link to="/">Log Out</Link></li>
                             </ul>
                         </div>}
@@ -114,7 +111,7 @@ class _MainHeader extends Component {
                             </button>
                         </div>}
                     </div>
-                </section>
+                </section>}
             </header>
         )
     }
