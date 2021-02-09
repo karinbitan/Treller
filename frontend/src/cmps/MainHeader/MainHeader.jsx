@@ -100,8 +100,8 @@ class _MainHeader extends Component {
                         {(user && isAvatarOptionsOpen) && <div className="avatar-options">
                             <h4 className="options-headline">Account</h4>
                             <ul>
+                                <li><Link to={`/user/${user._id}/boards`}>Boards</Link></li>
                                 <li onClick={this.toggleAvatarOptions}><Link to={`/user/${user._id}`}>Profile</Link></li>
-                                <li><Link to={`user/${user._id}`}>Boards</Link></li>
                                 <li onClick={this.logout}><Link to="/">Log Out</Link></li>
                             </ul>
                         </div>}

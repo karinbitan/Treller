@@ -1,10 +1,11 @@
 .home-page {
     background-color: white;
     min-height: 100vh;
+    background-color: rgba(32, 81, 167, 0.08);
     color: rgb(5, 97, 150);
-    & .home-page-container {
-        margin-top: 10px;
-    }
+    // & .home-page-container {
+    //     margin-top: 10px;
+    // }
     & p {
         align-self: flex-end;
         text-align: center;

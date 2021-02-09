@@ -8,7 +8,8 @@ module.exports = {
     deleteUser,
     updateUser,
     addUser,
-    addBoard
+    addBoard,
+    addMemberToBoard
 }
 
 async function query(filterBy = {}) {
@@ -27,8 +28,8 @@ async function query(filterBy = {}) {
 
 function _setFilter(filterBy) {
     const filter = [];
-     // TODO: Support lowercase
-     // TODO: Support search by all
+    // TODO: Support lowercase
+    // TODO: Support search by all
     if (filterBy.txt) {
         let textFields = []
         textFields.push({ "fullName": { $regex: `.*${filterBy.txt}.*` } });
@@ -123,12 +124,26 @@ async function addUser(user) {
     }
 }
 
+// BOARDS //
+
 async function addBoard(userId, boardId) {
     const collection = await dbService.getCollection('user');
     try {
         await collection.updateOne({ _id: ObjectId(userId) },
             { $push: { boardsMember: boardId, boardsOwner: boardId } });
         return user
+    } catch (err) {
+        console.log(`ERROR: cannot update user ${user._id}`)
+        throw err;
+    }
+}
+
+async function addMemberToBoard(boardId, member) {
+    const collection = await dbService.getCollection('user');
+    try {
+        const res = await collection.updateOne({ _id: member._id },
+             { $push: { boardsMember: { boardId } } });
+        return res;
     } catch (err) {
         console.log(`ERROR: cannot update user ${user._id}`)
         throw err;

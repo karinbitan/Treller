@@ -1,12 +1,13 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { setBoard, addBoard, updateBoard, addList, deleteList, favoriteBoard } from '../../store/actions/boardActions';
+import { setBoard, addBoard, updateBoard, addList, deleteList, updateBoardCollection, addMemberToBoard } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { deleteCard, updateCard } from '../../store/actions/cardActions';
 import { getUsers, updateUser } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService.js';
+import { boardService } from '../../services/boardService';
 
 import { ListPreview } from './../../cmps/ListPreview';
 import { AddList } from '../../cmps/AddList/AddList';
@@ -14,8 +15,6 @@ import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
 
 import './TrellerApp.scss';
-import { userService } from '../../services/userSercvice';
-import { boardService } from '../../services/boardService';
 
 class _TrellerApp extends Component {
 
@@ -29,7 +28,7 @@ class _TrellerApp extends Component {
         this.setState({ boardToEdit: this.props.board })
         await this.props.getLoggedInUser();
 
-        eventBus.on('newBoardAdded', async (boardId) => {
+        eventBus.on('onSetBoard', async (boardId) => {
             await this.props.setBoard(boardId);
             this.props.history.push(`/treller/board/${boardId}`);
         })
@@ -71,9 +70,9 @@ class _TrellerApp extends Component {
         await this.props.setBoard(boardToEdit._id);
     }
 
-    onFavoriteBoard = async (isStarred) => {
+    onFavoriteBoard = async (isFavorite) => {
         const { board } = this.props;
-        await this.props.favoriteBoard(board._id, isStarred);
+        await this.props.updateBoardCollection(board._id, { isFavorite });
         await this.props.setBoard(board._id);
     }
 
@@ -90,14 +89,9 @@ class _TrellerApp extends Component {
     }
 
     onAddMemberToBoard = async (member) => {
-        let { boardToEdit } = this.state;
-        let members = boardToEdit.members;
-        members.push({ _id: member._id, fullName: member.fullName });
-        boardToEdit.members = members;
-        await this.props.updateBoard(boardToEdit);
-        let user = await userService.getUserById(member._id);
-        user.boardsMember = boardToEdit._id;
-        await this.props.updateUser(user);
+        debugger
+        const { board } = this.props;
+        await this.props.addMemberToBoard(board, member);
     }
 
 
@@ -196,10 +190,8 @@ class _TrellerApp extends Component {
     getItemStyle = (isDragging, draggableStyle) => ({
         // some basic styles to make the items look a bit nicer
         userSelect: 'none',
-
         // change background colour if dragging
         background: isDragging ? '' : this.props.board.style.backgroundColor,
-
         // styles we need to apply on draggables
         ...draggableStyle,
     });
@@ -209,7 +201,6 @@ class _TrellerApp extends Component {
         if (!result.destination) {
             return;
         }
-
         // ??
         // if (result.destination.droppableId === result.source.droppableId &&
         //     result.destination.index === result.source.index) {
@@ -374,7 +365,8 @@ const mapDispatchToProps = {
     deleteList,
     deleteCard,
     updateCard,
-    favoriteBoard,
+    updateBoardCollection,
+    addMemberToBoard,
     getUsers,
     getLoggedInUser,
     updateUser

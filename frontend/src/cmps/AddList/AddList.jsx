@@ -39,8 +39,8 @@ export class AddList extends Component {
     render() {
         const { listToEdit, showingAddListForm } = this.state;
         return (
-            <section>
-                {!showingAddListForm ? <div className="add-container" onClick={this.toggleListForm}><i className="fas fa-plus"></i> Add another list</div>
+            <section className="add-container">
+                {!showingAddListForm ? <div className="add-btn" onClick={this.toggleListForm}><i className="fas fa-plus"></i> Add another list</div>
                     : <form onSubmit={this.onAddList} className="add-list-form">
                         <input type="text" className="add-form" name="title"
                             value={listToEdit.title} onChange={this.handleChangeList}

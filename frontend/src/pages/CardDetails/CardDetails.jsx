@@ -5,6 +5,7 @@ import {
     setCard, updateCard, updateCardCollection, deleteCard, addCard,
     addComment, deleteComment, addTodo, deleteTodo
 } from '../../store/actions/cardActions';
+import { getListById } from './../../store/actions/boardActions';
 import { eventBus } from '../../services/eventBusService';
 import Avatar from 'react-avatar';
 import { socketService } from '../../services/socketService';
@@ -22,7 +23,8 @@ export class _CardDetails extends Component {
         isCardOptionOpen: false,
         cardOptionType: '',
         cardOptionFunc: '',
-        isCardComplete: false
+        isCardComplete: false,
+        listIdx: null
     }
 
     async componentDidMount() {
@@ -30,6 +32,7 @@ export class _CardDetails extends Component {
         await this.props.setCard(cardId);
         await this.props.getLoggedInUser();
         this.setState({ cardToEdit: this.props.card });
+        this.getListIdx();
 
         socketService.setup();
         socketService.emit('register card', cardId);
@@ -49,6 +52,15 @@ export class _CardDetails extends Component {
         socketService.off('newCard');
         socketService.off('newBoard');
         socketService.terminate();
+    }
+
+    getListIdx = () => {
+        let {card, board} = this.props;
+        let listId = card.createdBy.listId;
+      const listIdx = board.lists.findIndex(list =>{
+            return list._id === listId;
+        })
+        this.setState({listIdx})
     }
 
     // CARD //
@@ -86,16 +98,17 @@ export class _CardDetails extends Component {
     }
 
     deleteCard = async () => {
-        const { cardId, board, listIdx } = this.props;
+        const { cardId, board } = this.props;
+        const {listIdx} = this.state;
         await this.props.deleteCard(board._id, listIdx, cardId);
         this.onCloseModal();
     }
 
     copyCard = async () => {
-        const { card, board, list, listIdx } = this.props;
-        await this.props.addCard(board._id, list._id, listIdx, card);
+        const { card, board} = this.props;
+        const {listIdx} = this.state;
+        await this.props.addCard(board._id, card.createdBy.listId, listIdx, card);
     }
-
 
     // DESCRIPTION //
     onUpdateDescription = async (description) => {
@@ -188,7 +201,8 @@ export class _CardDetails extends Component {
         let { cardToEdit } = this.state;
         cardToEdit.labels.push(label);
         this.setState(cardToEdit);
-        await this.props.updateCardCollection(cardToEdit._id, { label });
+        const labels = cardToEdit.labels;
+        await this.props.updateCardCollection(cardToEdit._id, { labels });
         await this.props.setCard(cardToEdit._id);
     }
 

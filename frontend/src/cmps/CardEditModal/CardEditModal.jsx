@@ -54,7 +54,6 @@ export class CardEditModal extends Component {
                         <button className="add-form-btn">Save card</button>
                     </form>}
                     <div className="card-edit-options">
-                        <p>Change Cover</p>
                         <p onClick={this.onCopyCard}>Copy card</p>
                         <p onClick={this.onDeleteCard}>Delete card</p>
                     </div>

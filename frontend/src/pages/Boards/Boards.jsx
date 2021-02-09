@@ -26,7 +26,7 @@ export class _Boards extends Component {
         debugger
         const boardToAdd = boardService.getEmptyBoard();
         const board = await this.props.addBoard(boardToAdd);
-        eventBus.emit('newBoardAdded', board._id);
+        eventBus.emit('onSetBoard', board._id);
         this.props.history.push(`/treller/board/${board._id}`);
     }
 

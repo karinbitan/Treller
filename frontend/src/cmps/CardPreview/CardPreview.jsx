@@ -14,7 +14,9 @@ export function CardPreview(props) {
     const [screenCard, setScreenCard] = useState({ top: null, left: null })
 
     // useEffect(() => {
-    //     console.log('something');
+    //     socketService.setup();
+    //     socketService.emit('register card', cardId);
+    //     socketService.on('newCard', (cardId) => this.setCard(cardId));
     // })
 
     const onDeleteCard = async () => {
@@ -39,7 +41,7 @@ export function CardPreview(props) {
         toggleEditModal(true)
     }
 
-    const { card, list, listIdx } = props;
+    const { card, list, listIdx, isSearch } = props;
     return (
         <section>
             {card.style.cover && <div className="cover-container">
@@ -51,8 +53,8 @@ export function CardPreview(props) {
                 onMouseLeave={() => toggleEditBtn(false)}
             >
                 {card.labels && <div className="flex">
-                    {card.labels.map(label => {
-                        return <div className={`label ${label.color}`} key={label.color}></div>
+                    {card.labels.map((label,idx) => {
+                        return <div className={`label ${label}`} key={idx}></div>
                     })}
                 </div>}
                 <Link to={{
@@ -67,13 +69,11 @@ export function CardPreview(props) {
                             )
                         })}
                     </div>}
-                <button className="edit-icon-btn"
+                {!isSearch && <button className="edit-icon-btn"
                     onClick={(ev) => openEditModal(ev)}
-                    style={{ display: isEditBtnShow ? 'block' : 'none' }}
-                //  ref={el => this.myBtnaRef = el} 
-                >
+                    style={{ display: isEditBtnShow ? 'block' : 'none' }}>
                     <i className="fas fa-pen edit-icon"></i>
-                </button>
+                </button>}
                 <div className="info-btn-container flex flex-start">
                     {card.description && <button className="info-btn" title="This card has description"><i className="fas fa-align-left"></i></button>}
                     {(card.comments && card.comments.length > 0) && <button className="info-btn" title="This card has comments"><i className="far fa-comment"></i></button>}

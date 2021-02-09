@@ -31,4 +31,17 @@
         left: 5px;
         z-index: 1;
     }
+    & .card-preview-search{
+        width: 150px;
+        margin-right: 5px;
+    }
+    & .card-name{
+        color: #172b4d;
+    }
+    & .list-board-name{
+        font-size: small;
+        margin: 0;
+        padding: 0;
+        color: #5e6c84;
+    }
 }

@@ -10,7 +10,8 @@ export const boardService = {
     addList,
     deleteList,
     getEmptyList,
-    favoriteBoard
+    addMemberToBoard,
+    updateBoardCollection
 }
 
 // BOARD //
@@ -34,8 +35,12 @@ function updateBoard(board) {
     return httpService.put(`board/${board._id}`, board);
 }
 
-function favoriteBoard(boardId, isStarred) {
-    return httpService.post(`board/${boardId}`, { isStarred })
+function updateBoardCollection(boardId, updatedObject) {
+    return httpService.patch(`board/${boardId}`, { updatedObject })
+}
+
+function addMemberToBoard(board, member) {
+    return httpService.post(`board/${board._id}`, { member })
 }
 
 function getEmptyBoard() {

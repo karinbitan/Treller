@@ -1,10 +1,12 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { getSearchResult } from './../../store/actions/searchActions';
+import { getBoardById } from './../../store/actions/boardActions';
 import { Link } from 'react-router-dom';
 import { CardPreview } from './../CardPreview/CardPreview';
 
 import './Filter.scss';
+import { eventBus } from '../../services/eventBusService';
 
 export class _Filter extends Component {
 
@@ -14,12 +16,9 @@ export class _Filter extends Component {
         },
         isFormOpen: false,
         searchResult: [],
-        isSearch: false
-    }
-
-    async componentDidMount() {
-        // await this.props.loadCards();
-        // console.log(this.props.cards)
+        isSearch: false,
+        listTitle: '',
+        boardTitle: ''
     }
 
     toggleForm = () => {
@@ -43,15 +42,26 @@ export class _Filter extends Component {
 
     setFilter = async (ev) => {
         ev.preventDefault();
-        const res = await this.props.getSearchResult(this.state.filterBy);
-        this.setState({ searchResult: res })
+        let results = await this.props.getSearchResult(this.state.filterBy);
+        this.setState({ searchResult: results })
         this.setState({ isSearch: true })
-        console.log(this.state.isSearch)
+        results.forEach(async (result) => {
+            let board = await this.props.getBoardById(result.createdBy.boardId);
+            let list = board.lists.find(list =>{
+               return list._id === result.createdBy.listId;
+            })
+            this.setState({ boardTitle: board.title })
+            this.setState({ listTitle: list.title })
+        })
     }
 
+    // onSetBoard = async(boardId)=>{
+    //     eventBus.emit('onSetBoard', boardId)
+    // }
+// How to set new board after click on card link //
+
     render() {
-        const { isFormOpen, searchResult, isSearch } = this.state;
-        // const { searchResult } = this.props;
+        const { isFormOpen, searchResult, isSearch, listTitle, boardTitle } = this.state;
         return (
             <section className="filter">
                 <form onSubmit={this.setFilter}>
@@ -67,14 +77,17 @@ export class _Filter extends Component {
                             {(searchResult && searchResult.length > 0) ? <ul>
                                 {searchResult.map(result => {
                                     return (
-                                        <li key={result._id}>
-                                            <div>
-                                                {/* <CardPreview card={result._id} /> */}
-                                                <Link to={`/treller/card/${result._id}`}>
-                                                    <h4>{result.title}</h4>
-                                                    <p>In List on Board</p>
-                                                </Link>
+                                        <li key={result._id} className="flex align-center">
+                                            <div className="card-preview-search">
+                                                <CardPreview card={result} isSearch={true} />
                                             </div>
+                                            <Link to={`/treller/card/${result._id}`}>
+                                                <h4 className="card-name">{result.title}</h4>
+                                                <p className="list-board-name">
+                                                    In <span className="bold">{listTitle} </span>
+                                                    On <span className="bold">{boardTitle}</span>
+                                                </p>
+                                            </Link>
                                         </li>
                                     )
                                 })}
@@ -93,6 +106,7 @@ function mapStateToProps(state) {
     }
 }
 const mapDispatchToProps = {
-    getSearchResult
+    getSearchResult,
+    getBoardById
 }
 export const Filter = connect(mapStateToProps, mapDispatchToProps)(_Filter)

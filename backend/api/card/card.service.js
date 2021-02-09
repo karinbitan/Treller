@@ -91,12 +91,12 @@ async function updateCard(card) {
     }
 }
 
-async function updateCardCollection(cardId, updateObject) {
+async function updateCardCollection(cardId, updatedObject) {
     const collection = await dbService.getCollection('card');
     const id = cardId;
     delete cardId
     try {
-        await collection.updateOne({ _id: ObjectId(id) }, { $set: updateObject });
+        await collection.updateOne({ _id: ObjectId(id) }, { $set: updatedObject });
         cardId = ObjectId(id);
         return updateObject;
     } catch (err) {

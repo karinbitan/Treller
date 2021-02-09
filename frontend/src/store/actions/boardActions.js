@@ -19,7 +19,7 @@ export function getBoardById(boardId) {
   return async dispatch => {
     try {
       const board = await boardService.getBoardById(boardId)
-      dispatch({ type: 'SET_BOARD', board })
+      return board;
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -72,13 +72,24 @@ export function updateBoard(board) {
   }
 }
 
-export function favoriteBoard(boardId, isStarred) {
+export function updateBoardCollection(board, updatedObject) {
   return async dispatch => {
     try {
-      await boardService.favoriteBoard(boardId, isStarred);
-      const board = boardService.getBoardById(boardId);
-      dispatch(_boardUpdate(board));
-      return board;
+      const savedBoard = await boardService.updateBoardCollection(board, updatedObject);
+      dispatch(_boardUpdate(savedBoard));
+      dispatch({ type: 'SET_BOARD', board: savedBoard })
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
+
+
+export function addMemberToBoard(board, member) {
+  return async dispatch => {
+    try {
+      const realBoard = await boardService.addMemberToBoard(board, member);
+      dispatch(_boardUpdate(realBoard));
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -109,7 +120,6 @@ export function deleteList(boardId, listId) {
     }
   }
 }
-
 
 function _boardUpdate(board) {
   socketService.emit('savedBoard', board._id);

@@ -2,51 +2,8 @@
     min-height: 100vh;
     overflow-y: auto;
     background-size: cover;
-    // &.blue {
-    //     background-color: rgb(0, 121, 191);
-    // }
-    // &.green {
-    //     background-color: rgb(81, 152, 57);
-    // }
-    // &.orange {
-    //     background-color: rgb(210, 144, 52);
-    // }
-    .add-container {
-        background-color: hsla(0, 0%, 100%, 0.3);
-        width: 200px;
-        padding: 10px;
-        margin-top: 5px;
-        cursor: pointer;
-        align-self: baseline;
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.171);
-        }
-    }
 
-    .add-list-form {
-        cursor: pointer;
-        background-color: #ebecf0;
-        margin-top: 5px;
-        width: 300px;
-        padding: 5px;
-    }
-
-    .lists {
+   & .lists {
         margin-left: 5px;
     }
 }
-
-// .green {
-//     background-color: rgb(81, 152, 57);
-//     background-color: rgb(55, 105, 39);
-// }
-
-// .blue {
-//     background-color: rgb(0, 121, 191);
-//     background-color: rgb(5, 97, 150);
-// }
-
-// .orange {
-//     background-color: rgb(210, 144, 52);
-//     background-color: rgb(156, 108, 40);
-// }

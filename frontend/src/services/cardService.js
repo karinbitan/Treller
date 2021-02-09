@@ -39,11 +39,12 @@ function addCard(boardId, listId, listIdx, card) {
 
 function updateCard(card) {
     socketService.emit('savedCard', card._id);
+    socketService.emit('savedBoard', card.createdBy.boardId);
     return httpService.put(`card/${card._id}`, card);
 }
 
-function updateCardCollection(cardId, updateObject) {
-    return httpService.patch(`card/${cardId}`, updateObject);
+function updateCardCollection(cardId, updatedObject) {
+    return httpService.patch(`card/${cardId}`, updatedObject);
 }
 
 function addComment(cardId, comment) {
@@ -55,7 +56,6 @@ function deleteComment(cardId, commentId) {
 }
 
 function addTodo(cardId, checklistIdx, todo) {
-    debugger
     return httpService.post(`card/${cardId}/${checklistIdx}/todos`, todo);
 }
 

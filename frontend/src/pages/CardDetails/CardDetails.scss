@@ -25,7 +25,6 @@
         -webkit-animation-duration: 0.4s;
         animation-name: animatetop;
         animation-duration: 0.4s;
-        // height: 90%;
         text-align: center;
         overflow-y: auto;
         & .icon {
@@ -65,9 +64,7 @@
         }
     }
 
-    /* The Close Button */
-
-   & .close-btn {
+    & .close-btn {
         font-size: 1rem;
         margin: 10px;
         font-family: quicksand;
@@ -144,7 +141,7 @@
         }
     }
 
-    .title-container {
+    & .title-container {
         margin: 12px 40px 8px 0;
         & .card-title-form {
             width: 100%;
@@ -169,7 +166,7 @@
             margin-left: 40px;
         }
     }
-    .main-container {
+    & .main-container {
         padding: 10px;
         margin-right: 30px;
         & .other-details {
@@ -249,11 +246,10 @@
                 margin: 8px 12px;
             }
         }
-    }
-}
-
-.side-container {
-    & h4 {
-        color: #5e6c84;
+        & .side-container {
+            & h4 {
+                color: #5e6c84;
+            }
+        }
     }
 }

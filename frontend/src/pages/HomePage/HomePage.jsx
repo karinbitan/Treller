@@ -24,7 +24,8 @@ export class _HomePage extends Component {
                         <span className="head-line">Treller helps your team achieve more.</span>
                         <br />
                         Organize, manage and connect with Treller! <br />
-                        <button><Link to="/login">Start now</Link></button>
+                        {!user ? <button><Link to="/login">Start now</Link></button>
+                            : <button><Link to={`/user/${user._id}/boards`}>Start now</Link></button>}
                     </p>
                     <img src={Banner} alt="banner" />
                 </div>

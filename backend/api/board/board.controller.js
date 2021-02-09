@@ -43,7 +43,7 @@ async function addBoard(req, res) {
             board.isTemplate = false;
             delete board._id;
         }
-        
+
         if (req.session.user) {
             board.createdBy = {
                 _id: req.session.user._id,
@@ -76,11 +76,25 @@ async function updateBoard(req, res) {
     }
 }
 
-async function favoriteBoard(req, res) {
+async function updateBoardCollection(req, res) {
     const boardId = req.params.id;
-    const { isStarred } = req.body;
+    const updatedObject = req.body;
     try {
-        await boardService.favoriteBoard(boardId, isStarred);
+        await boardService.updateBoardCollection(boardId, updatedObject);
+        const realBoard = await boardService.getBoardById(boardId)
+        res.send(realBoard);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+async function addMemberToBoard(req, res) {
+    const boardId = req.params.id;
+    let member = req.body;
+    member = { _id: member._id, fullName: member.fullName }
+    try {
+        await boardService.addMemberToBoard(boardId, member);
+        await userService.addMemberToBoard(boardId, member);
         const realBoard = await boardService.getBoardById(boardId)
         res.send(realBoard);
     } catch (err) {
@@ -121,7 +135,8 @@ module.exports = {
     deleteBoard,
     addBoard,
     updateBoard,
-    favoriteBoard,
+    updateBoardCollection,
+    addMemberToBoard,
     addList,
     deleteList
 }

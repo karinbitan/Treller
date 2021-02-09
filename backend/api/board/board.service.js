@@ -7,8 +7,9 @@ module.exports = {
     getBoardById,
     deleteBoard,
     updateBoard,
+    updateBoardCollection,
     addBoard,
-    favoriteBoard,
+    addMemberToBoard,
     addList,
     deleteList,
     addCard,
@@ -122,6 +123,17 @@ async function updateBoard(board) {
     }
 }
 
+async function updateBoardCollection(boardId, updatedObject) {
+    const collection = await dbService.getCollection('board');
+    try {
+        await collection.updateOne({ _id: ObjectId(boardId) }, { $set: updatedObject });
+        return updatedObject;
+    } catch (err) {
+        console.log(`ERROR: cannot update board ${boardId}`)
+        throw err;
+    }
+}
+
 async function addBoard(board) {
     const collection = await dbService.getCollection('board');
     try {
@@ -133,12 +145,13 @@ async function addBoard(board) {
     }
 }
 
-async function favoriteBoard(boardId, isStarred) {
+async function addMemberToBoard(boardId, member) {
     const collection = await dbService.getCollection('board');
+    const memberToAdd = { _id: member._id, fullName: member.fullName };
     try {
         const result = await collection.updateOne({ _id: ObjectId(boardId) },
-            { $set: { isFavorite: isStarred } });
-        return result.isStarred;
+            { $push: { members: memberToAdd } });
+        return result
     } catch (err) {
         console.log(`ERROR: cannot insert list`)
         throw err;
