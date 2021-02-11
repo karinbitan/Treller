@@ -1,4 +1,5 @@
 import { httpService } from './httpService';
+import { socketService } from './socketService';
 
 export const boardService = {
     query,
@@ -32,15 +33,17 @@ function addBoard(board) {
 }
 
 function updateBoard(board) {
+    socketService.emit('savedBoard', board._id);
     return httpService.put(`board/${board._id}`, board);
 }
 
-function updateBoardCollection(boardId, updatedObject) {
-    return httpService.patch(`board/${boardId}`, { updatedObject })
+function updateBoardCollection(board, updatedObject) {
+    socketService.emit('savedBoard', board._id); 
+    return httpService.patch(`board/${board._id}`, { updatedObject })
 }
 
 function addMemberToBoard(board, member) {
-    return httpService.post(`board/${board._id}`, { member })
+    return httpService.post(`board/${board._id}`, member)
 }
 
 function getEmptyBoard() {
@@ -64,9 +67,11 @@ function getEmptyBoard() {
 // LIST //
 
 function addList(boardId, list) {
+    socketService.emit('savedBoard', boardId); 
     return httpService.post(`board/${boardId}/list`, list);
 }
 function deleteList(boardId, listId) {
+    socketService.emit('savedBoard', boardId); 
     return httpService.delete(`board/${boardId}/list/${listId}`);
 }
 

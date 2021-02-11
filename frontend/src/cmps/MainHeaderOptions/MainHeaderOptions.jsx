@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { eventBus } from '../../services/eventBusService';
+import { socketService } from '../../services/socketService';
 import './MainHeaderOptions.scss';
 
 function _MainHeaderOptions(props) {
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
-        eventBus.on('notification', notification => {
-            setNotifications(notification)
-        })
+        socketService.on('getNotification', (msg => {
+            const msgs = [];
+            msgs.push(msg);
+            setNotifications(msgs);
+            console.log(msg, msgs)
+        }))
     });
 
     return (
@@ -17,15 +21,13 @@ function _MainHeaderOptions(props) {
             <button onClick={props.closePopUp} className="close-btn"><i className="fas fa-times"></i></button>
             <div>
                 <p>{props.type}</p>
-                <ul>
+                {notifications && <ul>
                     {notifications.map(notification => {
-                        if (notification) {
-                            return <li>
-                                <span><a href="#">{notification.title}</a></span>
-                            </li>
-                        }
+                        return <li>
+                            <span><a href="/">{notification.title}</a></span>
+                        </li>
                     })}
-                </ul>
+                </ul>}
             </div>
         </div>)
 }

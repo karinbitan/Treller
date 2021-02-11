@@ -98,7 +98,7 @@ async function updateCardCollection(cardId, updatedObject) {
     try {
         await collection.updateOne({ _id: ObjectId(id) }, { $set: updatedObject });
         cardId = ObjectId(id);
-        return updateObject;
+        return updatedObject;
     } catch (err) {
         console.log(`ERROR: cannot update card ${cardId}`)
         throw err;

@@ -52,16 +52,6 @@ class _MainHeader extends Component {
         this.setState({ isAvatarOptionsOpen: !this.state.isAvatarOptionsOpen })
     }
 
-    onAddBoard = async () => {
-        const emptyBoard = boardService.getEmptyBoard();
-        const board = await this.props.addBoard(emptyBoard);
-        eventBus.emit('newBoardAddes', board._id)
-    }
-
-    test = () => {
-        console.log('!')
-    }
-
     render() {
         const { user, board, isHomePage, isUserPage } = this.props;
         const { isAvatarOptionsOpen, isNotifOptionOpen, mainHeaderOptionsType } = this.state;
@@ -90,9 +80,8 @@ class _MainHeader extends Component {
                             <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Notifications')}>
                                 <img className="icon" src={Notification} alt="notifications" />
                             </button>
-                            {(isNotifOptionOpen && user) && <MainHeaderOptions
+                            {isNotifOptionOpen && <MainHeaderOptions
                                 type={mainHeaderOptionsType}
-                                boards={user.boardsMember}
                                 closePopUp={this.toggleMainHeaderOptions}
                             />}
                         </div>}

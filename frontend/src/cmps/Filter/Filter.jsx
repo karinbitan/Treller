@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { CardPreview } from './../CardPreview/CardPreview';
 
 import './Filter.scss';
-import { eventBus } from '../../services/eventBusService';
 
 export class _Filter extends Component {
 

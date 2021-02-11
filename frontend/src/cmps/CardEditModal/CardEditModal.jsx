@@ -1,65 +1,36 @@
-
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 
 import './CardEditModal.scss';
 
-export class CardEditModal extends Component {
+export function CardEditModal(props) {
+    const [cardTitle, changeCardTitle] = useState(props.cardTitle);
 
-    state = {
-        cardToEdit: null
-    }
+    useEffect(() => {
+        console.log(props)
+    })
 
-    componentDidMount = () => {
-        const cardToEdit = this.props.card;
-        this.setState({ cardToEdit })
-        console.log(this.props)
-    }
-
-    handleChange = ({ target }) => {
-        const field = target.name;
-        const value = target.value;
-        this.setState(prevState => ({ cardToEdit: { ...prevState.cardToEdit, [field]: value } }));
-    }
-
-    onCloseEditModal = () => {
-        this.props.onCloseEditModal()
-    }
-
-    onDeleteCard = () => {
-        this.props.onDeleteCard();
-    }
-
-    onCopyCard = () => {
-        this.props.onCopyCard();
-    }
-
-    onUpdateCard = (ev) => {
+    const onUpdateCardTitle = (ev) => {
         ev.preventDefault();
-        this.props.onUpdateCard(this.state.cardToEdit)
+        props.onUpdateCardTitle(cardTitle)
     }
 
-    render() {
-        const { cardToEdit } = this.state;
-        const { screenCard } = this.props;
-        console.log(screenCard)
-        return (
-            <section className="card-edit modal">
-                <button className="close-btn" onClick={this.onCloseEditModal}><i className="fas fa-times"></i></button>
-                <div className="card-edit modal-content"
-                    style={{ top: screenCard.top - 99, left: screenCard.left - 214 }}
-                    >
-                    {cardToEdit && <form onSubmit={this.onUpdateCard}>
-                        <textarea name="title" value={cardToEdit.title} onChange={this.handleChange}
+    return (
+        <section className="card-edit modal">
+            <button className="close-btn" onClick={() => props.onCloseEditModal}><i className="fas fa-times"></i></button>
+            <div className="card-edit modal-content"
+                style={{ top: props.screenCard.top - 99, left: props.screenCard.left - 214 }}
+            >
+                <form onSubmit={(ev) => onUpdateCardTitle(ev)}>
+                    <textarea name="title" value={cardTitle} onChange={(ev) => changeCardTitle(ev.target.value)}
                         className="card-title-textarea"></textarea>
-                        <button className="add-form-btn">Save card</button>
-                    </form>}
-                    <div className="card-edit-options">
-                        <p onClick={this.onCopyCard}>Copy card</p>
-                        <p onClick={this.onDeleteCard}>Delete card</p>
-                    </div>
+                    <button className="add-form-btn">Save card</button>
+                </form>
+                <div className="card-edit-options">
+                    <p onClick={() => props.onCopyCard}>Copy card</p>
+                    <p onClick={() => props.onDeleteCard}>Delete card</p>
                 </div>
-            </section>
-        )
-    }
+            </div>
+        </section>
+    )
 }
 

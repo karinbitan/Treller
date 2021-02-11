@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { utilService } from '../../services/utilService';
+// import { socketService } from '../../services/socketService';
 
 import Avatar from 'react-avatar';
 import { CardEditModal } from '../CardEditModal/CardEditModal';
@@ -13,11 +14,13 @@ export function CardPreview(props) {
     const [isEditBtnShow, toggleEditBtn] = useState(false);
     const [screenCard, setScreenCard] = useState({ top: null, left: null })
 
-    // useEffect(() => {
-    //     socketService.setup();
-    //     socketService.emit('register card', cardId);
-    //     socketService.on('newCard', (cardId) => this.setCard(cardId));
-    // })
+    useEffect(() => {
+        // const cardId = props.card._id;
+        // socketService.setup();
+        // socketService.emit('register card', cardId);
+        // socketService.on('newCard', (cardId) => this.setCard(cardId));
+        
+    })
 
     const onDeleteCard = async () => {
         const { board, listIdx, card } = this.props;
@@ -25,14 +28,14 @@ export function CardPreview(props) {
         toggleEditModal(false);
     }
 
-    const onUpdateCard = async (cardToEdit) => {
-        await props.onUpdateCard(cardToEdit);
-        toggleEditModal(false)
+    const onUpdateCardTitle = (cardTitle) => {
+        props.onUpdateCardTitle(props.card._id, cardTitle);
+        toggleEditModal(false);
     }
 
     const onCopyCard = async () => {
-        const { board, list, listIdx, card } = this.props;
-        this.props.addCard(board._id, list._id, listIdx, card);
+        const { board, card } = this.props;
+        this.props.addCard(board._id, card);
         toggleEditModal(false);
     }
 
@@ -41,7 +44,7 @@ export function CardPreview(props) {
         toggleEditModal(true)
     }
 
-    const { card, list, listIdx, isSearch } = props;
+    const { card, isSearch } = props;
     return (
         <section>
             {card.style.cover && <div className="cover-container">
@@ -53,7 +56,7 @@ export function CardPreview(props) {
                 onMouseLeave={() => toggleEditBtn(false)}
             >
                 {card.labels && <div className="flex">
-                    {card.labels.map((label,idx) => {
+                    {card.labels.map((label, idx) => {
                         return <div className={`label ${label}`} key={idx}></div>
                     })}
                 </div>}
@@ -86,8 +89,10 @@ export function CardPreview(props) {
                             <span className="due-status over-due">Over Due</span>}
                     </button>}
                 </div>
-                {isEditModalOpen && <CardEditModal card={card}
-                    onCloseEditModal={() => toggleEditModal(false)} onUpdateCard={onUpdateCard}
+                {isEditModalOpen && <CardEditModal
+                    cardTitle={card.title}
+                    onCloseEditModal={() => toggleEditModal(false)}
+                    onUpdateCardTitle={onUpdateCardTitle}
                     onDeleteCard={onDeleteCard}
                     onCopyCard={onCopyCard}
                     screenCard={screenCard} />}

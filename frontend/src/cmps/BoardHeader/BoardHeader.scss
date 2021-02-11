@@ -4,7 +4,6 @@
     margin-bottom: 10px;
     flex-wrap: wrap;
     & .board-name {
-        // padding: 10px 8px;
         border-radius: 3px;
         font-weight: bold;
         font-size: x-large;
@@ -20,6 +19,7 @@
         color: white;
         margin-right: 5px;
         height: 35px;
+        border-radius: 3px;
         background-color: hsla(0, 0%, 100%, 0.3);
         &:not:first-child {
             margin-left: 5px;

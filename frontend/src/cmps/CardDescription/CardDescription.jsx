@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './CardDescription.scss';
 
 export function CardDescription(props) {
@@ -6,13 +6,20 @@ export function CardDescription(props) {
     const [isDescriptionFormShow, toggleDescriptionForm] = useState(false)
     const [descriptionFormType, changeDescriptionForm] = useState('fake')
 
-    // useEffect(() => {
-    // })
-
     const updateDescription = (ev) => {
         ev.preventDefault();
         props.onUpdateDescription(description);
         setDescription(description);
+        toggleDescriptionForm(false);
+        changeDescriptionForm('fake');
+    }
+
+    const openDescriptionForm = () =>{
+        toggleDescriptionForm(true);
+        changeDescriptionForm('textarea');
+    }
+
+    const closeDescriptionForm = () =>{
         toggleDescriptionForm(false);
         changeDescriptionForm('fake');
     }
@@ -24,16 +31,14 @@ export function CardDescription(props) {
                 <h3>Description</h3>
                 {(description && !isDescriptionFormShow) &&
                     <button className="card-details-btn"
-                        onClick={() => toggleDescriptionForm(true),
-                            () => changeDescriptionForm('textarea')}>
+                        onClick={() => openDescriptionForm()}>
                         Edit
                         </button>}
             </div>
             <form className="description-form"
                 onSubmit={(ev) => updateDescription(ev)}>
                 <textarea
-                    onClick={() => toggleDescriptionForm(true),
-                        () => changeDescriptionForm('textarea')}
+                    onClick={() => openDescriptionForm()}
                     onBlur={() => toggleDescriptionForm(false)}
                     className={`description ${description ? 'value' : ''} ${descriptionFormType}`}
                     placeholder="Add more detailed description..."
@@ -46,7 +51,7 @@ export function CardDescription(props) {
                     <div className="btn flex justify-start">
                         <button className="add-form-btn">Save</button>
                         <button className="exit-btn"
-                            onClick={() => toggleDescriptionForm(false), () => changeDescriptionForm('fake')}>
+                            onClick={() => closeDescriptionForm(false)}>
                             <i className="fas fa-times"></i>
                         </button>
                     </div>}

@@ -94,16 +94,21 @@ export class ListPreview extends Component {
     }
 
     // CARD //
+    onAddCard = (card) => {
+        const { list, listIdx } = this.props;
+        this.props.onAddCard(list._id, listIdx, card)
+    }
+
     onDeleteCard = (cardId) => {
         this.props.onDeleteCard(this.props.listIdx, cardId);
     }
 
-    onUpdateCard = (card) => {
-        this.props.onUpdateCard(card);
+    onUpdateCardTitle = (cardId, cardTitle) => {
+        this.props.onUpdateCardTitle(cardId, cardTitle);
     }
 
     render() {
-        const { list, listIdx, board } = this.props;
+        const { list, listIdx } = this.props;
         const { provided, innerRef, isDraggingOver } = this.props;
         const { listToEdit, listActionOpen } = this.state;
         return (
@@ -115,17 +120,17 @@ export class ListPreview extends Component {
                 </form>}
                 <button onClick={this.toggleListOptionModel} className="list-menu-icon"><i className="fas fa-ellipsis-h"></i></button>
                 {listActionOpen && <div className="list-actions">
+                    <button className="close-btn" onClick={this.closeListOptionModel}><i className="fas fa-times"></i></button>
                     <p>List Actions</p>
                     <ul>
                         <li onClick={this.onDeleteList}>Delete List</li>
                     </ul>
-                    <button className="close-btn" onClick={this.closeListOptionModel}>X</button>
                 </div>}
-                {list.cards && <div className={"card-container" + (isDraggingOver ? " isDraggingOver" : "")}
+                {(list.cards && list.cards.length > 0) && <div className={"card-container" + (isDraggingOver ? " isDraggingOver" : "")}
                     {...provided.droppableProps}
                     ref={innerRef}>
                     {list.cards.map((card, idx) => {
-                        if (card) {
+                        if (card)
                             return (
                                 <Draggable draggableId={card._id} key={card._id} index={idx}>
                                     {(provided, snapshot) => (
@@ -142,18 +147,16 @@ export class ListPreview extends Component {
                                                 key={card._id}
                                                 list={list}
                                                 onDeleteCard={this.onDeleteCard}
-                                                onUpdateCard={this.onUpdateCard} />
+                                                onUpdateCardTitle={this.onUpdateCardTitle}
+                                                onAddCard={this.onAddCard} />
                                         </div>
                                     )}
                                 </Draggable>
                             )
-                        }
                     })}
                     {provided.placeholder}
                 </div>}
-
-                {/* <CardList list={list} cards={list.cards} idx={idx} key={list._id} /> */}
-                <AddCard boardId={board._id} listId={list._id} listIdx={listIdx} />
+                <AddCard onAddCard={this.onAddCard} />
             </section >
         )
     }

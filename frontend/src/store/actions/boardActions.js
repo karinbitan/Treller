@@ -1,5 +1,4 @@
 import { boardService } from '../../services/boardService';
-import { socketService } from '../../services/socketService';
 
 // Action Dispatcher
 
@@ -122,7 +121,6 @@ export function deleteList(boardId, listId) {
 }
 
 function _boardUpdate(board) {
-  socketService.emit('savedBoard', board._id);
   return {
     type: 'UPDATE_BOARD',
     board

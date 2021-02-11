@@ -14,31 +14,36 @@ export function CardChecklists(props) {
 
     const addTodo = (ev, checklistIdx) => {
         ev.preventDefault();
-        debugger
         props.onAddTodo(checklistIdx, todo);
+        setTodo({ title: '', isDone: false });
+        toggleAddTodoForm(false);
     }
 
-    const handleCheckChecklist = ({ target }, todo, idx) => {
-        const value = null;
-        // if (target.checked) {
-        //     value = true;
-        // } else {
-        //     value = false
-        // }
-        // setTodo(todo => ({...todo, [target.name]: value}));
-        // props.handleCheckChecklist(todo)
+    const deleteTodo = (checklistIdx, todo) => {
+        props.onDeleteTodo(checklistIdx, todo._id);;
+    }
+
+    const handleCheckChecklist = ({ target }, todo, checklistIdx, todoIdx) => {
+        if (target.checked) {
+            todo.isDone = true;
+        } else {
+            todo.isDone = false
+        }
+        props.onHandleCheckChecklist(todo, checklistIdx, todoIdx);
     }
 
 
-    // showTodoDeleteBtn = (ev, idx) => {
-    //     ev.stopPropagation();
-    //     this.setState({ isTodoDeleteBtnShow: true, currTodoIdx: idx })
-    // }
+    const showTodoDeleteBtn = (ev, idx) => {
+        ev.stopPropagation();
+        toggleDeleteBtn(true);
+        setCurrTodo(idx);
+    }
 
-    // hideTodoDeleteBtn = (ev, idx) => {
-    //     ev.stopPropagation();
-    //     this.setState({ isTodoDeleteBtnShow: false, currTodoIdx: idx })
-    // }
+    const hideTodoDeleteBtn = (ev, idx) => {
+        ev.stopPropagation();
+        toggleDeleteBtn(false);
+        setCurrTodo(idx);
+    }
 
 
     return (
@@ -54,19 +59,19 @@ export function CardChecklists(props) {
                                 <button className="card-details-btn">Delete</button>
                             </div>
                             {checklist.todos && checklist.todos.length > 0 && <ul>
-                                {checklist.todos.map((todo, idx) => {
-                                    return <li className="todo flex space-between" key={idx}
-                                        onMouseEnter={() => toggleDeleteBtn(true), () => setCurrTodo(idx)}
-                                        onMouseLeave={() => toggleDeleteBtn(false), () => setCurrTodo(idx)}>
-                                        <input type="checkbox" id={`todo${idx}`}
+                                {checklist.todos.map((todo, todoIdx) => {
+                                    return <li className="todo flex space-between" key={todoIdx}
+                                        onMouseEnter={(ev) => showTodoDeleteBtn(ev, todoIdx)}
+                                        onMouseLeave={(ev) => hideTodoDeleteBtn(ev, todoIdx)}>
+                                        <input type="checkbox" id={`todo${todoIdx}`}
                                             name="isDone"
-                                            onChange={ev => handleCheckChecklist(ev, todo, idx)}
+                                            onChange={ev => handleCheckChecklist(ev, todo, checklistIdx, todoIdx)}
                                             checked={todo.isDone} />
-                                        <label htmlFor={`todo${idx}`} style={{ textDecoration: todo.isDone ? 'line-through' : 'none' }}>
+                                        <label htmlFor={`todo${todoIdx}`} style={{ textDecoration: todo.isDone ? 'line-through' : 'none' }}>
                                             {todo.title}
                                         </label>
-                                        <button onClick={() => this.deleteTodo(idx)} className="delete-todo"
-                                            style={{ display: isDeleteBtnShow && currTodoIdx === idx ? 'block' : 'none' }}>
+                                        <button onClick={() => deleteTodo(checklistIdx, todo)} className="delete-todo"
+                                            style={{ display: isDeleteBtnShow && currTodoIdx === todoIdx ? 'block' : 'none' }}>
                                             <i className="fas fa-trash"></i>
                                         </button>
                                     </li>
@@ -78,7 +83,7 @@ export function CardChecklists(props) {
                                         onChange={ev => setTodo({ ...todo, [ev.target.name]: ev.target.value })}></textarea>
                                     <div className="flex">
                                         <button className="add-form-btn">Add</button>
-                                        <button className="exit-btn">
+                                        <button className="exit-btn" type="button" onClick={() => toggleAddTodoForm(false)}>
                                             <i className="fas fa-times"></i>
                                         </button>
                                     </div>

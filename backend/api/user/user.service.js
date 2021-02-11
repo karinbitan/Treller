@@ -141,8 +141,8 @@ async function addBoard(userId, boardId) {
 async function addMemberToBoard(boardId, member) {
     const collection = await dbService.getCollection('user');
     try {
-        const res = await collection.updateOne({ _id: member._id },
-             { $push: { boardsMember: { boardId } } });
+        const res = await collection.updateOne({ _id: ObjectId(member._id) },
+            { $push: { boardsMember: ObjectId(boardId) } });
         return res;
     } catch (err) {
         console.log(`ERROR: cannot update user ${user._id}`)

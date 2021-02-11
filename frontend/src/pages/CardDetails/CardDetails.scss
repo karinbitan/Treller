@@ -97,6 +97,8 @@
 
     & .cover {
         height: 200px;
+        background-position: center;
+        background-size: cover;
         &.green {
             background-color: #7bc86c;
         }
@@ -120,6 +122,7 @@
         }
         &.pic1 {
             background-image: url("../../assets/covers/1.jpg");
+           
         }
         &.pic2 {
             background-image: url("../../assets/covers/2.jpg");

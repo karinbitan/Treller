@@ -1,6 +1,8 @@
 .main-header {
     margin-left: 5px;
     margin-right: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     flex-wrap: wrap;
     & .logo {
         width: 100px;
@@ -25,6 +27,7 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        border-radius: 3px;
         position: relative;
         & :not:first-child {
             margin-left: 5px;
@@ -68,7 +71,7 @@
             & li {
                 cursor: pointer;
                 padding: 5px;
-                & a{
+                & a {
                     color: #172b4d;
                 }
                 &:hover {

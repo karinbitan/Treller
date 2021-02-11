@@ -6,6 +6,9 @@ function connectSockets(io) {
         socket.on('savedBoard', (boardId) => {
             io.to(boardId).emit('newBoard', boardId)
         })
+        socket.on('getNotification', (msg) => {
+            io.to(boardId).emit('sendNotification', msg)
+        })
         socket.on('register board', boardId => {
             socket.join(boardId)
         })

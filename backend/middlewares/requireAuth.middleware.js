@@ -7,26 +7,19 @@ async function requireAuth(req, res, next) {
   }
   next();
 }
-
-async function requireOwner(req, res, next) {
+async function requireBoardOwner(req, res, next) {
   const user = req.session.user;
-  if (user.userType !== 'owner') {
-    res.status(403).end('Only owner is authorized!');
+  const boardId = req.session.board._id;
+  if (!user.boardsMember.some(board => {
+    return board._id === boardId;
+  })) {
+    res.status(403).end('Unauthorized Enough..');
     return;
   }
   next();
 }
 
-// async function requireAdmin(req, res, next) {
-//   const user = req.session.user;
-//   if (!user.isAdmin) {
-//     res.status(403).end('Unauthorized Enough..');
-//     return;
-//   }
-//   next();
-// }
-
-// async function requireMember(req, res, next) {
+// async function requireUser(req, res, next) {
 //   const user = req.session.user;
 //   if (!user.isAdmin) {
 //     res.status(403).end('Unauthorized Enough..');
@@ -40,6 +33,5 @@ async function requireOwner(req, res, next) {
 
 module.exports = {
   requireAuth,
-  // requireAdmin,
-  requireOwner
+  requireBoardOwner
 }

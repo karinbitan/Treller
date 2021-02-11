@@ -94,6 +94,7 @@
     }
     & .picture {
         height: 150px;
+        background-size: cover;
         &.pic1 {
             background-image: url("../../assets/covers/1.jpg");
         }

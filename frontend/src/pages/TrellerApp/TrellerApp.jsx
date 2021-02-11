@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { setBoard, addBoard, updateBoard, addList, deleteList, updateBoardCollection, addMemberToBoard } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { deleteCard, updateCard } from '../../store/actions/cardActions';
+import { addCard, deleteCard, updateCard } from '../../store/actions/cardActions';
 import { getUsers, updateUser } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
@@ -32,10 +32,11 @@ class _TrellerApp extends Component {
             await this.props.setBoard(boardId);
             this.props.history.push(`/treller/board/${boardId}`);
         })
-
         socketService.setup();
         socketService.emit('register board', boardId);
         socketService.on('newBoard', (boardId) => this.setBoard(boardId));
+
+        console.log(this.props.board)
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -52,7 +53,6 @@ class _TrellerApp extends Component {
     }
 
     setBoard = async (boardId) => {
-        console.log(boardId);
         await this.props.setBoard(boardId);
         this.setState({ boardToEdit: this.props.board })
     }
@@ -72,7 +72,7 @@ class _TrellerApp extends Component {
 
     onFavoriteBoard = async (isFavorite) => {
         const { board } = this.props;
-        await this.props.updateBoardCollection(board._id, { isFavorite });
+        await this.props.updateBoardCollection(board, { isFavorite });
         await this.props.setBoard(board._id);
     }
 
@@ -100,16 +100,13 @@ class _TrellerApp extends Component {
         const { board } = this.props;
         await this.props.addList(board._id, list);
         await this.props.setBoard(board._id);
-        // eventBus.emit('notification', {
-        //     title: 'List added',
-        // })
     }
 
-    onCopyList = async (list) => {
-        const { board } = this.props;
-        await this.props.addList(board._id, list);
-        await this.props.setBoard(board._id);
-    }
+    // onCopyList = async (list) => {
+    //     const { board } = this.props;
+    //     await this.props.addList(board._id, list);
+    //     await this.props.setBoard(board._id);
+    // }
 
     onUpdateList = async (savedList) => {
         const { board } = this.props;
@@ -141,21 +138,27 @@ class _TrellerApp extends Component {
     }
 
     // CARD //
+    onAddCard = async (listId, listIdx, card) => {
+        debugger
+        const { board } = this.props;
+        await this.props.addCard(board._id, listId, listIdx, card);
+        await this.props.setBoard(board._id);
+
+        const msg = '!!!'
+        socketService.emit('sendNotification', msg)
+    }
+
     onDeleteCard = async (listIdx, cardId) => {
         const { board } = this.props;
         await this.props.deleteCard(board._id, listIdx, cardId);
         await this.props.setBoard(board._id);
     }
 
-    onUpdateCard = async (card) => {
+    onUpdateCardTitle = async (cardId, cardTitle) => {
         const { board } = this.props;
-        await this.props.updateCard(card);
+        const title = { cardTitle }
+        await this.props.updateCardCollection(cardId, { title });
         await this.props.setBoard(board._id)
-        eventBus.emit('notification', {
-            title: 'Card updated',
-            card: card,
-            by: this.props.user
-        })
     }
 
     // DRAG AND DROP //
@@ -183,8 +186,7 @@ class _TrellerApp extends Component {
 
     //
     getListStyle = isDraggingOver => ({
-        background: isDraggingOver ? 'rgba(0,0,0,.15)' : this.props.board.style.backgroundColor,
-        // display: 'flex',
+        background: isDraggingOver ? 'rgba(0,0,0,.15)' : this.props.board.style.backgroundColor
     });
 
     getItemStyle = (isDragging, draggableStyle) => ({
@@ -201,11 +203,6 @@ class _TrellerApp extends Component {
         if (!result.destination) {
             return;
         }
-        // ??
-        // if (result.destination.droppableId === result.source.droppableId &&
-        //     result.destination.index === result.source.index) {
-        //     return;
-        // };
         const { boardToEdit } = this.state;
         if (result.type === 'list') {
             const lists = this.reorder(
@@ -328,7 +325,8 @@ class _TrellerApp extends Component {
                                                                             onDeleteList={this.onDeleteList}
                                                                             onUpdateList={this.onUpdateList}
                                                                             onDeleteCard={this.onDeleteCard}
-                                                                            onUpdateCard={this.onUpdateCard} />
+                                                                            onUpdateCard={this.onUpdateCard}
+                                                                            onAddCard={this.onAddCard} />
                                                                     </div>
                                                                 )}
                                                             </Droppable>
@@ -363,6 +361,7 @@ const mapDispatchToProps = {
     updateBoard,
     addList,
     deleteList,
+    addCard,
     deleteCard,
     updateCard,
     updateBoardCollection,

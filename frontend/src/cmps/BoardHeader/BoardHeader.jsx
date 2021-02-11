@@ -84,8 +84,7 @@ export class BoardHeader extends Component {
     }
 
     render() {
-        //debugger;
-        const { board, isTemplate } = this.props;
+        const { board } = this.props;
         const { boardToEdit, isStarred, isMenuOpen, isStyleMenuOpen } = this.state;
         return (
             <section>
@@ -133,7 +132,7 @@ export class BoardHeader extends Component {
                                 </div>}
                         </div>}
                     </div>
-                   {isTemplate &&  <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
+                   {board.isTemplate &&  <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
                         Create Board From Template
                         </button>}
                 </section>}

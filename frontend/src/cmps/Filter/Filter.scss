@@ -5,11 +5,13 @@
         background-color: unset;
         color: #42526e;
     }
-   & .search-input {
+    & .search-input {
         background-color: hsla(0, 0%, 100%, 0.3);
         border: none;
         margin-left: 5px;
-        height: 30px;
+        height: 35px;
+        border-bottom-left-radius: 3px;
+        border-top-left-radius: 3px;
         &:focus {
             background-color: white;
         }
@@ -19,8 +21,10 @@
         padding: 7px;
         color: white;
         background: rgba(255, 255, 255, 0.3);
-        height: 30px;
+        height: 35px;
         border: unset;
+        border-bottom-right-radius: 3px;
+        border-top-right-radius: 3px;
     }
 
     & .search-tab {
@@ -31,14 +35,14 @@
         left: 5px;
         z-index: 1;
     }
-    & .card-preview-search{
+    & .card-preview-search {
         width: 150px;
         margin-right: 5px;
     }
-    & .card-name{
+    & .card-name {
         color: #172b4d;
     }
-    & .list-board-name{
+    & .list-board-name {
         font-size: small;
         margin: 0;
         padding: 0;

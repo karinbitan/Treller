@@ -3,10 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
-  useHistory,
   useLocation,
-  useParams
 } from "react-router-dom";
 
 import { HomePage } from './pages/HomePage';
@@ -17,8 +14,6 @@ import { Login } from './pages/Login';
 import { Boards } from './pages/Boards/Boards';
 
 import './App.scss';
-import { _CardDetails } from "./pages/CardDetails/CardDetails";
-
 
 export default function ModalGalleryExample() {
   return (

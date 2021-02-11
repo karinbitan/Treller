@@ -14,6 +14,11 @@ class _InviteMembers extends Component {
         searchResult: []
     }
 
+    componentWillUnmount() {
+        const emptyFilter = { txt: '' }
+        this.setState({ filter: emptyFilter })
+    }
+
     toggleInviteMenu = () => {
         this.setState({ isInviteMenuOpen: !this.state.isInviteMenuOpen })
     }
@@ -22,14 +27,13 @@ class _InviteMembers extends Component {
         const field = target.name;
         const value = target.value;
         this.setState(prevState => ({ filter: { ...prevState.filter, [field]: value } }), () => {
-            this.filterUsers(this.state.filter);
+            this.filterUsers(this.state.filter)
         });
-        const emptyFilter = { txt: '' }
-        this.setState({ filter: emptyFilter })
     }
 
     filterUsers = async (filter) => {
         const res = await this.props.getUsers(filter);
+        console.log(res)
         this.setState({ searchResult: res })
     }
 
