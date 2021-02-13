@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService';
 import './MainHeaderOptions.scss';
 
