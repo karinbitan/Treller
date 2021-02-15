@@ -55,11 +55,24 @@ async function updateUserCollection(req, res) {
     }
 }
 
+async function addUserNotification(req, res) {
+    const userId = req.params.id;
+    const notification = req.body;
+    try {
+        await userService.addUserNotification(userId, notification);
+        const realUser = await userService.getUserById(userId);
+        res.send(realUser);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
 
 module.exports = {
     getUserById,
     getUsers,
     deleteUser,
     updateUser,
-    updateUserCollection
+    updateUserCollection,
+    addUserNotification
 }

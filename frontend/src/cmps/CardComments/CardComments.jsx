@@ -20,7 +20,7 @@ export function CardComments(props) {
             <div className="headline flex align-center">
                 <i className="fas fa-comments icon"></i><h3>  Comments</h3>
             </div>
-            <div className="comment-form-container">
+            <div className="comment-form-container flex">
                 {user && <Avatar className="avatar-comment" name={user.fullName} size="35" round={true} />}
                 <form onFocus={() => toggleCommentOption(true)}
                     className="comment-form flex wrap" onSubmit={(ev) => onAddComment(ev)}>
@@ -45,8 +45,6 @@ export function CardComments(props) {
                             <p>{comment.txt}</p>
                         </div>
                         <div className="comment-actions">
-                            <span>Edit</span>
-                            -
                             <span onClick={() => props.onDeleteComment(comment._id)}>Delete</span>
                         </div>
                     </div>

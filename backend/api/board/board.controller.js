@@ -1,7 +1,7 @@
 const boardService = require('./board.service');
 const userService = require('./../user/user.service');
 const utilService = require('./../../services/util.service');
-const {socketConnection} = require('./../../server');
+const { socketConnection } = require('./../../server');
 
 // BOARD CRUD //
 
@@ -18,7 +18,7 @@ async function getBoards(req, res) {
 async function getBoard(req, res) {
     try {
         const board = await boardService.getBoardById(req.params.id);
-        req.session.board;
+        req.session.board = board;
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -69,7 +69,7 @@ async function updateBoard(req, res) {
     try {
         await boardService.updateBoard(board);
         const realBoard = await boardService.getBoardById(board._id);
-        socketConnection.to(boardId).emit('updatedBoard', boardId);
+        socketConnection.to(board._id).emit('updatedBoard', board._id);
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -98,6 +98,8 @@ async function addMemberToBoard(req, res) {
         await boardService.addMemberToBoard(boardId, member);
         await userService.addMemberToBoard(boardId, member);
         const realBoard = await boardService.getBoardById(boardId);
+        socketConnection.to(member._id).emit('newUserNotification',
+        { message: `You were added to board: ${realBoard.title}`, id: boardId })
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -105,11 +107,11 @@ async function addMemberToBoard(req, res) {
     }
 }
 
-async function addNotification(req, res) {
+async function addBoardNotification(req, res) {
     const boardId = req.params.id;
     const notification = req.body;
     try {
-        await boardService.addNotification(boardId, notification);
+        await boardService.addBoardNotification(boardId, notification);
         const realBoard = await boardService.getBoardById(boardId);
         res.send(realBoard);
     } catch (err) {
@@ -170,5 +172,5 @@ module.exports = {
     addList,
     deleteList,
     deleteCard,
-    addNotification
+    addBoardNotification
 }

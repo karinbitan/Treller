@@ -30,7 +30,7 @@ export function CardPreview(props) {
 
     const copyCard = async () => {
         const { card } = props;
-        props.addCard(card);
+        props.copyCard(card);
         toggleEditModal(false);
     }
 
@@ -59,30 +59,32 @@ export function CardPreview(props) {
                     pathname: `/treller/card/${card._id}`,
                     state: { background: location }
                 }}>{card.title}</Link>
-                {card.members &&
-                    <div className="members flex flex-end">
-                        {card.members.map(member => {
-                            return (
-                                <Avatar name={member.fullName} round={true} size={25} key={member._id} />
-                            )
-                        })}
-                    </div>}
                 {!isSearch && <button className="edit-icon-btn"
                     onClick={(ev) => openEditModal(ev)}
                     style={{ display: isEditBtnShow ? 'block' : 'none' }}>
                     <i className="fas fa-pen edit-icon"></i>
                 </button>}
-                <div className="info-btn-container flex flex-start">
-                    {card.description && <button className="info-btn" title="This card has description"><i className="fas fa-align-left"></i></button>}
-                    {(card.comments && card.comments.length > 0) && <button className="info-btn" title="This card has comments"><i className="far fa-comment"></i></button>}
-                    {(card.checklists && card.checklists.length > 0) && <button className="info-btn" title="This card has checklist"><i className="fas fa-tasks"></i></button>}
-                    {card.dueDate && <button className="info-btn due-date">
-                        <i className="far fa-clock"></i>
-                        {` ${utilService.convertToMonthString(card.dueDate)}  ${new Date(card.dueDate).getDate()}`}
-                        {card.isCardComplete && <span className="due-status complete">Complete</span>}
-                        {new Date() > new Date(card.dueDate) &&
-                            <span className="due-status over-due">Over Due</span>}
-                    </button>}
+                <div className="info-btn-container flex space-between">
+                    <div>
+                        {card.description && <button className="info-btn" title="This card has description"><i className="fas fa-align-left"></i></button>}
+                        {(card.comments && card.comments.length > 0) && <button className="info-btn" title="This card has comments"><i className="far fa-comment"></i></button>}
+                        {(card.checklists && card.checklists.length > 0) && <button className="info-btn" title="This card has checklist"><i className="fas fa-tasks"></i></button>}
+                        {card.dueDate && <button className="info-btn due-date">
+                            <i className="far fa-clock"></i>
+                            {` ${utilService.convertToMonthString(card.dueDate)}  ${new Date(card.dueDate).getDate()}`}
+                            {card.isCardComplete && <span className="due-status complete">Complete</span>}
+                            {new Date() > new Date(card.dueDate) &&
+                                <span className="due-status over-due">Over Due</span>}
+                        </button>}
+                    </div>
+                    {card.members &&
+                        <div className="members flex flex-end">
+                            {card.members.map(member => {
+                                return (
+                                    <Avatar name={member.fullName} round={true} size={25} key={member._id} />
+                                )
+                            })}
+                        </div>}
                 </div>
                 {isEditModalOpen && <CardEditModal
                     cardTitle={card.title}

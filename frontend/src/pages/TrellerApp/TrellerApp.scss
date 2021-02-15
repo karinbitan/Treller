@@ -1,9 +1,12 @@
+.background {
+    background-size: cover;
+}
+
 .treller-app {
     min-height: 84vh;
     overflow-x: auto;
-    background-size: cover;
 
-   & .lists {
+    & .lists {
         margin-left: 5px;
     }
 }

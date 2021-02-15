@@ -4,7 +4,8 @@ export const userService = {
     getUserById,
     updateUser,
     getEmptyUser,
-    updateUserCollection
+    updateUserCollection,
+    addUserNotification
 }
 
 function query(filter = null) {
@@ -28,6 +29,10 @@ function updateUserCollection(user, updatedObject) {
     return httpService.patch(`user/${user._id}`, updatedObject);
 }
 
+function addUserNotification(userId, notification) {
+    return httpService.post(`user/${userId}/notification`, notification);
+}
+
 function getEmptyUser() {
     const user = {
         fullName: '',
@@ -37,7 +42,8 @@ function getEmptyUser() {
         boardOwner: [],
         boardMember: [],
         cardMember : [],
-        favoriteBoards: []
+        favoriteBoards: [],
+        notifications: []
     }
     return user;
 }

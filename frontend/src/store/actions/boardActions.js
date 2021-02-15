@@ -36,10 +36,10 @@ export function setBoard(boardId) {
   }
 }
 
-export function removeBoard(boardId) {
+export function deleteBoard(boardId) {
   return async dispatch => {
     try {
-      await boardService.removeBoard(boardId);
+      await boardService.deleteBoard(boardId);
       dispatch({ type: 'REMOVE_BOARD', boardId })
     } catch (err) {
       console.log('ERROR!', err);
@@ -71,10 +71,10 @@ export function updateBoard(board) {
   }
 }
 
-export function updateBoardCollection(board, updatedObject) {
+export function updateBoardCollection(boardId, updatedObject) {
   return async dispatch => {
     try {
-      const savedBoard = await boardService.updateBoardCollection(board, updatedObject);
+      const savedBoard = await boardService.updateBoardCollection(boardId, updatedObject);
       dispatch(_boardUpdate(savedBoard));
       dispatch({ type: 'SET_BOARD', board: savedBoard })
     } catch (err) {
@@ -84,10 +84,10 @@ export function updateBoardCollection(board, updatedObject) {
 }
 
 
-export function addMemberToBoard(board, member) {
+export function addMemberToBoard(boardId, member) {
   return async dispatch => {
     try {
-      const realBoard = await boardService.addMemberToBoard(board, member);
+      const realBoard = await boardService.addMemberToBoard(boardId, member);
       dispatch(_boardUpdate(realBoard));
     } catch (err) {
       console.log('ERROR!', err);
@@ -95,10 +95,10 @@ export function addMemberToBoard(board, member) {
   }
 }
 
-export function addNotification(boardId, notification) {
+export function addBoardNotification(boardId, notification) {
   return async dispatch => {
     try {
-      const result = await boardService.addNotification(boardId, notification);
+      await boardService.addBoardNotification(boardId, notification);
       // dispatch({ type: 'ADD_NOTIFICIATIONS', notification });
     } catch (err) {
       console.log(err);

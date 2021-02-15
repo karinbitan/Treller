@@ -9,10 +9,11 @@ async function requireAuth(req, res, next) {
 }
 async function requireBoardOwner(req, res, next) {
   const user = req.session.user;
-  const boardId = req.session.board._id;
-  if (!user.boardsMember.some(board => {
-    return board._id === boardId;
-  })) {
+  const id = req.session.board._id;
+  const isAdmin = user.boardsOwner.some(boardId => {
+    return boardId === id;
+  });
+  if (!isAdmin) {
     res.status(403).end('Unauthorized Enough..');
     return;
   }

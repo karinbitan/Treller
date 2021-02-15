@@ -10,7 +10,8 @@ module.exports = {
     updateUserCollection,
     addUser,
     addBoard,
-    addMemberToBoard
+    addMemberToBoard,
+    addUserNotification
 }
 
 async function query(filterBy = {}) {
@@ -136,6 +137,19 @@ async function addUser(user) {
     }
 }
 
+async function addUserNotification(userId, notification) {
+    const collection = await dbService.getCollection('user');
+    try {
+        await collection.updateOne({ _id: ObjectId(userId) },
+            { $push: { notifications: notification } });
+        return notification;
+    } catch (err) {
+        console.log(`ERROR: cannot insert card`)
+        throw err;
+    }
+}
+
+
 // BOARDS //
 
 async function addBoard(userId, boardId) {
@@ -143,7 +157,7 @@ async function addBoard(userId, boardId) {
     try {
         await collection.updateOne({ _id: ObjectId(userId) },
             { $push: { boardsMember: boardId, boardsOwner: boardId } });
-        return user
+        return boardId
     } catch (err) {
         console.log(`ERROR: cannot update user ${user._id}`)
         throw err;
@@ -161,5 +175,3 @@ async function addMemberToBoard(boardId, member) {
         throw err;
     }
 }
-
-

@@ -33,3 +33,14 @@ export function setUser(userId) {
       }
     }
   }
+
+  export function addUserNotification(userId, notification) {
+    return async dispatch => {
+      try {
+        await userService.addUserNotification(userId, notification);
+        // dispatch({ type: 'ADD_NOTIFICIATIONS', notification });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }

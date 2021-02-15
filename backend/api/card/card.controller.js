@@ -52,7 +52,8 @@ async function addCard(req, res) {
         await boardService.addCard(boardId, listIdx, realCard);
         socketConnection.to(boardId).emit('updatedBoard', boardId);
         socketConnection.to(card._id).emit('updatedCard', card._id);
-        socketConnection.to(boardId).emit('newNotification', { message: `Card ${card.title} was added by ${user}`, cardId: card._id })
+        socketConnection.to(boardId).emit('newNotification',
+         { message: `Card ${card.title} was added by ${user}`, id: card._id })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -109,7 +110,8 @@ async function addComment(req, res) {
     try {
         const card = await cardService.addComment(cardId, comment);
         socketConnection.to(cardId).emit('updatedCard', cardId);
-        socketConnection.to(boardId).emit('newNotification', { message: 'Comment added', cardId: card })
+        socketConnection.to(boardId).emit('newNotification',
+         { message: 'Comment added', id: card })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)

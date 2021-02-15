@@ -3,7 +3,7 @@ import { httpService } from './httpService';
 export const boardService = {
     query,
     getBoardById,
-    removeBoard,
+    deleteBoard,
     addBoard,
     updateBoard,
     getEmptyBoard,
@@ -13,7 +13,7 @@ export const boardService = {
     addMemberToBoard,
     updateBoardCollection,
     deleteCard,
-    addNotification
+    addBoardNotification
 }
 
 // BOARD //
@@ -25,7 +25,7 @@ function getBoardById(boardId) {
     return httpService.get(`board/${boardId}`);
 }
 
-function removeBoard(boardId) {
+function deleteBoard(boardId) {
     return httpService.delete(`board/${boardId}`);
 }
 
@@ -37,15 +37,15 @@ function updateBoard(board) {
     return httpService.put(`board/${board._id}`, board);
 }
 
-function updateBoardCollection(board, updatedObject) {
-    return httpService.patch(`board/${board._id}`, updatedObject)
+function updateBoardCollection(boardId, updatedObject) {
+    return httpService.patch(`board/${boardId}`, updatedObject)
 }
 
-function addMemberToBoard(board, member) {
-    return httpService.post(`board/${board._id}`, member)
+function addMemberToBoard(boardId, member) {
+    return httpService.post(`board/${boardId}`, member)
 }
 
-function addNotification(boardId, notification) {
+function addBoardNotification(boardId, notification) {
     return httpService.post(`board/${boardId}/notification`, notification);
 }
 

@@ -23,7 +23,6 @@ export class _Boards extends Component {
 
     // Why it stops after add board? //
     addBoard = async () => {
-        debugger
         const boardToAdd = boardService.getEmptyBoard();
         const board = await this.props.addBoard(boardToAdd);
         eventBus.emit('onSetBoard', board._id);
@@ -44,7 +43,7 @@ export class _Boards extends Component {
             },
             {
                 name: 'Work', boardId: "600432fba5297b59781ba1d4",
-                smallImg: Template3, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large3_dq1hat.jpg"
+                smallImg: Template3, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1613425888/treller/bgc-large3_hxzpue.jpg"
             },
             {
                 name: 'Relax', boardId: "60197399331a92cde9ce9f7d",

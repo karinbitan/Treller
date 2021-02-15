@@ -12,7 +12,8 @@ export class BoardHeader extends Component {
         isStyleMenuOpen: false,
         style: {
             backgroundColor: null
-        }
+        },
+        templateMsg: 'Create Board From Template'
     }
 
     async componentDidMount() {
@@ -21,11 +22,11 @@ export class BoardHeader extends Component {
         const field = 'backgroundColor';
         const value = boardToEdit.style.backgroundColor;
         this.setState(({ style: { ...this.state.style, [field]: value } }))
-        
+
         const isFavorite = this.props.user.favoriteBoards.some(favoriteBoardId => {
             return favoriteBoardId === boardToEdit._id;
         })
-        this.setState({isFavorite})
+        this.setState({ isFavorite })
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -72,24 +73,22 @@ export class BoardHeader extends Component {
         this.setState({ isStyleMenuOpen: !this.state.isStyleMenuOpen })
     }
 
-    onDeleteBoard() {
-        this.props.deleteBoard();
-    }
-
     addMemberToBoard = (member) => {
         this.props.addMemberToBoard(member);
     }
 
     onAddBoardWithTemplate = () => {
         const { board } = this.props;
+        this.setState({ templateMsg: 'Creating Board' })
         this.props.addBoard(board);
     }
 
     render() {
-        // Favorite board not working!!! //
         const { board, user } = this.props;
-        const { boardToEdit, isFavorite, isMenuOpen, isStyleMenuOpen } = this.state;
-
+        const { boardToEdit, isFavorite, isMenuOpen, isStyleMenuOpen, templateMsg } = this.state;
+        const isAdmin = user.boardsOwner.some(boardId => {
+            return boardId === board._id;
+          });
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
@@ -120,7 +119,7 @@ export class BoardHeader extends Component {
                                     <li onClick={this.toggleStyleMenu}>Change Style
                                      <div className="color-sample" style={{ backgroundColor: board.style.backgroundColor }}></div>
                                     </li>
-                                    <li onClick={this.onDeleteBoard}>Delete Board</li>
+                                    {isAdmin && <li onClick={this.props.onDeleteBoard}>Delete Board</li>}
                                 </ul>
                             </div>
                                 : <div className="style-change-container">
@@ -137,8 +136,8 @@ export class BoardHeader extends Component {
                         </div>}
                     </div>
                     {board.isTemplate && <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
-                        Create Board From Template
-                        </button>}
+                        {templateMsg}
+                    </button>}
                 </section>}
             </section>
         )

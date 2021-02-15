@@ -2,11 +2,11 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     setBoard, addBoard, updateBoard, addList, deleteList, updateBoardCollection,
-    addMemberToBoard, addNotification
+    addMemberToBoard, addBoardNotification, deleteBoard
 } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { addCard, deleteCard, updateCard, updateCardCollection } from '../../store/actions/cardActions';
-import { getUsers, updateUser, updateUserCollection } from './../../store/actions/userActions';
+import { getUsers, updateUser, updateUserCollection, addUserNotification } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService.js';
@@ -23,7 +23,8 @@ class _TrellerApp extends Component {
 
     state = {
         boardToEdit: null,
-        notifications: []
+        boardNotifications: [],
+        userNotifications: []
     }
 
     async componentDidMount() {
@@ -36,24 +37,29 @@ class _TrellerApp extends Component {
             await this.props.setBoard(boardId);
             this.props.history.push(`/treller/board/${boardId}`);
         })
+        const userId = this.props.user._id;
         socketService.setup();
         socketService.emit('register board', boardId);
+        socketService.emit('register user', userId);
         socketService.on('updatedBoard', (boardId) => {
-            console.log(boardId)
             this.setBoard(boardId)
         });
         socketService.on('newNotification', (msg) => {
-            this.addNotification(msg);
+            this.addBoardNotification(msg);
+            console.log(msg)
         })
-        const notifications = this.props.board.notifications;
-        console.log(notifications)
-        this.setState({notifications})
+        socketService.on('newUserNotification', (msg) => {
+            this.addUserNotification(msg);
+        })
+        const boardNotifications = this.props.board.notifications;
+        this.setState({ boardNotifications })
+        const userNotifications = this.props.user.notifications;
+        this.setState({ userNotifications })
     }
 
     async componentDidUpdate(prevProps, prevState) {
         const boardId = this.props.match.params.id;
         if (prevProps.match.params.id !== this.props.match.params.id) {
-            console.log('bla')
             await this.props.setBoard(boardId);
             this.props.history.push(`/treller/board/${boardId}`)
         }
@@ -64,10 +70,17 @@ class _TrellerApp extends Component {
         socketService.terminate();
     }
 
-    addNotification = async (notification) => {
-        debugger
+    addBoardNotification = async (notification) => {
         const boardId = this.props.board._id;
-        await this.props.addNotification(boardId, notification);
+        await this.props.addBoardNotification(boardId, notification);
+        await this.props.setBoard(boardId); 
+    }
+
+    addUserNotification = async (notification) => {
+        const userId = this.props.user._id;
+        const boardId = this.props.board._id;
+        await this.props.addUserNotification(userId, notification);
+        await this.props.setBoard(boardId);
     }
 
     setBoard = async (boardId) => {
@@ -77,13 +90,13 @@ class _TrellerApp extends Component {
 
     updateBoardTitle = async (title) => {
         const { board } = this.props;
-        await this.props.updateBoardCollection(board, { title });
+        await this.props.updateBoardCollection(board._id, { title });
         await this.props.setBoard(board._id);
     }
 
     changeStyle = async (style) => {
         const { board } = this.props;
-        await this.props.updateBoardCollection(board, { style });
+        await this.props.updateBoardCollection(board._id, { style });
         await this.props.setBoard(board._id);
     }
 
@@ -101,12 +114,10 @@ class _TrellerApp extends Component {
         await this.props.setBoard(board._id);
     }
 
-    // Why it stop after add board? //
     addBoard = async (boardToAdd = null) => {
         if (!boardToAdd) {
             boardToAdd = boardService.getEmptyBoard();
         }
-        debugger
         const board = await this.props.addBoard(boardToAdd);
         await this.props.setBoard(board._id);
         this.props.history.push(`/treller/board/${board._id}`);
@@ -115,9 +126,15 @@ class _TrellerApp extends Component {
 
     addMemberToBoard = async (member) => {
         const { board } = this.props;
-        await this.props.addMemberToBoard(board, member);
+        await this.props.addMemberToBoard(board._id, member);
+        await this.props.setBoard(board._id);
     }
 
+    deleteBoard = async () => {
+        const { board, user } = this.props;
+        await this.props.deleteBoard(board._id);
+        this.props.history.push(`/user/${user._id}/boards`);
+    }
 
     // LIST //
     addList = async (list) => {
@@ -126,39 +143,21 @@ class _TrellerApp extends Component {
         await this.props.setBoard(board._id);
     }
 
-    // onCopyList = async (list) => {
-    //     const { board } = this.props;
-    //     await this.props.addList(board._id, list);
-    //     await this.props.setBoard(board._id);
-    // }
-
-    udateList = async (savedList) => {
-        const { board } = this.props;
-        const lists = board.lists;
-        const idx = lists.findIndex(list => {
-            return list._id === savedList._id;
-        })
-        lists.splice(idx, 1, savedList);
+    updateListTitle = async (listIdx, listTitle) => {
+        let { board } = this.props;
+        let lists = board.lists;
+        let list = lists[listIdx];
+        list.title = listTitle;
+        lists.splice(listIdx, 1, list);
         board.lists = lists;
-        this.setState({ board }, async () => {
-            await this.props.updateBoard(board)
-        })
-        eventBus.emit('notification', {
-            title: 'List updated',
-            list: savedList,
-            by: this.props.user
-        })
+        await this.props.updateBoard(board);
+        await this.props.setBoard(board._id);
     }
 
-    deleteList = async (list) => {
+    deleteList = async (listId) => {
         const { board } = this.props;
-        await this.props.deleteList(board._id, list._id);
+        await this.props.deleteList(board._id, listId);
         await this.props.setBoard(board._id);
-        eventBus.emit('notification', {
-            title: 'List deleted',
-            list: list,
-            by: this.props.user
-        })
     }
 
     // CARD //
@@ -166,9 +165,6 @@ class _TrellerApp extends Component {
         const { board } = this.props;
         await this.props.addCard(board._id, listId, listIdx, card);
         await this.props.setBoard(board._id);
-
-        // const msg = '!!!'
-        // socketService.emit('sendNotification', msg)
     }
 
     deleteCard = async (listIdx, cardId) => {
@@ -298,14 +294,18 @@ class _TrellerApp extends Component {
 
     render() {
         const { board, user } = this.props;
-        const { boardToEdit, notifications } = this.state;
+        const { boardToEdit, boardNotifications, userNotifications } = this.state;
         return (
             <section>
-                {(board && user && boardToEdit) && <section style={{
+                {(board && user && boardToEdit) && <section className="background" style={{
                     backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
                     backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
                 }}>
-                    <MainHeader board={board} user={user} notifications={notifications} />
+                    <MainHeader
+                        board={board}
+                        user={user}
+                        boardNotifications={boardNotifications}
+                        userNotifications={userNotifications} />
                     <BoardHeader
                         user={user}
                         updateBoardTitle={this.updateBoardTitle}
@@ -314,6 +314,7 @@ class _TrellerApp extends Component {
                         changeStyle={this.changeStyle}
                         addMemberToBoard={this.addMemberToBoard}
                         addBoard={this.addBoard}
+                        onDeleteBoard={this.deleteBoard}
                     />
                     <section className="treller-app">
                         <section className="lists flex column">
@@ -347,7 +348,7 @@ class _TrellerApp extends Component {
                                                                                 provided={provided}
                                                                                 isDraggingOver={snapshot.isDraggingOver}
                                                                                 deleteList={this.deleteList}
-                                                                                updateList={this.updateList}
+                                                                                updateListTitle={this.updateListTitle}
                                                                                 deleteCard={this.deleteCard}
                                                                                 updateCardTitle={this.updateCardTitle}
                                                                                 addCard={this.addCard} />
@@ -395,6 +396,8 @@ const mapDispatchToProps = {
     updateUser,
     updateUserCollection,
     updateCardCollection,
-    addNotification
+    addBoardNotification,
+    addUserNotification,
+    deleteBoard
 }
 export const TrellerApp = connect(mapStateToProps, mapDispatchToProps)(_TrellerApp)

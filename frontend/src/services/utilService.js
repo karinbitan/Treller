@@ -7,7 +7,6 @@ function convertToMonthString (date) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    console.log(date)
     return monthNames[new Date(date).getMonth()];
 }
 

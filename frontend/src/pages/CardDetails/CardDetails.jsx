@@ -47,7 +47,6 @@ export class _CardDetails extends Component {
     }
 
     componentWillUnmount() {
-        console.log('unmount')
         socketService.off('updatedCard');
         socketService.off('updatedBoard');
         socketService.terminate();
@@ -273,7 +272,7 @@ export class _CardDetails extends Component {
                             <div className="other-details flex">
                                 {(card.members && card.members.length > 0) &&
                                     <div className="members-containers">
-                                        <h4>Members</h4>
+                                        <h5>Members</h5>
                                         <div className="flex">
                                             {card.members.map(member => {
                                                 return <Avatar name={member.fullName}
@@ -284,7 +283,7 @@ export class _CardDetails extends Component {
                                 }
                                 {(card.labels && card.labels.length > 0) &&
                                     <div className="labels-container">
-                                        <h4>Labels</h4>
+                                        <h5>Labels</h5>
                                         <div className="flex">
                                             {card.labels.map(label => {
                                                 return <div className={`label ${label}`}
@@ -293,7 +292,7 @@ export class _CardDetails extends Component {
                                         </div>
                                     </div>}
                                 {card.dueDate && <div className="due-date-container">
-                                    <h4>Due Date</h4>
+                                    <h5>Due Date</h5>
                                     <input type="checkbox" onChange={this.handleCheckDueDate} />
                                     <button className="due-date">
                                         {card.dueDate.replace('T', ' at ')}
@@ -314,8 +313,8 @@ export class _CardDetails extends Component {
                                 addComment={this.addComment}
                                 onDeleteComment={this.deleteComment} />
                         </div>
-                        <div className="side-container flex column">
-                            <h4>ADD TO CARD</h4>
+                        <div className="side-container flex column align-center">
+                            <h5>ADD TO CARD</h5>
                             <button onClick={() => this.openPopUp('members', this.addMember)} className="card-details-btn">
                                 <i className="fas fa-user-friends"></i> Members</button>
                             <button onClick={() => this.openPopUp('cover', this.addCover)} className="card-details-btn">
@@ -327,7 +326,7 @@ export class _CardDetails extends Component {
                             <button onClick={() => this.openPopUp('dueDate', this.setDate)} className="card-details-btn">
                                 <i className="fas fa-calendar-week"></i> Due Date</button>
                             <br />
-                            <h4>ACTIONS</h4>
+                            <h5>ACTIONS</h5>
                             <button onClick={this.copyCard} className="card-details-btn">
                                 <i className="fas fa-copy"></i> Copy</button>
                             <button onClick={this.deleteCard} className="card-details-btn">

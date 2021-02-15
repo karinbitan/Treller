@@ -14,7 +14,7 @@ module.exports = {
     deleteList,
     addCard,
     deleteCard,
-    addNotification
+    addBoardNotification
 }
 
 async function query() {
@@ -158,7 +158,7 @@ async function addMemberToBoard(boardId, member) {
     }
 }
 
-async function addNotification(boardId, notification) {
+async function addBoardNotification(boardId, notification) {
     const collection = await dbService.getCollection('board');
     try {
         await collection.updateOne({ _id: ObjectId(boardId) },

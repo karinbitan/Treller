@@ -49,8 +49,7 @@ function addComment(cardId, comment) {
 }
 
 function deleteComment(cardId, commentId) {
-    debugger
-    return httpService.delete(`card/comments/${cardId}/${commentId}`);
+    return httpService.delete(`card/${cardId}/comments/${commentId}`);
 }
 
 function addTodo(cardId, checklistIdx, todo) {

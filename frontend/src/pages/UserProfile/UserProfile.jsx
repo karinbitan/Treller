@@ -19,9 +19,6 @@ export class _UserProfile extends Component {
     }
 
     async componentDidMount() {
-        // const userId = this.props.match.params.id;
-        // console.log(this.props.user)
-        // const user = await this.props.setUser(userId);
         await this.props.getLoggedInUser();
         let { user } = this.props;
         this.setState({ userToEdit: user });
@@ -40,9 +37,7 @@ export class _UserProfile extends Component {
         const field = target.name;
         const value = target.value;
         this.setState(prevState => ({ userToEdit: { ...prevState.userToEdit, [field]: value } }));
-        console.log(this.state.userToEdit)
     }
-
 
     updateUser = async (ev) => {
         ev.preventDefault();

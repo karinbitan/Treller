@@ -1,8 +1,8 @@
-import { Component } from 'react';
 import { connect } from 'react-redux';
 import { logout } from '../../store/actions/authActions';
 import { addBoard } from '../../store/actions/boardActions';
 import { Link, NavLink } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import Avatar from 'react-avatar';
 import Logo from './../../assets/treller-logo.png';
@@ -14,94 +14,73 @@ import { Filter } from '../Filter/Filter';
 
 import './MainHeader.scss';
 
-class _MainHeader extends Component {
+function _MainHeader(props) {
+    const [isAvatarOptionsOpen, toggleAvatarOptions] = useState(false);
+    const [isNotificationOptionOpen, toggleNotificationsOptions] = useState(false);
 
-    state = {
-        isAvatarOptionsOpen: false,
-        isBoardOptionOpen: false,
-        isNotifOptionOpen: false,
-        mainHeaderOptionsType: '',
-    }
-
-    async componentDidMount() {
-        // await this.props.getLoggedInUser();
-    }
-
-    toggleAvatarOptions = () => {
-        this.setState({ isAvatarOptionsOpen: !this.state.isAvatarOptionsOpen })
-    }
-
-    toggleMainHeaderOptions = (type) => {
-        if (type === 'Board') {
-            this.setState({ isBoardOptionOpen: !this.state.isBoardOptionOpen })
-        } else {
-            this.setState({ isNotifOptionOpen: !this.state.isNotifOptionOpen })
+    useEffect(() => {
+        if (isAvatarOptionsOpen) {
+            toggleNotificationsOptions(false);
         }
+    }, [isAvatarOptionsOpen])
+
+    const logout = async () => {
+        await props.logout();
+        toggleAvatarOptions(false)
     }
 
-    openMainHeaderOptions = (type) => {
-        this.toggleMainHeaderOptions(type);
-        this.setState({ mainHeaderOptionsType: type })
-    }
-
-    logout = async () => {
-        await this.props.logout();
-        this.setState({ isAvatarOptionsOpen: !this.state.isAvatarOptionsOpen })
-    }
-
-    render() {
-        const { user, board, isHomePage, isUserPage, notifications } = this.props;
-        const { isAvatarOptionsOpen, isNotifOptionOpen, mainHeaderOptionsType } = this.state;
-        return (
-            <header style={{ backgroundColor: board ? 'rgba(0,0,0,.15)' : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
-                {user && <section className="main-header flex align-center">
-                    {!isHomePage && <div className="menu-container flex align-center">
+    const { user, board, isHomePage, isUserPage, boardNotifications, userNotifications } = props;
+    return (
+        <header style={{ backgroundColor: board ? 'rgba(0,0,0,.15)' : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
+            {user && <section className="main-header flex align-center">
+                {!isHomePage && <div className="menu-container flex align-center">
+                    <button className="icon-container no-button">
+                        <NavLink to="/"><img className="icon" src={Home} alt="home" /></NavLink>
+                    </button>
+                    <div>
                         <button className="icon-container no-button">
-                            <NavLink to="/"><img className="icon" src={Home} alt="home" /></NavLink>
+                            <Link to={`/user/${user._id}/boards`}><img className="icon" src={Logo} alt="boards" /></Link>
                         </button>
-                        <div>
-                            <button className="icon-container no-button">
-                                <Link to={`/user/${user._id}/boards`}><img className="icon" src={Logo} alt="boards" /></Link>
-                            </button>
-                        </div>
-                        <Filter />
+                    </div>
+                    <Filter />
+                </div>}
+                <div className="logo">
+                    {board ?
+                        <Link to={`/treller/board/${board._id}`} className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
+                        : user ? <Link to={`/user/${user._id}/boards`} className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
+                            : <Link to="/"></Link>
+                    }
+                </div>
+                <div className="menu-container flex flex-end align-center">
+                    {!isHomePage && <div className="flex">
+                        <button className="icon-container no-button" onClick={() => toggleNotificationsOptions(!isNotificationOptionOpen)}>
+                            <img className="icon" src={Notification} alt="notifications" />
+                        </button>
+                        {isNotificationOptionOpen && <Notifications
+                            closePopUp={() => toggleNotificationsOptions(false)}
+                            boardNotifications={boardNotifications}
+                            userNotifications={userNotifications}
+                        />}
                     </div>}
-                    <div className="logo">
-                        {!isHomePage ?
-                            <Link to="/treller" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
-                            : <Link to="/" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
-                        }
-                    </div>
-                    <div className="menu-container flex flex-end align-center">
-                        {!isHomePage && <div className="flex">
-                            <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Notifications')}>
-                                <img className="icon" src={Notification} alt="notifications" />
-                            </button>
-                            {isNotifOptionOpen && <Notifications
-                                type={mainHeaderOptionsType}
-                                closePopUp={this.toggleMainHeaderOptions}
-                                notifications={notifications}
-                            />}
-                        </div>}
-                        {user && <Avatar className="avatar-member" name={user.fullName} size="40" round={true} onClick={this.toggleAvatarOptions} />}
-                        {(user && isAvatarOptionsOpen) && <div className="avatar-options">
-                            <h4 className="options-headline">Account</h4>
-                            <ul>
-                                <li><Link to={`/user/${user._id}/boards`}>Boards</Link></li>
-                                <li onClick={this.toggleAvatarOptions}><Link to={`/user/${user._id}`}>Profile</Link></li>
-                                <li onClick={this.logout}><Link to="/">Log Out</Link></li>
-                            </ul>
-                        </div>}
-                        {!user && <div>
-                            <button className="icon-container no-button">
-                                <Link to="/login"><img className="icon" src={LoginIcon} alt="login icon" /></Link>
-                            </button>
-                        </div>}
-                    </div>
-                </section>}
-            </header>
-        )
-    }
+                    {user && <Avatar className="avatar-member" name={user.fullName} size="40" round={true}
+                        onClick={() => toggleAvatarOptions(!isAvatarOptionsOpen)} />}
+                    {(user && isAvatarOptionsOpen) && <div className="avatar-options">
+                        <h4 className="options-headline">Account</h4>
+                        <ul>
+                            <li><Link to={`/user/${user._id}/boards`}>Boards</Link></li>
+                            <li onClick={() => toggleAvatarOptions(false)}><Link to={`/user/${user._id}`}>Profile</Link></li>
+                            <li onClick={logout}><Link to="/">Log Out</Link></li>
+                        </ul>
+                    </div>}
+                    {!user && <div>
+                        <button className="icon-container no-button">
+                            <Link to="/login"><img className="icon" src={LoginIcon} alt="login icon" /></Link>
+                        </button>
+                    </div>}
+                </div>
+            </section>}
+        </header>
+    )
 }
 
 const mapDispatchToProps = {

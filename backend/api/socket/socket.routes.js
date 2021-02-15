@@ -20,6 +20,13 @@ function listenToSocketEvents(io) {
             socket.join(cardId)
         });
 
+        // USER //
+        socket.on('register user', userId => {
+            console.log(userId, 'socket work!')
+            socket.join(userId)
+        });
+
+
         // socket.on('register chat room', cardId => {
         //     socket.join(cardId)
         // }); 
