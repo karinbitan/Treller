@@ -13,7 +13,8 @@ module.exports = {
     addList,
     deleteList,
     addCard,
-    deleteCard
+    deleteCard,
+    addNotification
 }
 
 async function query() {
@@ -102,18 +103,17 @@ async function updateBoard(board) {
     const collection = await dbService.getCollection('board');
     const id = board._id;
     delete board._id;
-
-    board.lists.map(list => {
-        if (list.cards && list.cards.length) {
-            list.cards = list.cards.map((card) => {
-                const cardId = card._id;
-                return card._id = ObjectId(cardId);
-            })
-        }
-        return list;
-    })
-
+    
     try {
+        board.lists.map(list => {
+            if (list.cards && list.cards.length) {
+                list.cards = list.cards.map((card) => {
+                    const cardId = card._id;
+                    return card._id = ObjectId(cardId);
+                })
+            }
+            return list;
+        })
         await collection.replaceOne({ _id: ObjectId(id) }, board);
         board._id = ObjectId(id)
         return board;
@@ -158,23 +158,21 @@ async function addMemberToBoard(boardId, member) {
     }
 }
 
+async function addNotification(boardId, notification) {
+    const collection = await dbService.getCollection('board');
+    try {
+        await collection.updateOne({ _id: ObjectId(boardId) },
+            { $push: { notifications: notification } });
+        return notification;
+    } catch (err) {
+        console.log(`ERROR: cannot insert card`)
+        throw err;
+    }
+}
+
 // LIST //
 async function addList(boardId, list) {
     const collection = await dbService.getCollection('board');
-    // if (list._id) {
-    //     delete list._id;
-    //     list.cards.forEach(card => {
-    //         if (card && card.length) {
-    //             delete card._id;
-    //             cardService.addCard(card)
-    //         }
-    //     })
-    //     .map(card =>{
-    //         return 
-    //     })
-    // } else {
-    //     list._id = _makeId();
-    // }
     try {
         const result = await collection.updateOne({ _id: ObjectId(boardId) },
             { $push: { lists: list } });
@@ -217,8 +215,7 @@ async function deleteCard(boardId, listIdx, cardId) {
     const collection = await dbService.getCollection('board');
     const field = 'lists.' + listIdx + '.cards';
     try {
-        await collection.update({ _id: ObjectId(boardId) },
-            // { $pull: { "lists": { "cards": { $elemMatch: { cardId } } } } }
+        await collection.updateOne({ _id: ObjectId(boardId) },
             { $pull: { [field]: ObjectId(cardId) } }
         );
     } catch (err) {

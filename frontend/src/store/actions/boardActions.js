@@ -95,6 +95,17 @@ export function addMemberToBoard(board, member) {
   }
 }
 
+export function addNotification(boardId, notification) {
+  return async dispatch => {
+    try {
+      const result = await boardService.addNotification(boardId, notification);
+      // dispatch({ type: 'ADD_NOTIFICIATIONS', notification });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
 // LIST //
 export function addList(boardId, list) {
   return async dispatch => {

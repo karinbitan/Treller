@@ -37,9 +37,9 @@ class _InviteMembers extends Component {
         this.setState({ searchResult: res })
     }
 
-    inviteMember = (member) => {
-        this.props.onAddMemberToBoard(member);
-    }
+    // inviteMember = (member) => {
+    //     this.props.onAddMemberToBoard(member);
+    // }
 
     render() {
         const { board } = this.props;
@@ -61,7 +61,7 @@ class _InviteMembers extends Component {
                         <ul className="result-container">
                             {searchResult.map(result => {
                                 return (
-                                    <li onClick={() => this.inviteMember(result)} className="flex align-center"
+                                    <li onClick={() => this.onAddMemberToBoard(result)} className="flex align-center"
                                         key={result._id}>
                                         <Avatar name={result.fullName} size={20} round={true} />
                                         <span className="user-name">{result.fullName}</span>

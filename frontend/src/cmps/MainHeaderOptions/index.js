@@ -1,1 +1,0 @@
-export { MainHeaderOptions } from './MainHeaderOptions'

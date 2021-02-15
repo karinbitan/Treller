@@ -1,5 +1,4 @@
 import { httpService } from './httpService';
-import { socketService } from './socketService';
 
 export const cardService = {
     query,
@@ -29,25 +28,20 @@ function getCardById(cardId) {
     return httpService.get(`card/${cardId}`);
 }
 
-function deleteCard(boardId, listIdx, cardId) {
-    return httpService.delete(`card/${boardId}/${listIdx}/${cardId}`);
+function deleteCard(cardId) {
+    return httpService.delete(`card/${cardId}`);
 }
 
 function addCard(boardId, listId, listIdx, card) {
-    socketService.emit('savedBoard', boardId); 
     return httpService.post(`card/`, { boardId, listId, listIdx, card });
 }
 
-function updateCard(card) {
-    socketService.emit('savedCard', card._id);
-    socketService.emit('savedBoard', card.createdBy.boardId);
-    return httpService.put(`card/${card._id}`, card);
+function updateCard(boardId, card) {
+    return httpService.put(`card/${boardId}/${card._id}`, card);
 }
 
-function updateCardCollection(card, updatedObject) {
-    socketService.emit('savedCard', card._id);
-    socketService.emit('savedBoard', card.createdBy.boardId);
-    return httpService.patch(`card/${card._id}`, updatedObject);
+function updateCardCollection(boardId, cardId, updatedObject) {
+    return httpService.patch(`card/${boardId}/${cardId}`, updatedObject);
 }
 
 function addComment(cardId, comment) {
@@ -55,7 +49,8 @@ function addComment(cardId, comment) {
 }
 
 function deleteComment(cardId, commentId) {
-    return httpService.delete(`card/${cardId}/comments/${commentId}`);
+    debugger
+    return httpService.delete(`card/comments/${cardId}/${commentId}`);
 }
 
 function addTodo(cardId, checklistIdx, todo) {
@@ -63,7 +58,7 @@ function addTodo(cardId, checklistIdx, todo) {
 }
 
 function deleteTodo(cardId, checklistIdx, todoIdx) {
-    return httpService.delete(`card/${cardId}/${checklistIdx}/todos/${todoIdx}`);
+    return httpService.delete(`card/${cardId}/checklists/${checklistIdx}/todos/${todoIdx}`);
 }
 
 

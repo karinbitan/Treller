@@ -15,27 +15,22 @@ export function CardPreview(props) {
     const [screenCard, setScreenCard] = useState({ top: null, left: null })
 
     useEffect(() => {
-        // const cardId = props.card._id;
-        // socketService.setup();
-        // socketService.emit('register card', cardId);
-        // socketService.on('newCard', (cardId) => this.setCard(cardId));
-        
     })
 
-    const onDeleteCard = async () => {
-        const { board, listIdx, card } = this.props;
-        props.onDeleteCard(board._id, listIdx, card._id);
+    const deleteCard = async () => {
+        const { card } = props;
+        props.deleteCard(card._id);
         toggleEditModal(false);
     }
 
-    const onUpdateCardTitle = (cardTitle) => {
-        props.onUpdateCardTitle(props.card._id, cardTitle);
+    const updateCardTitle = (cardTitle) => {
+        props.updateCardTitle(props.card._id, cardTitle);
         toggleEditModal(false);
     }
 
-    const onCopyCard = async () => {
-        const { board, card } = this.props;
-        this.props.addCard(board._id, card);
+    const copyCard = async () => {
+        const { card } = props;
+        props.addCard(card);
         toggleEditModal(false);
     }
 
@@ -92,9 +87,9 @@ export function CardPreview(props) {
                 {isEditModalOpen && <CardEditModal
                     cardTitle={card.title}
                     onCloseEditModal={() => toggleEditModal(false)}
-                    onUpdateCardTitle={onUpdateCardTitle}
-                    onDeleteCard={onDeleteCard}
-                    onCopyCard={onCopyCard}
+                    updateCardTitle={updateCardTitle}
+                    onDeleteCard={deleteCard}
+                    onCopyCard={copyCard}
                     screenCard={screenCard} />}
             </section>
         </section>

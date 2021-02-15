@@ -28,6 +28,7 @@ export function getLoggedInUser() {
       const user = await authService.getLoggedInUser();
       if (Object.entries(user).length === 0) return;
       dispatch({ type: 'SET_USER', user });
+      return user;
     } catch (err) {
       console.log('UserActions: err in logout', err);
     }

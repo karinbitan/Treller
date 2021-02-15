@@ -1,7 +1,8 @@
 const cardService = require('./card.service');
 const boardService = require('./../board/board.service');
-const logger = require('../../services/logger.service');
 const utilService = require('./../../services/util.service');
+
+const {socketConnection} = require('./../../server');
 
 async function getCards(req, res) {
     try {
@@ -24,10 +25,11 @@ async function getCard(req, res) {
 }
 
 async function deleteCard(req, res) {
-    const { boardId, listIdx, id } = req.params;
+    const cardId = req.params.id;
     try {
-        await cardService.deleteCard(id);
-        await boardService.deleteCard(boardId, listIdx, id);
+        await cardService.deleteCard(cardId);
+        socketConnection.to(cardId).emit('updatedCard', cardId);
+        // socketConnection.to(boardId).emit('newNotification', { message: 'Card deleted', card: realCard })
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -37,6 +39,7 @@ async function deleteCard(req, res) {
 
 async function addCard(req, res) {
     let { boardId, listId, listIdx, card } = req.body
+    const user = req.session.user.fullName;
     if (req.session.user) {
         card.createdBy = {
             userId: req.session.user._id,
@@ -47,6 +50,9 @@ async function addCard(req, res) {
     try {
         const realCard = await cardService.addCard(card);
         await boardService.addCard(boardId, listIdx, realCard);
+        socketConnection.to(boardId).emit('updatedBoard', boardId);
+        socketConnection.to(card._id).emit('updatedCard', card._id);
+        socketConnection.to(boardId).emit('newNotification', { message: `Card ${card.title} was added by ${user}`, cardId: card._id })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -56,9 +62,12 @@ async function addCard(req, res) {
 
 async function updateCard(req, res) {
     const card = req.body;
+    const boardId = req.params.boardId;
     try {
         await cardService.updateCard(card);
         const realCard = await cardService.getCardById(card._id)
+        socketConnection.to(card._id).emit('updatedCard', card._id)
+        socketConnection.to(boardId).emit('updatedBoard', boardId)
         res.send(realCard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -68,10 +77,13 @@ async function updateCard(req, res) {
 
 async function updateCardCollection(req, res) {
     const cardId = req.params.id;
+    const boardId = req.params.boardId;
     const updateObject = req.body
     try {
         await cardService.updateCardCollection(cardId, updateObject);
-        const realCard = await cardService.getCardById(cardId)
+        const realCard = await cardService.getCardById(cardId);
+        socketConnection.to(cardId).emit('updatedCard', cardId);
+        socketConnection.to(boardId).emit('updatedBoard', boardId)
         res.send(realCard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -96,6 +108,8 @@ async function addComment(req, res) {
     }
     try {
         const card = await cardService.addComment(cardId, comment);
+        socketConnection.to(cardId).emit('updatedCard', cardId);
+        socketConnection.to(boardId).emit('newNotification', { message: 'Comment added', cardId: card })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -107,6 +121,7 @@ async function deleteComment(req, res) {
     const { id, commentId } = req.params;
     try {
         const card = await cardService.deleteComment(id, commentId);
+        socketConnection.to(id).emit('updatedCard', id);
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -120,6 +135,7 @@ async function addTodo(req, res) {
     todo._id = utilService._makeId();
     try {
         const card = await cardService.addTodo(id, checklistIdx, todo);
+        socketConnection.to(id).emit('updatedCard', id);
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -131,6 +147,7 @@ async function deleteTodo(req, res) {
     const { id, checklistIdx, todoId } = req.params;
     try {
         const card = await cardService.deleteTodo(id, checklistIdx, todoId);
+        socketConnection.to(id).emit('updatedCard', id);
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)

@@ -1,5 +1,5 @@
 const dbService = require('../../services/db.service')
-const ObjectId = require('mongodb').ObjectId
+const ObjectId = require('mongodb').ObjectId;
 
 module.exports = {
     query,
@@ -7,6 +7,7 @@ module.exports = {
     getByUserName,
     deleteUser,
     updateUser,
+    updateUserCollection,
     addUser,
     addBoard,
     addMemberToBoard
@@ -107,6 +108,17 @@ async function updateUser(user) {
         await collection.replaceOne({ _id: user._id }, { user });
         user._id = ObjectId(user._id);
         return user;
+    } catch (err) {
+        console.log(`ERROR: cannot update user ${user._id}`)
+        throw err;
+    }
+}
+
+async function updateUserCollection(userId, updatedObject) {
+    const collection = await dbService.getCollection('user');
+    try {
+        await collection.updateOne({ _id: ObjectId(userId) }, { $set: updatedObject });
+        return updatedObject;
     } catch (err) {
         console.log(`ERROR: cannot update user ${user._id}`)
         throw err;

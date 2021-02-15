@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './CardChecklists.scss';
 
 export function CardChecklists(props) {
@@ -7,31 +7,22 @@ export function CardChecklists(props) {
     const [isAddTodoFormShow, toggleAddTodoForm] = useState(false);
     const [currTodoIdx, setCurrTodo] = useState('')
 
-    useEffect(() => {
-        console.log(currTodoIdx)
-        console.log(isDeleteBtnShow)
-    })
 
-    const addTodo = (ev, checklistIdx) => {
+    const onAddTodo = (ev, checklistIdx) => {
         ev.preventDefault();
-        props.onAddTodo(checklistIdx, todo);
+        props.addTodo(checklistIdx, todo);
         setTodo({ title: '', isDone: false });
         toggleAddTodoForm(false);
     }
 
-    const deleteTodo = (checklistIdx, todo) => {
-        props.onDeleteTodo(checklistIdx, todo._id);;
-    }
-
-    const handleCheckChecklist = ({ target }, todo, checklistIdx, todoIdx) => {
+    const onHandleCheckChecklist = ({ target }, todo, checklistIdx, todoIdx) => {
         if (target.checked) {
             todo.isDone = true;
         } else {
             todo.isDone = false
         }
-        props.onHandleCheckChecklist(todo, checklistIdx, todoIdx);
+        props.handleCheckChecklist(todo, checklistIdx, todoIdx);
     }
-
 
     const showTodoDeleteBtn = (ev, idx) => {
         ev.stopPropagation();
@@ -56,7 +47,7 @@ export function CardChecklists(props) {
                                 <i className="fas fa-tasks icon"></i><h3>
                                     {checklist.title}
                                 </h3>
-                                <button className="card-details-btn">Delete</button>
+                                <button className="card-details-btn" onClick={()=>props.onDeleteChecklist(checklistIdx)}>Delete</button>
                             </div>
                             {checklist.todos && checklist.todos.length > 0 && <ul>
                                 {checklist.todos.map((todo, todoIdx) => {
@@ -65,12 +56,12 @@ export function CardChecklists(props) {
                                         onMouseLeave={(ev) => hideTodoDeleteBtn(ev, todoIdx)}>
                                         <input type="checkbox" id={`todo${todoIdx}`}
                                             name="isDone"
-                                            onChange={ev => handleCheckChecklist(ev, todo, checklistIdx, todoIdx)}
+                                            onChange={ev => onHandleCheckChecklist(ev, todo, checklistIdx, todoIdx)}
                                             checked={todo.isDone} />
                                         <label htmlFor={`todo${todoIdx}`} style={{ textDecoration: todo.isDone ? 'line-through' : 'none' }}>
                                             {todo.title}
                                         </label>
-                                        <button onClick={() => deleteTodo(checklistIdx, todo)} className="delete-todo"
+                                        <button onClick={() => props.onDeleteTodo(checklistIdx, todo._id)} className="delete-todo"
                                             style={{ display: isDeleteBtnShow && currTodoIdx === todoIdx ? 'block' : 'none' }}>
                                             <i className="fas fa-trash"></i>
                                         </button>
@@ -78,7 +69,7 @@ export function CardChecklists(props) {
                                 })}
                             </ul>}
                             {!isAddTodoFormShow ? <button className="card-details-btn flex open-form" onClick={toggleAddTodoForm}>Add Todo</button>
-                                : <form onSubmit={ev => addTodo(ev, checklistIdx)} className="add-todo">
+                                : <form onSubmit={ev => onAddTodo(ev, checklistIdx)} className="add-todo">
                                     <textarea name="title" value={todo.title}
                                         onChange={ev => setTodo({ ...todo, [ev.target.name]: ev.target.value })}></textarea>
                                     <div className="flex">

@@ -34,8 +34,9 @@ export class _CardDetails extends Component {
 
         socketService.setup();
         socketService.emit('register card', cardId);
-        socketService.on('newCard', (cardId) => this.setCard(cardId));
-        socketService.emit('savedBoard', this.props.card.boardId);
+        socketService.on('updatedBoard', (boardId) => this.setCard(boardId));
+        socketService.on('updatedCard', (cardId) => this.setCard(cardId));
+        // socketService.emit('savedBoard', this.props.card.boardId);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -47,8 +48,8 @@ export class _CardDetails extends Component {
 
     componentWillUnmount() {
         console.log('unmount')
-        socketService.off('newCard');
-        socketService.off('newBoard');
+        socketService.off('updatedCard');
+        socketService.off('updatedBoard');
         socketService.terminate();
     }
 
@@ -64,7 +65,6 @@ export class _CardDetails extends Component {
     // CARD //
 
     setCard = async (cardId) => {
-        debugger
         await this.props.setCard(cardId);
         this.setState({ cardToEdit: this.props.card });
     }
@@ -90,15 +90,17 @@ export class _CardDetails extends Component {
     updateTitle = async (ev) => {
         ev.preventDefault();
         const { cardToEdit } = this.state;
-        await this.props.updateCard(cardToEdit);
+        const { board } = this.props;
+        const title = cardToEdit.title;
+        await this.props.updateCardCollection(board._id, cardToEdit._id, { title });
         await this.props.setCard(cardToEdit._id);
         this.myTextareaRef.blur();
     }
 
     deleteCard = async () => {
-        const { cardId, board } = this.props;
+        const { card, board } = this.props;
         const { listIdx } = this.state;
-        await this.props.deleteCard(board._id, listIdx, cardId);
+        await this.props.deleteCard(board._id, listIdx, card._id);
         this.onCloseModal();
     }
 
@@ -109,37 +111,39 @@ export class _CardDetails extends Component {
     }
 
     // DESCRIPTION //
-    onUpdateDescription = async (description) => {
-        const field = description;
-        this.setState(prevState => ({ cardToEdit: { ...prevState.cardToEdit, [field]: description } }));
-        const { cardToEdit } = this.state;
-        await this.props.updateCardCollection(cardToEdit, { description });
-        await this.props.setCard(cardToEdit._id);
+    updateDescription = async (description) => {
+        const { board, card } = this.props;
+        await this.props.updateCardCollection(board._id, card._id, { description });
+        await this.props.setCard(card._id);
     }
 
     // MEMBERS //
     addMember = async (member) => {
-        debugger
-        const { cardToEdit } = this.state;
-        let members = cardToEdit.members;
+        const { board, card } = this.props;
+        let members = card.members;
         members.push(member);
-        cardToEdit.members = members;
-        this.setState({ cardToEdit });
-        await this.props.updateCardCollection(cardToEdit, { members });
-        await this.props.setCard(cardToEdit._id);
+        await this.props.updateCardCollection(board._id, card._id, { members });
+        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
     // CHECKLIST //
     addChecklist = async (ev, checklist) => {
         ev.preventDefault();
-        const { cardToEdit } = this.state;
-        let checklists = cardToEdit.checklists;
+        const { board, card } = this.props;
+        let checklists = card.checklists;
         checklists.push(checklist);
-        this.setState({ cardToEdit });
-        await this.props.updateCardCollection(cardToEdit, { 'checklists': cardToEdit.checklists });
-        await this.props.setCard(cardToEdit._id);
+        await this.props.updateCardCollection(board._id, card._id, { checklists });
+        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
+    }
+
+    deleteChecklist = async (checklistIdx) => {
+        const { board, card } = this.props;
+        let checklists = card.checklists;
+        checklists.splice(checklistIdx, 1);
+        await this.props.updateCardCollection(board._id, card._id, { checklists });
+        await this.props.setCard(card._id);
     }
 
     addTodo = async (checklistIdx, todo) => {
@@ -148,16 +152,14 @@ export class _CardDetails extends Component {
         await this.props.setCard(card._id);
     }
 
-    onHandleCheckChecklist = async (todo, checklistIdx, todoIdx) => {
-        let { cardToEdit } = this.state;
-        let checklists = cardToEdit.checklists;
-        const checklist = checklists[checklistIdx]
+    handleCheckChecklist = async (todo, checklistIdx, todoIdx) => {
+        const { board, card } = this.props;
+        let checklists = card.checklists;
+        let checklist = checklists[checklistIdx]
         checklist.todos.splice(todoIdx, 1, todo);
-        cardToEdit.checklists = checklists;
-        this.setState({ cardToEdit }, async () => {
-            await this.props.updateCardCollection(cardToEdit, { checklists });
-        });
-        await this.props.setCard(cardToEdit._id)
+        checklists.splice(checklistIdx, 1, checklist);
+        await this.props.updateCardCollection(board._id, card._id, { checklists });
+        await this.props.setCard(card._id)
     }
 
     deleteTodo = async (checklistIdx, todoId) => {
@@ -169,10 +171,9 @@ export class _CardDetails extends Component {
     // DUE DATE //
     setDate = async (ev, date) => {
         ev.preventDefault();
-        const { cardToEdit } = this.state;
-        cardToEdit.dueDate = date;
-        await this.props.updateCard(cardToEdit)
-        await this.props.setCard(cardToEdit._id);
+        const { board, card } = this.props;
+        await this.props.updateCardCollection(board._id, card._id, { date })
+        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
@@ -185,48 +186,44 @@ export class _CardDetails extends Component {
         }
     }
 
-    deleteDueDate = async () => {
-        const { cardToEdit } = this.state;
-        cardToEdit.dueDate = '';
-        await this.props.updateCard(cardToEdit)
-        await this.props.setCard(cardToEdit._id);
+    onDeleteDueDate = async () => {
+        const { board, card } = this.props;
+        const dueDate = '';
+        await this.props.updateCardCollection(board._id, card._id, { dueDate })
+        await this.props.setCard(card._id);
     }
 
     // LABEL //
     addLabel = async (addedLabel) => {
-        let { cardToEdit } = this.state;
-        if (cardToEdit.labels.some(label => {
+        const { board, card } = this.props;
+        let labels = card.labels;
+        if (labels.some(label => {
             return label === addedLabel;
         })) return;
-        cardToEdit.labels.push(addedLabel);
-        this.setState({ cardToEdit });
-        const labels = cardToEdit.labels;
-        await this.props.updateCardCollection(cardToEdit, { labels });
-        await this.props.setCard(cardToEdit._id);
+        labels.push(addedLabel);
+        await this.props.updateCardCollection(board._id, card._id, { labels });
+        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
     // COVER //
     addCover = async (cover) => {
-        let { cardToEdit } = this.state;
-        let style = cardToEdit.style
-        style.cover = cover;
-        cardToEdit.style = style;
-        this.setState({ cardToEdit });
-        await this.props.updateCardCollection(cardToEdit, { style });
-        await this.props.setCard(cardToEdit._id);
+        const { board, card } = this.props;
+        const style = { cover };
+        await this.props.updateCardCollection(board._id, card._id, { style });
+        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
     // COMMENTS //
-    onAddComment = async (comment) => {
+    addComment = async (comment) => {
         const { card } = this.props;
         await this.props.addComment(card._id, comment);
         await this.props.setCard(card._id);
     }
 
-    onDeleteComment = async (commentId) => {
-        const cardId = this.props.cardId;
+    deleteComment = async (commentId) => {
+        const cardId = this.props.card._id;
         await this.props.deleteComment(cardId, commentId);
         await this.props.setCard(cardId);
     }
@@ -262,7 +259,7 @@ export class _CardDetails extends Component {
                     <div className="title-container">
                         <div className="headline flex align-center">
                             <i className="far fa-file-alt icon"></i>
-                            <form onSubmit={this.updateTitle} className="card-title-form">
+                            <form className="card-title-form">
                                 <textarea className="card-title" ref={el => this.myTextareaRef = el}
                                     name="title" value={cardToEdit.title}
                                     onChange={this.handleChangeCard} onKeyDown={this.onEnterPress}>
@@ -304,18 +301,18 @@ export class _CardDetails extends Component {
                                         {new Date() > new Date(card.dueDate) &&
                                             <span className="due-status over-due">Over Due</span>}
                                     </button>
-                                    <button className="delete-due-date" onClick={this.deleteDueDate}>
+                                    <button className="delete-due-date" onClick={this.onDeleteDueDate}>
                                         <i className="far fa-calendar-times"></i>
                                     </button>
                                 </div>}
                             </div>
-                            <CardDescription description={card.description} onUpdateDescription={this.onUpdateDescription} />
+                            <CardDescription description={card.description} updateDescription={this.updateDescription} />
                             {(card.checklists && card.checklists.length > 0) &&
-                                <CardChecklists checklists={card.checklists} onAddTodo={this.addTodo} onDeleteTodo={this.deleteTodo}
-                                    onHandleCheckChecklist={this.onHandleCheckChecklist} />}
+                                <CardChecklists checklists={card.checklists} addTodo={this.addTodo} onDeleteTodo={this.deleteTodo}
+                                    handleCheckChecklist={this.handleCheckChecklist} onDeleteChecklist={this.deleteChecklist} />}
                             <CardComments comments={card.comments} user={user}
-                                onAddComment={this.onAddComment}
-                                onDeleteComment={this.onDeleteComment} />
+                                addComment={this.addComment}
+                                onDeleteComment={this.deleteComment} />
                         </div>
                         <div className="side-container flex column">
                             <h4>ADD TO CARD</h4>

@@ -1,5 +1,4 @@
 import { httpService } from './httpService';
-import { socketService } from './socketService';
 
 export const boardService = {
     query,
@@ -12,7 +11,9 @@ export const boardService = {
     deleteList,
     getEmptyList,
     addMemberToBoard,
-    updateBoardCollection
+    updateBoardCollection,
+    deleteCard,
+    addNotification
 }
 
 // BOARD //
@@ -32,18 +33,20 @@ function addBoard(board) {
     return httpService.post(`board`, board);
 }
 
-function updateBoard(board) {
-    socketService.emit('savedBoard', board._id);
+function updateBoard(board) { 
     return httpService.put(`board/${board._id}`, board);
 }
 
 function updateBoardCollection(board, updatedObject) {
-    socketService.emit('savedBoard', board._id); 
-    return httpService.patch(`board/${board._id}`, { updatedObject })
+    return httpService.patch(`board/${board._id}`, updatedObject)
 }
 
 function addMemberToBoard(board, member) {
     return httpService.post(`board/${board._id}`, member)
+}
+
+function addNotification(boardId, notification) {
+    return httpService.post(`board/${boardId}/notification`, notification);
 }
 
 function getEmptyBoard() {
@@ -59,20 +62,24 @@ function getEmptyBoard() {
         lists: [],
         activities: [],
         isFavorite: false,
-        isTemplate: false
+        isTemplate: false,
+        notifications: []
     }
     return board;
 }
 
 // LIST //
-
 function addList(boardId, list) {
-    socketService.emit('savedBoard', boardId); 
     return httpService.post(`board/${boardId}/list`, list);
 }
+
 function deleteList(boardId, listId) {
-    socketService.emit('savedBoard', boardId); 
     return httpService.delete(`board/${boardId}/list/${listId}`);
+}
+
+// CARD //
+function deleteCard(boardId, listIdx, cardId) {
+    return httpService.delete(`board/${boardId}/list/${listIdx}/card/${cardId}`);
 }
 
 function getEmptyList() {

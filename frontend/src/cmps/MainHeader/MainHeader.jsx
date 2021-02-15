@@ -1,21 +1,18 @@
 import { Component } from 'react';
-import Avatar from 'react-avatar';
-import Logo from './../../assets/treller-logo.png';
-// import Menu from './../../assets/menu-icon.png';
-import Home from './../../assets/home-icon.png';
-import Notification from './../../assets/bell-icon.png';
-import LoginIcon from './../../assets/login-icon.png';
-
 import { connect } from 'react-redux';
 import { logout } from '../../store/actions/authActions';
 import { addBoard } from '../../store/actions/boardActions';
 import { Link, NavLink } from 'react-router-dom';
 
-import './MainHeader.scss';
-import { MainHeaderOptions } from '../MainHeaderOptions/MainHeaderOptions';
+import Avatar from 'react-avatar';
+import Logo from './../../assets/treller-logo.png';
+import Home from './../../assets/home-icon.png';
+import Notification from './../../assets/bell-icon.png';
+import LoginIcon from './../../assets/login-icon.png';
+import { Notifications } from '../Notifications/Notifications';
 import { Filter } from '../Filter/Filter';
-import { boardService } from '../../services/boardService';
-import { eventBus } from '../../services/eventBusService';
+
+import './MainHeader.scss';
 
 class _MainHeader extends Component {
 
@@ -53,7 +50,7 @@ class _MainHeader extends Component {
     }
 
     render() {
-        const { user, board, isHomePage, isUserPage } = this.props;
+        const { user, board, isHomePage, isUserPage, notifications } = this.props;
         const { isAvatarOptionsOpen, isNotifOptionOpen, mainHeaderOptionsType } = this.state;
         return (
             <header style={{ backgroundColor: board ? 'rgba(0,0,0,.15)' : (isHomePage || isUserPage) ? 'rgb(5, 97, 150)' : '' }}>
@@ -80,9 +77,10 @@ class _MainHeader extends Component {
                             <button className="icon-container no-button" onClick={() => this.openMainHeaderOptions('Notifications')}>
                                 <img className="icon" src={Notification} alt="notifications" />
                             </button>
-                            {isNotifOptionOpen && <MainHeaderOptions
+                            {isNotifOptionOpen && <Notifications
                                 type={mainHeaderOptionsType}
                                 closePopUp={this.toggleMainHeaderOptions}
+                                notifications={notifications}
                             />}
                         </div>}
                         {user && <Avatar className="avatar-member" name={user.fullName} size="40" round={true} onClick={this.toggleAvatarOptions} />}

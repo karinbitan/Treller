@@ -11,11 +11,11 @@ export function AddCard(props) {
 
     })
 
-    const addCard = (ev) => {
+    const onAddCard = (ev) => {
         ev.preventDefault();
         let emptyCard = cardService.getEmptyCard();
         emptyCard.title = cardTitleToEdit;
-        props.onAddCard(emptyCard);
+        props.addCard(emptyCard);
         newCardTitle('');
         toggleForm(false);
     }
@@ -23,7 +23,7 @@ export function AddCard(props) {
     return (
         <section className="add-card-container">
             {!isFormShow ? <div onClick={() => toggleForm(true)} className="add-card"><i className="fas fa-plus"></i> Add a card</div>
-                : <form onSubmit={(ev) => addCard(ev)} className="add-card-form">
+                : <form onSubmit={(ev) => onAddCard(ev)} className="add-card-form">
                     <input type="text" className="add-form" name="title"
                         value={cardTitleToEdit.title} onChange={(ev) => newCardTitle(ev.target.value)}
                         placeholder="Enter a title for this card" />

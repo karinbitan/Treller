@@ -1,4 +1,5 @@
 import { cardService } from '../../services/cardService';
+import { boardService } from '../../services/boardService';
 
 // Action Dispatcher
 
@@ -27,7 +28,8 @@ export function setCard(cardId) {
 export function deleteCard(boardId, listIdx, cardId) {
   return async dispatch => {
     try {
-      await cardService.deleteCard(boardId, listIdx, cardId);
+      await cardService.deleteCard(cardId);
+      await boardService.deleteCard(boardId, listIdx, cardId);
       dispatch({ type: 'DELETE_CARD', cardId })
     } catch (err) {
       console.log('ERROR!', err);
@@ -46,10 +48,10 @@ export function addCard(boardId, listId, listIdx, card) {
   }
 }
 
-export function updateCard(card) {
+export function updateCard(boardId, card) {
   return async dispatch => {
     try {
-      const savedCard = await cardService.updateCard(card)
+      const savedCard = await cardService.updateCard(boardId, card)
       dispatch(_cardUpdate(savedCard));
       dispatch({ type: 'SET_CARD', card: savedCard })
     } catch (err) {
@@ -58,10 +60,10 @@ export function updateCard(card) {
   }
 }
 
-export function updateCardCollection(cardId, updateObject) {
+export function updateCardCollection(boardId, cardId, updateObject) {
   return async dispatch => {
     try {
-      const savedCard = await cardService.updateCardCollection(cardId, updateObject)
+      const savedCard = await cardService.updateCardCollection(boardId, cardId, updateObject)
       dispatch(_cardUpdate(savedCard));
       dispatch({ type: 'SET_CARD', card: savedCard })
     } catch (err) {
@@ -74,8 +76,7 @@ export function addComment(cardId, comment) {
   return async dispatch => {
     try {
       const realCard = await cardService.addComment(cardId, comment);
-      const savedCard = await cardService.updateCard(realCard);
-      dispatch(_cardUpdate(savedCard));
+      dispatch(_cardUpdate(realCard));
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -86,8 +87,7 @@ export function deleteComment(cardId, commentId) {
   return async dispatch => {
     try {
       const realCard = await cardService.deleteComment(cardId, commentId);
-      const savedCard = await cardService.updateCard(realCard);
-      dispatch(_cardUpdate(savedCard));
+      dispatch(_cardUpdate(realCard));
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -98,8 +98,7 @@ export function addTodo(cardId, checklistIdx, todo) {
   return async dispatch => {
     try {
       const realCard = await cardService.addTodo(cardId, checklistIdx, todo);
-      const savedCard = await cardService.updateCard(realCard);
-      dispatch(_cardUpdate(savedCard));
+      dispatch(_cardUpdate(realCard));
     } catch (err) {
       console.log('ERROR!', err);
     }
@@ -110,8 +109,7 @@ export function deleteTodo(cardId, checklistIdx, todoId) {
   return async dispatch => {
     try {
       const realCard = await cardService.deleteTodo(cardId, checklistIdx, todoId);
-      const savedCard = await cardService.updateCard(realCard);
-      dispatch(_cardUpdate(savedCard));
+      dispatch(_cardUpdate(realCard));
     } catch (err) {
       console.log('ERROR!', err);
     }

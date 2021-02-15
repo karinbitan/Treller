@@ -28,10 +28,9 @@ export class AddList extends Component {
     }
 
     onAddList = (ev) => {
-        ev.stopPropagation();
         ev.preventDefault();
         const { listToEdit } = this.state;
-        this.props.onAddList(listToEdit);
+        this.props.addList(listToEdit);
         this.setState({ showingAddListForm: false });
         this.setState(({ listToEdit: { ...this.state.listToEdit, title: '' } }));
     }

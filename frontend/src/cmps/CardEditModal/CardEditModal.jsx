@@ -6,17 +6,17 @@ export function CardEditModal(props) {
     const [cardTitle, changeCardTitle] = useState(props.cardTitle);
 
     useEffect(() => {
-        console.log(props)
+        // console.log(props)
     })
 
     const onUpdateCardTitle = (ev) => {
         ev.preventDefault();
-        props.onUpdateCardTitle(cardTitle)
+        props.updateCardTitle(cardTitle)
     }
 
     return (
         <section className="card-edit modal">
-            <button className="close-btn" onClick={() => props.onCloseEditModal}><i className="fas fa-times"></i></button>
+            <button className="close-btn" onClick={props.onCloseEditModal}><i className="fas fa-times"></i></button>
             <div className="card-edit modal-content"
                 style={{ top: props.screenCard.top - 99, left: props.screenCard.left - 214 }}
             >
@@ -26,8 +26,8 @@ export function CardEditModal(props) {
                     <button className="add-form-btn">Save card</button>
                 </form>
                 <div className="card-edit-options">
-                    <p onClick={() => props.onCopyCard}>Copy card</p>
-                    <p onClick={() => props.onDeleteCard}>Delete card</p>
+                    <p onClick={props.onCopyCard}>Copy card</p>
+                    <p onClick={props.onDeleteCard}>Delete card</p>
                 </div>
             </div>
         </section>

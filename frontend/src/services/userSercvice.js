@@ -3,7 +3,8 @@ export const userService = {
     query,
     getUserById,
     updateUser,
-    getEmptyUser
+    getEmptyUser,
+    updateUserCollection
 }
 
 function query(filter = null) {
@@ -23,6 +24,10 @@ function updateUser(user) {
     return httpService.put(`user/${user._id}`, user);
 }
 
+function updateUserCollection(user, updatedObject) {
+    return httpService.patch(`user/${user._id}`, updatedObject);
+}
+
 function getEmptyUser() {
     const user = {
         fullName: '',
@@ -31,7 +36,8 @@ function getEmptyUser() {
         imgUrl: '',
         boardOwner: [],
         boardMember: [],
-        cardMember : []
+        cardMember : [],
+        favoriteBoards: []
     }
     return user;
 }

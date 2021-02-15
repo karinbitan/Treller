@@ -7,7 +7,7 @@ import './BoardHeader.scss';
 export class BoardHeader extends Component {
     state = {
         boardToEdit: null,
-        isStarred: false,
+        isFavorite: false,
         isMenuOpen: false,
         isStyleMenuOpen: false,
         style: {
@@ -21,9 +21,11 @@ export class BoardHeader extends Component {
         const field = 'backgroundColor';
         const value = boardToEdit.style.backgroundColor;
         this.setState(({ style: { ...this.state.style, [field]: value } }))
-        this.setState({ isStarred: this.props.board.isFavorite });
-
-        console.log('mount', this.props.board.title)
+        
+        const isFavorite = this.props.user.favoriteBoards.some(favoriteBoardId => {
+            return favoriteBoardId === boardToEdit._id;
+        })
+        this.setState({isFavorite})
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -53,12 +55,12 @@ export class BoardHeader extends Component {
         ev.preventDefault();
         const { boardToEdit } = this.state;
         this.myTextRef.blur();
-        this.props.onUpdateBoard(boardToEdit);
+        this.props.updateBoardTitle(boardToEdit.title);
     }
 
     onFavoriteBoard = async () => {
-        this.setState({ isStarred: !this.state.isStarred }, () => {
-            this.props.onFavoriteBoard(this.state.isStarred);
+        this.setState({ isFavorite: !this.state.isFavorite }, () => {
+            this.props.favoriteBoard(this.state.isFavorite);
         });
     }
 
@@ -71,21 +73,23 @@ export class BoardHeader extends Component {
     }
 
     onDeleteBoard() {
-        this.props.onDeleteBoard();
+        this.props.deleteBoard();
     }
 
-    onAddMemberToBoard = (member) => {
-        this.props.onAddMemberToBoard(member);
+    addMemberToBoard = (member) => {
+        this.props.addMemberToBoard(member);
     }
 
     onAddBoardWithTemplate = () => {
         const { board } = this.props;
-        this.props.onAddBoard(board);
+        this.props.addBoard(board);
     }
 
     render() {
-        const { board } = this.props;
-        const { boardToEdit, isStarred, isMenuOpen, isStyleMenuOpen } = this.state;
+        // Favorite board not working!!! //
+        const { board, user } = this.props;
+        const { boardToEdit, isFavorite, isMenuOpen, isStyleMenuOpen } = this.state;
+
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
@@ -95,7 +99,7 @@ export class BoardHeader extends Component {
                             value={boardToEdit.title} onChange={this.handleChangeBoard} />
                     </form>
                     <button onClick={this.onFavoriteBoard} className="board-header-icon favorite-board">
-                        <i style={isStarred ? { color: "#f2d600" } : {}} className="far fa-star"></i></button>
+                        <i style={isFavorite ? { color: "#f2d600" } : {}} className="far fa-star"></i></button>
                          |
                 <div className="board-header-icon avatar-container">
                         {board.members.map(member => {
@@ -103,7 +107,7 @@ export class BoardHeader extends Component {
                         })}
                     </div>
         |
-        <InviteMembers board={board} onAddMemberToBoard={this.onAddMemberToBoard} />
+        <InviteMembers board={board} addMemberToBoard={this.addMemberToBoard} />
                     <div className="menu-container flex">
                         <button className="board-header-icon show-menu-icon" onClick={this.toggleMenu}>
                             <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
@@ -132,7 +136,7 @@ export class BoardHeader extends Component {
                                 </div>}
                         </div>}
                     </div>
-                   {board.isTemplate &&  <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
+                    {board.isTemplate && <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
                         Create Board From Template
                         </button>}
                 </section>}

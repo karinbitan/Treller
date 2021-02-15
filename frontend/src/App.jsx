@@ -23,7 +23,7 @@ export default function ModalGalleryExample() {
   );
 }
 
-function App() {
+export function App() {
   const location = useLocation();
   const background = location.state && location.state.background;
 

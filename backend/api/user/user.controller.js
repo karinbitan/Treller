@@ -42,10 +42,24 @@ async function updateUser(req, res) {
     }
 }
 
+async function updateUserCollection(req, res) {
+    const userId = req.params.id;
+    const updatedObject = req.body;
+    try {
+        await userService.updateUserCollection(userId ,updatedObject)
+        const realUser = await userService.getUserById(userId);
+        res.send(realUser)
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+
 
 module.exports = {
     getUserById,
     getUsers,
     deleteUser,
-    updateUser
+    updateUser,
+    updateUserCollection
 }

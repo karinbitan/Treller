@@ -1,8 +1,7 @@
 const boardService = require('./board.service');
-// const cardService = require('./../card/card.service');
 const userService = require('./../user/user.service');
-const logger = require('../../services/logger.service');
 const utilService = require('./../../services/util.service');
+const {socketConnection} = require('./../../server');
 
 // BOARD CRUD //
 
@@ -69,7 +68,8 @@ async function updateBoard(req, res) {
     const board = req.body;
     try {
         await boardService.updateBoard(board);
-        const realBoard = await boardService.getBoardById(board._id)
+        const realBoard = await boardService.getBoardById(board._id);
+        socketConnection.to(boardId).emit('updatedBoard', boardId);
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -82,7 +82,8 @@ async function updateBoardCollection(req, res) {
     const updatedObject = req.body;
     try {
         await boardService.updateBoardCollection(boardId, updatedObject);
-        const realBoard = await boardService.getBoardById(boardId)
+        const realBoard = await boardService.getBoardById(boardId);
+        socketConnection.to(boardId).emit('updatedBoard', boardId);
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -96,7 +97,20 @@ async function addMemberToBoard(req, res) {
     try {
         await boardService.addMemberToBoard(boardId, member);
         await userService.addMemberToBoard(boardId, member);
-        const realBoard = await boardService.getBoardById(boardId)
+        const realBoard = await boardService.getBoardById(boardId);
+        res.send(realBoard);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+
+async function addNotification(req, res) {
+    const boardId = req.params.id;
+    const notification = req.body;
+    try {
+        await boardService.addNotification(boardId, notification);
+        const realBoard = await boardService.getBoardById(boardId);
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -111,6 +125,7 @@ async function addList(req, res) {
     list._id = utilService._makeId();
     try {
         const realList = await boardService.addList(boardId, list);
+        socketConnection.to(boardId).emit('updatedBoard', boardId)
         res.send(realList);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -123,6 +138,20 @@ async function deleteList(req, res) {
     const { listId } = req.params;
     try {
         await boardService.deleteList(boardId, listId);
+        socketConnection.to(boardId).emit('updatedBoard', boardId)
+        res.end();
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+
+// CARD //
+async function deleteCard(req, res) {
+    const { id, listIdx, cardId } = req.params;
+    try {
+        await boardService.deleteCard(id, listIdx, cardId);
+        socketConnection.to(id).emit('updatedBoard', id)
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -139,5 +168,7 @@ module.exports = {
     updateBoardCollection,
     addMemberToBoard,
     addList,
-    deleteList
+    deleteList,
+    deleteCard,
+    addNotification
 }

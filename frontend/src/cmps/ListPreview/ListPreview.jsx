@@ -1,28 +1,10 @@
 import { Component } from 'react'
 import { Draggable } from 'react-beautiful-dnd';
-// import { connect } from 'react-redux';
-// import { getBoardById } from '../../store/actions/boardActions';
-// import { addCard } from '../../store/actions/cardActions';
-
 import { AddCard } from '../AddCard/AddCard';
 import { CardPreview } from '../CardPreview';
 
 
-import './ListPreview.scss'
-
-// const reorder = (list, startIndex, endIndex) => {
-//     const result = Array.from(list);
-//     const [removed] = result.splice(startIndex, 1);
-//     result.splice(endIndex, 0, removed);
-
-//     return result;
-// };
-
-// //
-// const getListStyle = isDraggingOver => ({
-//     background: isDraggingOver ? '#6a7eb4' : '#ebecf0',
-//     // display: 'flex',
-// });
+import './ListPreview.scss';
 
 const getItemStyle = (isDragging, draggableStyle) => ({
     // some basic styles to make the items look a bit nicer
@@ -34,7 +16,6 @@ const getItemStyle = (isDragging, draggableStyle) => ({
     // styles we need to apply on draggables
     ...draggableStyle,
 });
-//
 
 export class ListPreview extends Component {
 
@@ -54,7 +35,6 @@ export class ListPreview extends Component {
             this.setState({ listToEdit });
         }
     }
-
 
     handleChange = ({ target }) => {
         const field = target.name;
@@ -76,9 +56,9 @@ export class ListPreview extends Component {
         this.myTextareaRef.blur();
     }
 
-    onDeleteList = () => {
+    deleteList = () => {
         const { list } = this.props;
-        this.props.onDeleteList(list);
+        this.props.deleteList(list);
         this.setState({ listActionOpen: false });
     }
 
@@ -94,17 +74,18 @@ export class ListPreview extends Component {
     }
 
     // CARD //
-    onAddCard = (card) => {
+    addCard = (card) => {
         const { list, listIdx } = this.props;
-        this.props.onAddCard(list._id, listIdx, card)
+        this.props.addCard(list._id, listIdx, card)
     }
 
-    onDeleteCard = (cardId) => {
-        this.props.onDeleteCard(this.props.listIdx, cardId);
+    deleteCard = (cardId) => {
+        const { listIdx } = this.props;
+        this.props.deleteCard(listIdx, cardId);
     }
 
-    onUpdateCardTitle = (cardId, cardTitle) => {
-        this.props.onUpdateCardTitle(cardId, cardTitle);
+    updateCardTitle = (cardId, cardTitle) => {
+        this.props.updateCardTitle(cardId, cardTitle);
     }
 
     render() {
@@ -142,13 +123,12 @@ export class ListPreview extends Component {
                                                 provided.draggableProps.style
                                             )}
                                             ref={provided.innerRef}>
-                                            <CardPreview card={card}
-                                                listIdx={listIdx}
+                                            <CardPreview
+                                                card={card}
                                                 key={card._id}
-                                                list={list}
-                                                onDeleteCard={this.onDeleteCard}
-                                                onUpdateCardTitle={this.onUpdateCardTitle}
-                                                onAddCard={this.onAddCard} />
+                                                deleteCard={this.deleteCard}
+                                                updateCardTitle={this.updateCardTitle}
+                                                addCard={this.addCard} />
                                         </div>
                                     )}
                                 </Draggable>
@@ -156,7 +136,7 @@ export class ListPreview extends Component {
                     })}
                     {provided.placeholder}
                 </div>}
-                <AddCard onAddCard={this.onAddCard} />
+                <AddCard addCard={this.addCard} />
             </section >
         )
     }

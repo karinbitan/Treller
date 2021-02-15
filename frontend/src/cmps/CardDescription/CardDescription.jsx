@@ -6,9 +6,9 @@ export function CardDescription(props) {
     const [isDescriptionFormShow, toggleDescriptionForm] = useState(false)
     const [descriptionFormType, changeDescriptionForm] = useState('fake')
 
-    const updateDescription = (ev) => {
+    const onUpdateDescription = (ev) => {
         ev.preventDefault();
-        props.onUpdateDescription(description);
+        props.updateDescription(description);
         setDescription(description);
         toggleDescriptionForm(false);
         changeDescriptionForm('fake');
@@ -36,7 +36,7 @@ export function CardDescription(props) {
                         </button>}
             </div>
             <form className="description-form"
-                onSubmit={(ev) => updateDescription(ev)}>
+                onSubmit={(ev) => onUpdateDescription(ev)}>
                 <textarea
                     onClick={() => openDescriptionForm()}
                     onBlur={() => toggleDescriptionForm(false)}

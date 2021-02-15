@@ -1,9 +1,12 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { setBoard, addBoard, updateBoard, addList, deleteList, updateBoardCollection, addMemberToBoard } from '../../store/actions/boardActions';
+import {
+    setBoard, addBoard, updateBoard, addList, deleteList, updateBoardCollection,
+    addMemberToBoard, addNotification
+} from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { addCard, deleteCard, updateCard } from '../../store/actions/cardActions';
-import { getUsers, updateUser } from './../../store/actions/userActions';
+import { addCard, deleteCard, updateCard, updateCardCollection } from '../../store/actions/cardActions';
+import { getUsers, updateUser, updateUserCollection } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService.js';
@@ -20,6 +23,7 @@ class _TrellerApp extends Component {
 
     state = {
         boardToEdit: null,
+        notifications: []
     }
 
     async componentDidMount() {
@@ -34,22 +38,36 @@ class _TrellerApp extends Component {
         })
         socketService.setup();
         socketService.emit('register board', boardId);
-        socketService.on('newBoard', (boardId) => this.setBoard(boardId));
-
-        console.log(this.props.board)
+        socketService.on('updatedBoard', (boardId) => {
+            console.log(boardId)
+            this.setBoard(boardId)
+        });
+        socketService.on('newNotification', (msg) => {
+            this.addNotification(msg);
+        })
+        const notifications = this.props.board.notifications;
+        console.log(notifications)
+        this.setState({notifications})
     }
 
     async componentDidUpdate(prevProps, prevState) {
         const boardId = this.props.match.params.id;
         if (prevProps.match.params.id !== this.props.match.params.id) {
-            await this.props.setBoard(boardId)
+            console.log('bla')
+            await this.props.setBoard(boardId);
+            this.props.history.push(`/treller/board/${boardId}`)
         }
     }
 
     componentWillUnmount() {
-        console.log('unmount')
-        socketService.off('newBoard');
+        socketService.off('updatedBoard');
         socketService.terminate();
+    }
+
+    addNotification = async (notification) => {
+        debugger
+        const boardId = this.props.board._id;
+        await this.props.addNotification(boardId, notification);
     }
 
     setBoard = async (boardId) => {
@@ -57,27 +75,34 @@ class _TrellerApp extends Component {
         this.setState({ boardToEdit: this.props.board })
     }
 
-    onUpdateBoard = async (boardToEdit) => {
-        await this.props.updateBoard(boardToEdit);
-        await this.props.setBoard(boardToEdit._id)
-    }
-
-    onChangeStyle = async (style) => {
-        const { boardToEdit } = this.state;
-        boardToEdit.style = style;
-        this.setState({ boardToEdit });
-        await this.props.updateBoard(boardToEdit);
-        await this.props.setBoard(boardToEdit._id);
-    }
-
-    onFavoriteBoard = async (isFavorite) => {
+    updateBoardTitle = async (title) => {
         const { board } = this.props;
-        await this.props.updateBoardCollection(board, { isFavorite });
+        await this.props.updateBoardCollection(board, { title });
+        await this.props.setBoard(board._id);
+    }
+
+    changeStyle = async (style) => {
+        const { board } = this.props;
+        await this.props.updateBoardCollection(board, { style });
+        await this.props.setBoard(board._id);
+    }
+
+    favoriteBoard = async (isFavorite) => {
+        const { board, user } = this.props;
+        const favoriteBoards = [];
+        if (isFavorite) favoriteBoards.push(board._id);
+        else {
+            const idx = favoriteBoards.findIndex(favoriteBoard => {
+                return favoriteBoard._id === board._id;
+            })
+            favoriteBoards.splice(idx);
+        }
+        await this.props.updateUserCollection(user, { favoriteBoards });
         await this.props.setBoard(board._id);
     }
 
     // Why it stop after add board? //
-    onAddBoard = async (boardToAdd = null) => {
+    addBoard = async (boardToAdd = null) => {
         if (!boardToAdd) {
             boardToAdd = boardService.getEmptyBoard();
         }
@@ -88,15 +113,14 @@ class _TrellerApp extends Component {
 
     }
 
-    onAddMemberToBoard = async (member) => {
-        debugger
+    addMemberToBoard = async (member) => {
         const { board } = this.props;
         await this.props.addMemberToBoard(board, member);
     }
 
 
     // LIST //
-    onAddList = async (list) => {
+    addList = async (list) => {
         const { board } = this.props;
         await this.props.addList(board._id, list);
         await this.props.setBoard(board._id);
@@ -108,7 +132,7 @@ class _TrellerApp extends Component {
     //     await this.props.setBoard(board._id);
     // }
 
-    onUpdateList = async (savedList) => {
+    udateList = async (savedList) => {
         const { board } = this.props;
         const lists = board.lists;
         const idx = lists.findIndex(list => {
@@ -126,7 +150,7 @@ class _TrellerApp extends Component {
         })
     }
 
-    onDeleteList = async (list) => {
+    deleteList = async (list) => {
         const { board } = this.props;
         await this.props.deleteList(board._id, list._id);
         await this.props.setBoard(board._id);
@@ -138,26 +162,25 @@ class _TrellerApp extends Component {
     }
 
     // CARD //
-    onAddCard = async (listId, listIdx, card) => {
-        debugger
+    addCard = async (listId, listIdx, card) => {
         const { board } = this.props;
         await this.props.addCard(board._id, listId, listIdx, card);
         await this.props.setBoard(board._id);
 
-        const msg = '!!!'
-        socketService.emit('sendNotification', msg)
+        // const msg = '!!!'
+        // socketService.emit('sendNotification', msg)
     }
 
-    onDeleteCard = async (listIdx, cardId) => {
+    deleteCard = async (listIdx, cardId) => {
         const { board } = this.props;
         await this.props.deleteCard(board._id, listIdx, cardId);
         await this.props.setBoard(board._id);
     }
 
-    onUpdateCardTitle = async (cardId, cardTitle) => {
+    updateCardTitle = async (cardId, cardTitle) => {
         const { board } = this.props;
-        const title = { cardTitle }
-        await this.props.updateCardCollection(cardId, { title });
+        const title = cardTitle;
+        await this.props.updateCardCollection(board._id, cardId, { title });
         await this.props.setBoard(board._id)
     }
 
@@ -267,80 +290,82 @@ class _TrellerApp extends Component {
             }
             boardToEdit.lists = lists;
 
-            await this.setState({ boardToEdit }, async () => {
+            this.setState({ boardToEdit }, async () => {
                 await this.props.updateBoard(boardToEdit)
             })
         }
     };
 
-
     render() {
         const { board, user } = this.props;
-        const { boardToEdit } = this.state;
+        const { boardToEdit, notifications } = this.state;
         return (
             <section>
-                {(board && boardToEdit) && <section className="treller-app"
-                    style={{
-                        backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
-                        backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
-                    }}>
-                    {(board && user) && <MainHeader board={board} user={user} />}
-                    <BoardHeader onUpdateBoard={this.onUpdateBoard}
-                        onFavoriteBoard={this.onFavoriteBoard}
+                {(board && user && boardToEdit) && <section style={{
+                    backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
+                    backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
+                }}>
+                    <MainHeader board={board} user={user} notifications={notifications} />
+                    <BoardHeader
+                        user={user}
+                        updateBoardTitle={this.updateBoardTitle}
+                        favoriteBoard={this.favoriteBoard}
                         board={board}
-                        onChangeStyle={this.onChangeStyle}
-                        onAddMemberToBoard={this.onAddMemberToBoard}
-                        onAddBoard={this.onAddBoard}
+                        changeStyle={this.changeStyle}
+                        addMemberToBoard={this.addMemberToBoard}
+                        addBoard={this.addBoard}
                     />
-                    <section className="lists flex column">
-                        <DragDropContext onDragEnd={this.onDragEnd}>
-                            <Droppable droppableId="dropable-list" direction="horizontal" type="list">
-                                {(provided, snapshot) => (
-                                    <div className="droppable-container flex"
-                                        style={this.getListStyle(snapshot.isDraggingOver)}
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}>
-                                        {board.lists.map((list, idx) => {
-                                            return (
-                                                <Draggable draggableId={list._id} key={list._id} index={idx}>
-                                                    {(provided, snapshot) => (
-                                                        <div className="list"
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            style={this.getItemStyle(
-                                                                snapshot.isDragging,
-                                                                provided.draggableProps.style
-                                                            )}
-                                                            ref={provided.innerRef}>
-                                                            <Droppable droppableId={list._id} direction="vertical" type="card">
-                                                                {(provided, snapshot) => (
-                                                                    <div className="card-list flex column"
-                                                                        style={this.getListStyle(snapshot.isDraggingOver)}
-                                                                        {...provided.droppableProps}
-                                                                        ref={provided.innerRef}>
-                                                                        <ListPreview list={list} listIdx={idx} key={idx} board={this.props.board}
-                                                                            innerRef={provided.innerRef}
-                                                                            provided={provided}
-                                                                            isDraggingOver={snapshot.isDraggingOver}
-                                                                            onDeleteList={this.onDeleteList}
-                                                                            onUpdateList={this.onUpdateList}
-                                                                            onDeleteCard={this.onDeleteCard}
-                                                                            onUpdateCard={this.onUpdateCard}
-                                                                            onAddCard={this.onAddCard} />
-                                                                    </div>
+                    <section className="treller-app">
+                        <section className="lists flex column">
+                            <DragDropContext onDragEnd={this.onDragEnd}>
+                                <Droppable droppableId="dropable-list" direction="horizontal" type="list">
+                                    {(provided, snapshot) => (
+                                        <div className="droppable-container flex"
+                                            style={this.getListStyle(snapshot.isDraggingOver)}
+                                            {...provided.droppableProps}
+                                            ref={provided.innerRef}>
+                                            {board.lists.map((list, idx) => {
+                                                return (
+                                                    <Draggable draggableId={list._id} key={list._id} index={idx}>
+                                                        {(provided, snapshot) => (
+                                                            <div className="list"
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={this.getItemStyle(
+                                                                    snapshot.isDragging,
+                                                                    provided.draggableProps.style
                                                                 )}
-                                                            </Droppable>
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            )
-                                        })}
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
-                        <AddList onAddList={this.onAddList} />
+                                                                ref={provided.innerRef}>
+                                                                <Droppable droppableId={list._id} direction="vertical" type="card">
+                                                                    {(provided, snapshot) => (
+                                                                        <div className="card-list flex column"
+                                                                            style={this.getListStyle(snapshot.isDraggingOver)}
+                                                                            {...provided.droppableProps}
+                                                                            ref={provided.innerRef}>
+                                                                            <ListPreview list={list} listIdx={idx} key={idx} board={this.props.board}
+                                                                                innerRef={provided.innerRef}
+                                                                                provided={provided}
+                                                                                isDraggingOver={snapshot.isDraggingOver}
+                                                                                deleteList={this.deleteList}
+                                                                                updateList={this.updateList}
+                                                                                deleteCard={this.deleteCard}
+                                                                                updateCardTitle={this.updateCardTitle}
+                                                                                addCard={this.addCard} />
+                                                                        </div>
+                                                                    )}
+                                                                </Droppable>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                )
+                                            })}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+                            <AddList addList={this.addList} />
+                        </section>
                     </section>
                 </section>}
             </section>
@@ -351,8 +376,7 @@ class _TrellerApp extends Component {
 function mapStateToProps(state) {
     return {
         board: state.boardReducer.currBoard,
-        user: state.userReducer.loggedInUser,
-        users: state.userReducer.users
+        user: state.userReducer.loggedInUser
     }
 }
 const mapDispatchToProps = {
@@ -368,6 +392,9 @@ const mapDispatchToProps = {
     addMemberToBoard,
     getUsers,
     getLoggedInUser,
-    updateUser
+    updateUser,
+    updateUserCollection,
+    updateCardCollection,
+    addNotification
 }
 export const TrellerApp = connect(mapStateToProps, mapDispatchToProps)(_TrellerApp)
