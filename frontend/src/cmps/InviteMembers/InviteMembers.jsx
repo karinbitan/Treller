@@ -36,19 +36,33 @@ class _InviteMembers extends Component {
         this.setState({ searchResult: res })
     }
 
-    inviteMember = (member) => {
-        this.setState({isInviteMenuOpen: false})
-        this.props.addMemberToBoard(member);
+    onInviteMember = (member) => {
+        if (this.isMember(member._id)) return;
+        this.setState({ isInviteMenuOpen: false })
+        this.props.inviteMemberToBoard(member);
+    }
+
+    isMember = (userId) => {
+        const { board } = this.props;
+        const isMember = board.members.find(member => {
+            return member._id === userId
+        })
+        return isMember;
+    }
+
+    isUser = (userId) => {
+        const { user } = this.props;
+        if (user._id === userId) return true;
+        else return false;
     }
 
     render() {
-        const { board } = this.props;
         const { isInviteMenuOpen, searchResult } = this.state;
         return (
-            <section className="invite-container">
+            <section className="invite-container" >
                 <button onClick={this.toggleInviteMenu} className="board-header-icon invite-btn">Invite</button>
-                {isInviteMenuOpen && <div className="invite pop-up">
-                    <button onClick={this.toggleInviteMenu}><i className="fas fa-times"></i></button>
+                { isInviteMenuOpen && <div className="invite pop-up">
+                    <button onClick={this.toggleInviteMenu} className="close-btn"><i className="fas fa-times"></i></button>
                     <p className="headline">Invite</p>
                     <form className="invite-form">
                         <input className="invite-search" type="search" name="txt" onChange={this.handleChangeInvite}
@@ -59,15 +73,15 @@ class _InviteMembers extends Component {
                     </form>
                     {(searchResult && searchResult.length > 0) && <div>
                         <ul className="result-container">
-                            {searchResult.map(result => {
+                            {searchResult.map(user => {
+                                if (this.isUser(user._id)) return;
                                 return (
-                                    <li onClick={() => this.inviteMember(result)} className="flex align-center"
-                                        key={result._id}>
-                                        <Avatar name={result.fullName} size={20} round={true} />
-                                        <span className="user-name">{result.fullName}</span>
-                                        {board.members.find(member => {
-                                            return member._id === result._id
-                                        }) && <i className="fas fa-check" title="This user is already a member"></i>}
+                                    <li onClick={() => this.onInviteMember(user)}
+                                        className={`flex align-center ${this.isMember(user._id) ? 'already-member' : ''}`}
+                                        title={`${this.isMember(user._id) ? 'This user is already a member in this board' : ''}`}
+                                        key={user._id}>
+                                        <Avatar name={user.fullName} size={20} round={true} />
+                                        <span className="user-name">{user.fullName}</span>
                                     </li>)
                             })}
                         </ul>

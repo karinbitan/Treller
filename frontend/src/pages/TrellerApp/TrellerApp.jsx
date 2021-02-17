@@ -2,11 +2,11 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     setBoard, addBoard, updateBoard, addList, deleteList, updateBoardCollection,
-    addMemberToBoard, addBoardNotification, deleteBoard
+    inviteMemberToBoard, deleteBoard
 } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { addCard, deleteCard, updateCard, updateCardCollection } from '../../store/actions/cardActions';
-import { getUsers, updateUser, updateUserCollection, addUserNotification } from './../../store/actions/userActions';
+import { getUsers, updateUser, updateUserCollection } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService.js';
@@ -16,6 +16,7 @@ import { ListPreview } from './../../cmps/ListPreview';
 import { AddList } from '../../cmps/AddList/AddList';
 import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
+import { NotificiationMsg } from '../../cmps/NotificiationMsg/NotificiationMsg';
 
 import './TrellerApp.scss';
 
@@ -23,8 +24,7 @@ class _TrellerApp extends Component {
 
     state = {
         boardToEdit: null,
-        boardNotifications: [],
-        userNotifications: []
+        notification: null
     }
 
     async componentDidMount() {
@@ -45,16 +45,14 @@ class _TrellerApp extends Component {
             this.setBoard(boardId)
         });
         socketService.on('newNotification', (msg) => {
-            this.addBoardNotification(msg);
+            this.setState({ notification: msg })
             console.log(msg)
         })
-        socketService.on('newUserNotification', (msg) => {
-            this.addUserNotification(msg);
-        })
-        const boardNotifications = this.props.board.notifications;
-        this.setState({ boardNotifications })
-        const userNotifications = this.props.user.notifications;
-        this.setState({ userNotifications })
+
+        // Move to app //
+        // socketService.on('newUserNotification', (msg) => {
+        //     this.addUserNotification(msg);
+        // })
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -65,23 +63,10 @@ class _TrellerApp extends Component {
         }
     }
 
-    componentWillUnmount() {
-        socketService.off('updatedBoard');
-        socketService.terminate();
-    }
-
-    addBoardNotification = async (notification) => {
-        const boardId = this.props.board._id;
-        await this.props.addBoardNotification(boardId, notification);
-        await this.props.setBoard(boardId); 
-    }
-
-    addUserNotification = async (notification) => {
-        const userId = this.props.user._id;
-        const boardId = this.props.board._id;
-        await this.props.addUserNotification(userId, notification);
-        await this.props.setBoard(boardId);
-    }
+    // componentWillUnmount() {
+    //     socketService.off('register board', boardId);
+    //     socketService.terminate();
+    // }
 
     setBoard = async (boardId) => {
         await this.props.setBoard(boardId);
@@ -110,7 +95,7 @@ class _TrellerApp extends Component {
             })
             favoriteBoards.splice(idx);
         }
-        await this.props.updateUserCollection(user, { favoriteBoards });
+        await this.props.updateUserCollection(user._id, { favoriteBoards });
         await this.props.setBoard(board._id);
     }
 
@@ -121,12 +106,11 @@ class _TrellerApp extends Component {
         const board = await this.props.addBoard(boardToAdd);
         await this.props.setBoard(board._id);
         this.props.history.push(`/treller/board/${board._id}`);
-
     }
 
-    addMemberToBoard = async (member) => {
+    inviteMemberToBoard = async (member) => {
         const { board } = this.props;
-        await this.props.addMemberToBoard(board._id, member);
+        await this.props.inviteMemberToBoard(board, member);
         await this.props.setBoard(board._id);
     }
 
@@ -294,28 +278,30 @@ class _TrellerApp extends Component {
 
     render() {
         const { board, user } = this.props;
-        const { boardToEdit, boardNotifications, userNotifications } = this.state;
+        const { boardToEdit, notification } = this.state;
         return (
             <section>
-                {(board && user && boardToEdit) && <section className="background" style={{
+                {((board && boardToEdit) && user) && <section className="background" style={{
                     backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
                     backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
                 }}>
                     <MainHeader
                         board={board}
                         user={user}
-                        boardNotifications={boardNotifications}
-                        userNotifications={userNotifications} />
+                    />
                     <BoardHeader
                         user={user}
                         updateBoardTitle={this.updateBoardTitle}
                         favoriteBoard={this.favoriteBoard}
                         board={board}
                         changeStyle={this.changeStyle}
-                        addMemberToBoard={this.addMemberToBoard}
+                        inviteMemberToBoard={this.inviteMemberToBoard}
                         addBoard={this.addBoard}
                         onDeleteBoard={this.deleteBoard}
                     />
+                    <div>
+                        {notification && <NotificiationMsg notification={notification} user={user} />}
+                    </div>
                     <section className="treller-app">
                         <section className="lists flex column">
                             <DragDropContext onDragEnd={this.onDragEnd}>
@@ -390,14 +376,12 @@ const mapDispatchToProps = {
     deleteCard,
     updateCard,
     updateBoardCollection,
-    addMemberToBoard,
+    inviteMemberToBoard,
     getUsers,
     getLoggedInUser,
     updateUser,
     updateUserCollection,
     updateCardCollection,
-    addBoardNotification,
-    addUserNotification,
     deleteBoard
 }
 export const TrellerApp = connect(mapStateToProps, mapDispatchToProps)(_TrellerApp)

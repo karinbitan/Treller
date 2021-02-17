@@ -2,7 +2,7 @@ const cardService = require('./card.service');
 const boardService = require('./../board/board.service');
 const utilService = require('./../../services/util.service');
 
-const {socketConnection} = require('./../../server');
+const { socketConnection } = require('./../../server');
 
 async function getCards(req, res) {
     try {
@@ -29,7 +29,6 @@ async function deleteCard(req, res) {
     try {
         await cardService.deleteCard(cardId);
         socketConnection.to(cardId).emit('updatedCard', cardId);
-        // socketConnection.to(boardId).emit('newNotification', { message: 'Card deleted', card: realCard })
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -39,7 +38,7 @@ async function deleteCard(req, res) {
 
 async function addCard(req, res) {
     let { boardId, listId, listIdx, card } = req.body
-    const user = req.session.user.fullName;
+    const user = req.session.user;
     if (req.session.user) {
         card.createdBy = {
             userId: req.session.user._id,
@@ -53,7 +52,10 @@ async function addCard(req, res) {
         socketConnection.to(boardId).emit('updatedBoard', boardId);
         socketConnection.to(card._id).emit('updatedCard', card._id);
         socketConnection.to(boardId).emit('newNotification',
-         { message: `Card ${card.title} was added by ${user}`, id: card._id })
+            {
+                message: `Card ${card.title} was added by `,
+                id: card._id, user: { id: user._id, fullName: user.fullName }
+            })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -111,7 +113,7 @@ async function addComment(req, res) {
         const card = await cardService.addComment(cardId, comment);
         socketConnection.to(cardId).emit('updatedCard', cardId);
         socketConnection.to(boardId).emit('newNotification',
-         { message: 'Comment added', id: card })
+            { message: 'Comment added', id: card })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)

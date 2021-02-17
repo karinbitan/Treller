@@ -10,15 +10,14 @@
         align-self: flex-end;
         text-align: center;
         font-size: 1.75rem;
-        & button {
+        & .start-now-link {
             border: none;
             padding: 10px;
             background: #056196;
             font-weight: bolder;
             cursor: pointer;
-            & a {
-                color: white;
-            }
+            color: white;
+            font-size: 1rem;
         }
         & .head-line {
             font-size: 3rem;

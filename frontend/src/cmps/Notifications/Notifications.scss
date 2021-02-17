@@ -10,34 +10,45 @@
     top: 37px;
     right: 0;
     min-height: 150px;
-    & .close-btn {
-        margin-top: 10px;
-        border: unset;
-        background-color: unset;
-        color: #42526e;
-        float: right;
-    }
-    & p {
+    padding: 10px;
+    & .headline {
         border-bottom: 1px solid rgba(9, 30, 66, 0.13);
         color: #5e6c84;
         text-align: center;
     }
-    & h5 {
-        font-weight: 500;
-        text-align: center;
-        color: #172b4d;
+    & .circle {
+        color: cornflowerblue;
+        position: absolute;
+        right: 0;
     }
     & ul {
         text-align: center;
         color: #172b4d;
         & li {
-            cursor: pointer;
-            padding: 5px;
-            &:hover {
-                background-color: rgba(9, 30, 66, 0.04);
-            }
-            & a {
-                color: #0c3953;
+            // padding: 5px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(9, 30, 66, 0.13);
+            padding-bottom: 5px;
+            & .notification-action {
+                cursor: pointer;
+                margin-left: 5px;
+                border: 1px solid black;
+                &.approve {
+                    background-color: cornflowerblue;
+                    color: white;
+                    padding: 6px;
+                    font-weight: bold;
+                    &:hover{
+                        background-color: rgb(83, 122, 194);
+                    }
+                }
+                &.decline {
+                    padding: 6px;
+                    font-weight: bold;
+                    &:hover{
+                        background-color: rgb(199, 197, 197);
+                    }
+                }
             }
         }
     }

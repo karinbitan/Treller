@@ -83,6 +83,15 @@ export function updateBoardCollection(boardId, updatedObject) {
   }
 }
 
+export function inviteMemberToBoard(board, member) {
+  return async dispatch => {
+    try {
+      await boardService.inviteMemberToBoard(board, member);
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
 
 export function addMemberToBoard(boardId, member) {
   return async dispatch => {
@@ -91,17 +100,6 @@ export function addMemberToBoard(boardId, member) {
       dispatch(_boardUpdate(realBoard));
     } catch (err) {
       console.log('ERROR!', err);
-    }
-  }
-}
-
-export function addBoardNotification(boardId, notification) {
-  return async dispatch => {
-    try {
-      await boardService.addBoardNotification(boardId, notification);
-      // dispatch({ type: 'ADD_NOTIFICIATIONS', notification });
-    } catch (err) {
-      console.log(err);
     }
   }
 }

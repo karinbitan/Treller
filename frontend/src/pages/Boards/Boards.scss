@@ -1,11 +1,28 @@
 .boards {
     background-color: rgba(32, 81, 167, 0.08);
+    text-align: center;
+    color: #172b4d;
+    // & ul {
+    //     border-bottom: 1px solid #b3bac5;
+    //     padding-bottom: 10px;
+    // }
     & h2 {
         color: #172b4d;
+        padding-left: 10px;
+        padding-bottom: 10px;
     }
     & .boards-container {
-        border-bottom: 1px solid #b3bac5;
         padding-bottom: 10px;
+        // width: 800px;
+        // margin: auto;
+        // border-bottom: 1px solid rgba(9, 30, 66, 0.13);
+        & .template-info {
+            border-radius: 3px;
+            display: inline-block;
+            margin-left: 8px;
+            padding: 6px 12px 6px 6px;
+            background-color: rgba(9, 30, 66, 0.04);
+        }
     }
     & .template-img {
         width: 170px;
@@ -19,7 +36,7 @@
         }
         & span {
             border-radius: 3px;
-            background-color: hsla(0, 0%, 100%, 0.69);
+            background-color: hsla(0, 0%, 100%, 0.5);
             padding: 3px 8px;
             font-weight: 700;
             text-transform: uppercase;
@@ -33,12 +50,16 @@
         }
     }
     & .user-boards-container {
+        // width: 800px;
+        // margin: auto;
+        // border-bottom: 1px solid rgba(9, 30, 66, 0.13);
         & .board-link {
             width: 170px;
             height: 100px;
             margin-right: 10px;
             padding: 5px;
             background-size: cover;
+            cursor: pointer;
             & a {
                 color: white;
                 font-weight: 700;
@@ -50,7 +71,9 @@
             &.empty {
                 border: 1px solid #b3bac5;
                 background-color: rgba(9, 30, 66, 0.04);
-                cursor: pointer;
+                &:hover {
+                    font-weight: bold;
+                }
             }
         }
     }

@@ -22,10 +22,10 @@ export function setUser(userId) {
     }
   }
 
-  export function updateUserCollection(user, updatedObject) {
+  export function updateUserCollection(userId, updatedObject) {
     return async dispatch => {
       try {
-        const savedUser = await userService.updateUserCollection(user, updatedObject);
+        const savedUser = await userService.updateUserCollection(userId, updatedObject);
         dispatch({ type: 'UPDATE_USER', user: savedUser })
         dispatch({ type: 'SET_USER', user: savedUser })
       } catch (err) {

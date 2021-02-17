@@ -25,8 +25,9 @@ function updateUser(user) {
     return httpService.put(`user/${user._id}`, user);
 }
 
-function updateUserCollection(user, updatedObject) {
-    return httpService.patch(`user/${user._id}`, updatedObject);
+function updateUserCollection(userId, updatedObject) {
+    debugger
+    return httpService.patch(`user/${userId}`, updatedObject);
 }
 
 function addUserNotification(userId, notification) {

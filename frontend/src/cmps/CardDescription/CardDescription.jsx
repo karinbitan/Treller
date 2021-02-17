@@ -39,7 +39,7 @@ export function CardDescription(props) {
                 onSubmit={(ev) => onUpdateDescription(ev)}>
                 <textarea
                     onClick={() => openDescriptionForm()}
-                    onBlur={() => toggleDescriptionForm(false)}
+                    // onBlur={() => toggleDescriptionForm(false)}
                     className={`description ${description ? 'value' : ''} ${descriptionFormType}`}
                     placeholder="Add more detailed description..."
                     onChange={ev => setDescription(ev.target.value)}

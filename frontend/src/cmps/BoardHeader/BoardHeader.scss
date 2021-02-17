@@ -1,5 +1,5 @@
 .board-header {
-    margin-left: 5px;
+    margin-left: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
     flex-wrap: wrap;
@@ -30,14 +30,11 @@
     }
     & .avatar-container {
         background-color: unset;
-        cursor: pointer;
         &:hover {
             background-color: unset;
         }
         & .member-avatar {
-            cursor: pointer;
             margin-left: 2px;
-            cursor: pointer;
         }
     }
 
@@ -53,7 +50,13 @@
     }
 
     & .menu-container {
-        cursor: pointer;
+        & .close-btn{
+            color: #5e6c84;
+            float: right;
+            border: none;
+            background-color: unset;
+            cursor: pointer;
+        }
         position: relative;
         & .show-menu-icon {
             cursor: pointer;
@@ -72,9 +75,10 @@
             }
         }
         & .color-sample {
-            float: left;
             width: 20px;
             height: 20px;
+            position: absolute;
+            top: 7px;
         }
 
         & .style-change-container {

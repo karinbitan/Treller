@@ -10,22 +10,20 @@ import './HomePage.scss';
 
 export class _HomePage extends Component {
 
-    async componentDidMount() {
-        await this.props.getLoggedInUser();
-    }
+    // async componentDidMount() {
+    //     await this.props.getLoggedInUser();
+    // }
 
     render() {
         const { user } = this.props;
         return (
             <section className="home-page">
-                <MainHeader isHomePage={true} user={user} />
                 <div className="home-page-container flex space-between">
                     <p>
                         <span className="head-line">Treller helps your team achieve more.</span>
                         <br />
                         Organize, manage and connect with Treller! <br />
-                        {!user ? <button><Link to="/login">Start now</Link></button>
-                            : <button><Link to={`/user/${user._id}/boards`}>Start now</Link></button>}
+                        <Link className="start-now-link" to="/login">Start now</Link>
                     </p>
                     <img src={Banner} alt="banner" />
                 </div>

@@ -9,11 +9,13 @@
     right: 4px;
     top: 134px;
     min-height: 150px;
+    padding: 10px;
     & .headline-option {
         border-bottom: 1px solid rgba(9, 30, 66, 0.13);
         color: #5e6c84;
         text-align: center;
-        padding-bottom: 20px;
+        padding-bottom: 10px;
+        font-size: 14px;
     }
     & ul {
         text-align: center;
@@ -117,6 +119,10 @@
     & .members-container {
         & h4 {
             margin-bottom: 10px;
+        }
+        & .add-members-info{
+            color: #5e6c84;
+            font-size: 14px;
         }
         & .member {
             color: #091e42;

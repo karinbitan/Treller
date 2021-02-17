@@ -49,21 +49,49 @@
         cursor: pointer;
     }
 
+    & .avatar-member-popup {
+        position: absolute;
+        left: 10px;
+        top: 35px;
+    }
+
     & .avatar-options {
+        padding: 10px;
         background: #fff;
         border-radius: 3px;
         box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
         overflow: hidden;
         position: absolute;
-        width: 100px;
+        width: 200px;
         z-index: 70;
         top: 40px;
         min-height: 150px;
         & .options-headline {
-            margin-top: 10px;
+            margin: 0;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(9, 30, 66, 0.13);
             color: #5e6c84;
             text-align: center;
+        }
+        & .account-info {
+            border-bottom: 1px solid rgba(9, 30, 66, 0.13);
+            padding: 10px 0;
+            & .user-name {
+                font-size: small;
+                color: gray;
+                margin-left: 50px;
+                cursor: auto;
+                &:hover {
+                    background-color: unset;
+                }
+            }
+            & .full-name {
+                margin-left: 50px;
+                cursor: auto;
+                &:hover {
+                    background-color: unset;
+                }
+            }
         }
         & ul {
             text-align: center;

@@ -14,7 +14,8 @@ export class _Login extends Component {
             password: ''
         },
         isLogin: false,
-        isSignup: false
+        isSignup: false,
+        loginFailed: false
     }
 
     componentDidMount() {
@@ -52,7 +53,7 @@ export class _Login extends Component {
                 
             }
             this.setState({ loginCred })
-            alert('Login failed!');
+            this.setState({loginFailed: true})
         } else {
             this.props.history.push(`/user/${user._id}/boards`);
             // this.props.history.push(`/user/${user._id}`);
@@ -67,7 +68,7 @@ export class _Login extends Component {
     }
 
     render() {
-        const { isLogin, isSignup, loginCred } = this.state;
+        const { isLogin, isSignup, loginCred, loginFailed } = this.state;
         return (
             <section className="login-container container">
                 <h1 className="logo">Treller</h1>
@@ -80,6 +81,7 @@ export class _Login extends Component {
                          onChange={this.handleChangeLogin} placeholder="Enter user name" /><br />
                         <input type="password" name="password" value={loginCred.password}
                          onChange={this.handleChangeLogin} placeholder="Enter password" /><br />
+                        {loginFailed && <p className="login-failed">Login failed, please try again</p>}
                         <button>Login</button>
                     </form>
                 </div>}

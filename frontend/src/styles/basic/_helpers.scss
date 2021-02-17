@@ -103,6 +103,14 @@
     }
 }
 
+.close-btn {
+    color: #7c828d;
+    border: unset;
+    background-color: unset;
+    float: right;
+    cursor: pointer;
+}
+
 .pop-up {
     background: #fff;
     border-radius: 3px;
@@ -112,11 +120,14 @@
     width: 303px;
     z-index: 70;
     min-height: 150px;
+    padding: 10px;
     & .headline {
         border-bottom: 1px solid rgba(9, 30, 66, 0.13);
         margin: 0;
         color: #5e6c84;
         text-align: center;
+        padding: 10px 0;
+        font-size: 14px;
     }
     & ul {
         text-align: center;
@@ -134,4 +145,8 @@
 .no-button {
     // padding: 0;
     border: none;
+}
+
+.relative {
+    position: relative;
 }

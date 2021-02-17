@@ -1,6 +1,6 @@
 .invite-container {
     & .invite-form {
-        margin: 0 8px;
+        margin: 10px 8px;
         & .invite-search {
             font-size: 14px;
             background-color: #fafbfc;
@@ -15,6 +15,10 @@
         margin: 10px;
         & .user-name{
             margin: 5px;
+        }
+        & .already-member{
+            cursor: not-allowed;
+            color: gray;
         }
     }
 }

@@ -13,8 +13,7 @@ module.exports = {
     addList,
     deleteList,
     addCard,
-    deleteCard,
-    addBoardNotification
+    deleteCard
 }
 
 async function query() {
@@ -154,18 +153,6 @@ async function addMemberToBoard(boardId, member) {
         return result
     } catch (err) {
         console.log(`ERROR: cannot insert list`)
-        throw err;
-    }
-}
-
-async function addBoardNotification(boardId, notification) {
-    const collection = await dbService.getCollection('board');
-    try {
-        await collection.updateOne({ _id: ObjectId(boardId) },
-            { $push: { notifications: notification } });
-        return notification;
-    } catch (err) {
-        console.log(`ERROR: cannot insert card`)
         throw err;
     }
 }

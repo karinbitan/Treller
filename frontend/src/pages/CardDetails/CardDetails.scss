@@ -29,6 +29,7 @@
         animation-duration: 0.4s;
         text-align: center;
         overflow-y: auto;
+        padding: 10px;
         & .icon {
             font-size: 20px;
             position: absolute;
@@ -67,17 +68,6 @@
             top: 0;
             opacity: 1;
         }
-    }
-
-    & .close-btn {
-        font-size: 1rem;
-        margin: 10px;
-        font-family: quicksand;
-        border: none;
-        background-color: unset;
-        cursor: pointer;
-        position: absolute;
-        right: 0;
     }
 
     // Main //
@@ -169,17 +159,32 @@
         }
         & .list-name {
             text-align: start;
-            margin-bottom: 10px;
+            margin-bottom: 0;
             margin-left: 40px;
         }
     }
     & .main-container {
-        padding: 10px;
+        padding: 0 10px 10px;
         margin-right: 50px;
         & .other-details {
             margin-left: 40px;
+            & > div {
+                margin-right: 20px;
+            }
+            & .other-details-headline {
+                margin-bottom: 10px;
+            }
+            & .members-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
             & .labels-container {
-                margin-right: 40px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
                 & h4 {
                     text-align: start;
                 }
@@ -187,7 +192,9 @@
                     width: 50px;
                     height: 32px;
                     border-radius: 3px;
-                    margin-top: 8px;
+                    &:not(:last-child) {
+                        margin-right: 5px;
+                    }
                     &.green {
                         background-color: #61bd4f;
                     }
@@ -220,7 +227,6 @@
                     background-color: rgba(9, 30, 66, 0.04);
                     border: none;
                     padding: 8px 12px;
-                    margin-top: 8px;
                     color: #172b4d;
                     font-size: 1rem;
                     & .due-status {

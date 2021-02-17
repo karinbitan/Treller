@@ -21,7 +21,7 @@ export function CardComments(props) {
                 <i className="fas fa-comments icon"></i><h3>  Comments</h3>
             </div>
             <div className="comment-form-container flex">
-                {user && <Avatar className="avatar-comment" name={user.fullName} size="35" round={true} />}
+                {user && <Avatar className="avatar-comment" name={user.fullName} size="30" round={true} />}
                 <form onFocus={() => toggleCommentOption(true)}
                     className="comment-form flex wrap" onSubmit={(ev) => onAddComment(ev)}>
                     <textarea className="comment-text-area" name="txt" placeholder="Add a comment..." value={comment.txt}

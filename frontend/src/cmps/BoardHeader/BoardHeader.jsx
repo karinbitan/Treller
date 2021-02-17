@@ -22,11 +22,17 @@ export class BoardHeader extends Component {
         const field = 'backgroundColor';
         const value = boardToEdit.style.backgroundColor;
         this.setState(({ style: { ...this.state.style, [field]: value } }))
+        this.isFavorite()
+    }
 
-        const isFavorite = this.props.user.favoriteBoards.some(favoriteBoardId => {
-            return favoriteBoardId === boardToEdit._id;
+    isFavorite = () => {
+        const {board} = this.props;
+        const isFavorite = this.props.user.favoriteBoards.some(favoriteBoard => {
+            return favoriteBoard._id === board._id;
         })
         this.setState({ isFavorite })
+        console.log(isFavorite, this.props.user)
+        return isFavorite;
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -49,7 +55,7 @@ export class BoardHeader extends Component {
         // this.setState(prevState => ({ style: { ...prevState.style, [field]: color } }), () =>
         //     this.props.onChangeStyle(this.state.style);
         // );
-        this.setState({ style }, () => this.props.onChangeStyle(this.state.style));
+        this.setState({ style }, () => this.props.changeStyle(this.state.style));
     }
 
     onUpdateBoard = (ev) => {
@@ -73,8 +79,8 @@ export class BoardHeader extends Component {
         this.setState({ isStyleMenuOpen: !this.state.isStyleMenuOpen })
     }
 
-    addMemberToBoard = (member) => {
-        this.props.addMemberToBoard(member);
+    inviteMemberToBoard = (member) => {
+        this.props.inviteMemberToBoard(member);
     }
 
     onAddBoardWithTemplate = () => {
@@ -88,7 +94,7 @@ export class BoardHeader extends Component {
         const { boardToEdit, isFavorite, isMenuOpen, isStyleMenuOpen, templateMsg } = this.state;
         const isAdmin = user.boardsOwner.some(boardId => {
             return boardId === board._id;
-          });
+        });
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
@@ -106,17 +112,17 @@ export class BoardHeader extends Component {
                         })}
                     </div>
         |
-        <InviteMembers board={board} addMemberToBoard={this.addMemberToBoard} />
+        <InviteMembers board={board} user={user} inviteMemberToBoard={this.inviteMemberToBoard} />
                     <div className="menu-container flex">
                         <button className="board-header-icon show-menu-icon" onClick={this.toggleMenu}>
                             <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
                         </button>
                         {isMenuOpen && <div className="menu pop-up">
-                            <button onClick={this.toggleMenu}>X</button>
+                            <button onClick={this.toggleMenu} className="close-btn"><i className="fas fa-times"></i></button>
                             {!isStyleMenuOpen ? <div>
                                 <p className="headline">Menu</p>
                                 <ul>
-                                    <li onClick={this.toggleStyleMenu}>Change Style
+                                    <li className="relative" onClick={this.toggleStyleMenu}>Change Style
                                      <div className="color-sample" style={{ backgroundColor: board.style.backgroundColor }}></div>
                                     </li>
                                     {isAdmin && <li onClick={this.props.onDeleteBoard}>Delete Board</li>}

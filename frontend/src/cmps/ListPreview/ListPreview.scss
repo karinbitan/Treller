@@ -25,6 +25,7 @@
         }
     }
     & .list-actions {
+        padding: 10px;
         background: #fff;
         border-radius: 3px;
         box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
@@ -34,7 +35,7 @@
         z-index: 70;
         left: 238px;
         top: 33px;
-        min-height: 150px;
+        min-height: 100px;
         & p {
             border-bottom: 1px solid rgba(9, 30, 66, 0.13);
             color: #5e6c84;
@@ -50,14 +51,6 @@
                     background-color: rgba(2, 8, 19, 0.09);
                 }
             }
-        }
-        & .close-btn {
-            margin-top: 10px;
-            color: #5e6c84;
-            float: right;
-            border: none;
-            background-color: unset;
-            cursor: pointer;
         }
     }
 }

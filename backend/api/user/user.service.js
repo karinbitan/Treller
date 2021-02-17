@@ -65,7 +65,15 @@ async function getUserById(userId) {
                 foreignField: '_id',
                 as: 'boardsMember'
             }
-        }
+        },
+        // {
+        //     $lookup: {
+        //         from: 'board',
+        //         localField: 'favoriteBoards',
+        //         foreignField: '_id',
+        //         as: 'favoriteBoards'
+        //     }
+        // }
         ]
         let user = await collection.aggregate(aggQuery).toArray();
         // const user = await collection.findOne({ _id: ObjectId(userId) })

@@ -50,31 +50,32 @@ export class _Boards extends Component {
                 smallImg: Template4, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large2_zr62xq.jpg"
             }
         ];
-        if (user) {
-            if (user.boardsMember && user.boardsMember.length > 0) {
-                var favBoards = user.boardsMember.map(board => {
-                    return board;
-                })
-                    .filter(favBoard => {
-                        return favBoard.isFavorite === true;
-                    })
-            }
-        }
+        // if (user) {
+        //     if (user.boardsMember && user.boardsMember.length > 0) {
+        //         var favBoards = user.boardsMember.map(board => {
+        //             return board;
+        //         })
+        //             .filter(favBoard => {
+        //                 return favBoard.isFavorite === true;
+        //             })
+        //     }
+        // }
         return (
             <section>
                 {user && <MainHeader isUserPage={true} user={user} />}
                 {user && <section className="boards container">
                     <div className="boards-container">
-                        <h3><i className="fas fa-columns"></i> Treller Templates</h3>
-                        <p>Check out our new templates.. </p>
-                        <ul className="flex">
+                        <div className="flex justify-center align-center"><i className="fas fa-columns"></i><h2>Treller Templates</h2></div>
+                        <p className="template-info"><span className="bold">Create your own board with our new template.</span>
+                            <br /> Manage and monitoring your board, easily with Treller Templates! </p>
+                        <ul className="flex justify-center flex-wrap">
                             {templates.map(template => {
                                 return (
                                     <li className="template-img" style={{ backgroundImage: `url(${template.smallImg})` }}
                                         key={template.name}>
                                         <Link to={`/treller/board/${template.boardId}`}>
                                             <span>Template</span>
-                                            <h3 className="template-name">{template.name}</h3>
+                                            <h2 className="template-name">{template.name}</h2>
                                         </Link>
                                     </li>
                                 )
@@ -82,10 +83,11 @@ export class _Boards extends Component {
                         </ul>
                     </div>
                     <div className="user-boards-container">
-                        <div className="boards-container">
-                            <h3><i className="far fa-star"></i> Starred Boards</h3>
-                            {favBoards ? <ul className="starred-boards flex">
-                                {favBoards.map(board => {
+                        {/* {(user.favoriteBoards && user.favoriteBoards.length > 0) && <div className="boards-container">
+                            <div className="flex justify-center align-center"><i className="far fa-star"></i><h2>Starred Boards</h2></div>
+
+                            <ul className="starred-boards flex justify-center flex-wrap">
+                                {user.favoriteBoards.map(board => {
                                     return (
                                         <li key={board._id} className="board-link flex column space-between"
                                             style={{
@@ -105,12 +107,11 @@ export class _Boards extends Component {
                                     )
                                 })}
                             </ul>
-                                : <p>You don't have starred boards yet...</p>}
-                        </div>
+                        </div>} */}
                         <div className="boards-container">
-                            <h3><i className="fab fa-trello"></i> Your Boards</h3>
+                            <div className="flex justify-center align-center"><i className="fab fa-trello"></i><h2>Your Boards</h2></div>
                             {(user.boardsMember && user.boardsMember.length > 0) &&
-                                <ul className="other-boards flex">
+                                <ul className="other-boards flex justify-center flex-wrap">
                                     {user.boardsMember.map(board => {
                                         if (!board.style) {
                                             return;

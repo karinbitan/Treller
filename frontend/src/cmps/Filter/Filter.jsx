@@ -31,6 +31,18 @@ export function _Filter(props) {
         })
     }
 
+    const closeForm = () => {
+        toggleForm(false);
+        setFilterBy({ txt: '' })
+    }
+
+    const isBoardMember = (boardId) => {
+        const isMember = props.user.boardsMember.some(board => {
+            return board._id === boardId;
+        })
+        return isMember;
+    }
+
     // onSetBoard = async(boardId)=>{
     //     eventBus.emit('onSetBoard', boardId)
     // }
@@ -39,17 +51,18 @@ export function _Filter(props) {
     return (
         <section className="filter">
             <form onSubmit={(ev) => setFilter(ev)}>
-                <input type="search" className="search-input" name="txt"
+                <input type="search" className="search-input" name="txt" value={filterBy.txt}
                     onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })} onFocus={() => toggleForm(true)} />
                 {!isFormOpen && <button type="button" className="search-btn"><i className="fa fa-search"></i></button>}
             </form>
             {isFormOpen && <div className="search-tab pop-up" >
-                <button onClick={() => toggleForm(false)} className="close-btn"><i className="fas fa-times"></i></button>
+                <button onClick={closeForm} className="close-btn"><i className="fas fa-times"></i></button>
                 <p className="headline">Search Results</p>
                 {isSearch &&
-                    <div>
+                    <div className="flex justify-center">
                         {(searchResult && searchResult.length > 0) ? <ul>
                             {searchResult.map(result => {
+                                if (!isBoardMember(result.createdBy.boardId)) return <span>Can't find search result...</span>;
                                 return (
                                     <li key={result._id} className="flex align-center">
                                         <div className="card-preview-search">
@@ -69,7 +82,7 @@ export function _Filter(props) {
                                 )
                             })}
                         </ul>
-                            : <span>Can't find search result...</span>}
+                            : <span className="no-result-msg">We couldn't find any cards or boards that matched your search.</span>}
                     </div>}
             </div>}
         </section>

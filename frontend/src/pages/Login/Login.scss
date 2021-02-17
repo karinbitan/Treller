@@ -44,6 +44,10 @@
             padding: 20px;
             color: #0c3953;
         }
+        & .login-failed{
+            color: red;
+            margin-top: 0px;
+        }
     }
     & input {
         font-size: 14px;

@@ -17,23 +17,23 @@ export function CardOptions(props) {
     return (
         <div className="card-options">
             <button className="close-btn" onClick={closePopUp}><i className="fas fa-times"></i></button>
-            {type === 'members' && <div className="members-container">
+            {type === 'Members' && <div className="members-container">
                 <p className="headline-option">{type}</p>
-                <h4>Board Members</h4>
-                {board.members && <div>
+                <p className="add-members-info">Add members to card:</p>
+                {board.members && <ul>
                     {board.members.map(member => {
                         return (
-                            <div onClick={() => props.func(member)} className="member flex" key={member._id}>
+                            <li onClick={() => props.func(member)} className="member flex" key={member._id}>
                                 <Avatar className="avatar-logo" name={member.fullName} round={true}
                                     size={30} />
                                 {member.fullName}
-                            </div>)
+                            </li>)
                     })}
-                </div>}
+                </ul>}
             </div>}
-            {type === 'cover' && <div className="covers">
+            {type === 'Cover' && <div className="covers">
                 <p className="headline-option">{props.type}</p>
-                <span>Colors</span>
+                <p>Colors</p>
                 <ul className="flex wrap justify-center">
                     <li className="cover color green" onClick={() => props.func({ color: 'green' })}></li>
                     <li className="cover color yellow" onClick={() => props.func({ color: 'yellow' })}></li>
@@ -43,7 +43,7 @@ export function CardOptions(props) {
                     <li className="cover color blue" onClick={() => props.func({ color: 'blue' })}></li>
                     <li className="cover color pink" onClick={() => props.func({ color: 'pink' })}></li>
                 </ul>
-                <span>Pictures</span>
+                <p>Pictures</p>
                 <ul className="flex wrap justify-center">
                     <li className="cover pic pic1" onClick={() => props.func({ picture: 'pic1' })}></li>
                     <li className="cover pic pic2" onClick={() => props.func({ picture: 'pic2' })}></li>
@@ -54,7 +54,7 @@ export function CardOptions(props) {
                     <li className="cover pic pic7" onClick={() => props.func({ picture: 'pic7' })}></li>
                 </ul>
             </div>}
-            {type === 'labels' && <div className="labels-container">
+            {type === 'Labels' && <div className="labels-container">
                 <p className="headline-option">{props.type}</p>
                 <div className="labels">
                     <ul className="flex column align-center">
@@ -67,9 +67,9 @@ export function CardOptions(props) {
                     </ul>
                 </div>
             </div>}
-            {type === 'checklists' && <div className="checklists-container">
+            {type === 'Checklists' && <div className="checklists-container">
                 <p className="headline-option">{props.type}</p>
-                <h4>Add Checklist:</h4>
+                <span>Add Checklist:</span>
                 <form onSubmit={(ev) => props.func(ev, checklist)}>
                     <input type="text" name="title" value={checklist.title}
                         onChange={(ev) => newChecklist({ ...checklist, [ev.target.name]: ev.target.value })} />
@@ -77,9 +77,9 @@ export function CardOptions(props) {
                     <button>Add</button>
                 </form>
             </div>}
-            {type === 'dueDate' && <div className="due-date-form">
+            {type === 'Due Date' && <div className="due-date-form">
                 <p className="headline-option">{props.type}</p>
-                <form onSubmit={ev => props.addDueDate(ev, date)}>
+                <form onSubmit={(ev) => props.func(ev, date)}>
                     <input type="datetime-local" value={date} name="dueDate"
                         onChange={(ev) => setDate(ev.target.value)} />
                     <br />

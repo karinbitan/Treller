@@ -22,7 +22,8 @@ export class _CardDetails extends Component {
         cardOptionType: '',
         cardOptionFunc: '',
         isCardComplete: false,
-        listIdx: null
+        listIdx: null,
+        listTitle: null
     }
 
     async componentDidMount() {
@@ -31,12 +32,12 @@ export class _CardDetails extends Component {
         await this.props.getLoggedInUser();
         this.setState({ cardToEdit: this.props.card });
         this.getListIdx();
+        this.getList();
 
         socketService.setup();
         socketService.emit('register card', cardId);
         socketService.on('updatedBoard', (boardId) => this.setCard(boardId));
         socketService.on('updatedCard', (cardId) => this.setCard(cardId));
-        // socketService.emit('savedBoard', this.props.card.boardId);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -59,6 +60,15 @@ export class _CardDetails extends Component {
             return list._id === listId;
         })
         this.setState({ listIdx })
+    }
+
+    getList = () => {
+        let { listIdx } = this.state;
+        let { board } = this.props;
+        const list = board.lists.find((list, idx) => {
+            return idx === listIdx;
+        })
+        this.setState({listTitle: list.title})
     }
 
     // CARD //
@@ -168,10 +178,11 @@ export class _CardDetails extends Component {
     }
 
     // DUE DATE //
-    setDate = async (ev, date) => {
+    setDate = async (ev, dueDate) => {
+        debugger
         ev.preventDefault();
         const { board, card } = this.props;
-        await this.props.updateCardCollection(board._id, card._id, { date })
+        await this.props.updateCardCollection(board._id, card._id, { dueDate })
         await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
@@ -238,12 +249,10 @@ export class _CardDetails extends Component {
     closePopUp = () => {
         this.setState({ isCardOptionOpen: false })
     }
-    //
 
     render() {
-        // const { user, board, list, card } = this.props;
         const { user, board, card } = this.props;
-        const { cardToEdit, isCardOptionOpen, cardOptionType, cardOptionFunc } = this.state;
+        const { cardToEdit, isCardOptionOpen, cardOptionType, cardOptionFunc, listTitle } = this.state;
 
         return (
             <section className="card-details modal">
@@ -265,14 +274,14 @@ export class _CardDetails extends Component {
                                 </textarea>
                             </form>
                         </div>
-                        {/* <p className="list-name">in list {list.title}</p> */}
+                        <p className="list-name">in list {listTitle}</p>
                     </div>
                     <div className="flex">
                         <div className="main-container">
                             <div className="other-details flex">
                                 {(card.members && card.members.length > 0) &&
-                                    <div className="members-containers">
-                                        <h5>Members</h5>
+                                    <div className="members-container">
+                                        <h5 className="other-details-headline">Members</h5>
                                         <div className="flex">
                                             {card.members.map(member => {
                                                 return <Avatar name={member.fullName}
@@ -283,7 +292,7 @@ export class _CardDetails extends Component {
                                 }
                                 {(card.labels && card.labels.length > 0) &&
                                     <div className="labels-container">
-                                        <h5>Labels</h5>
+                                        <h5 className="other-details-headline">Labels</h5>
                                         <div className="flex">
                                             {card.labels.map(label => {
                                                 return <div className={`label ${label}`}
@@ -292,7 +301,7 @@ export class _CardDetails extends Component {
                                         </div>
                                     </div>}
                                 {card.dueDate && <div className="due-date-container">
-                                    <h5>Due Date</h5>
+                                    <h5 className="other-details-headline">Due Date</h5>
                                     <input type="checkbox" onChange={this.handleCheckDueDate} />
                                     <button className="due-date">
                                         {card.dueDate.replace('T', ' at ')}
@@ -315,15 +324,15 @@ export class _CardDetails extends Component {
                         </div>
                         <div className="side-container flex column align-center">
                             <h5>ADD TO CARD</h5>
-                            <button onClick={() => this.openPopUp('members', this.addMember)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('Members', this.addMember)} className="card-details-btn">
                                 <i className="fas fa-user-friends"></i> Members</button>
-                            <button onClick={() => this.openPopUp('cover', this.addCover)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('Cover', this.addCover)} className="card-details-btn">
                                 <i className="fas fa-palette"></i> Cover</button>
-                            <button onClick={() => this.openPopUp('labels', this.addLabel)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('Labels', this.addLabel)} className="card-details-btn">
                                 <i className="fas fa-tags"></i> Labels</button>
-                            <button onClick={() => this.openPopUp('checklists', this.addChecklist)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('Checklists', this.addChecklist)} className="card-details-btn">
                                 <i className="fas fa-tasks"></i> Checklist</button>
-                            <button onClick={() => this.openPopUp('dueDate', this.setDate)} className="card-details-btn">
+                            <button onClick={() => this.openPopUp('Due Date', this.setDate)} className="card-details-btn">
                                 <i className="fas fa-calendar-week"></i> Due Date</button>
                             <br />
                             <h5>ACTIONS</h5>

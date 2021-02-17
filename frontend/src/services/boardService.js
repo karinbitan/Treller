@@ -13,7 +13,7 @@ export const boardService = {
     addMemberToBoard,
     updateBoardCollection,
     deleteCard,
-    addBoardNotification
+    inviteMemberToBoard
 }
 
 // BOARD //
@@ -41,12 +41,12 @@ function updateBoardCollection(boardId, updatedObject) {
     return httpService.patch(`board/${boardId}`, updatedObject)
 }
 
-function addMemberToBoard(boardId, member) {
-    return httpService.post(`board/${boardId}`, member)
+function inviteMemberToBoard(board, member) {
+    return httpService.post(`board/${board._id}/invite`, {board, member})
 }
 
-function addBoardNotification(boardId, notification) {
-    return httpService.post(`board/${boardId}/notification`, notification);
+function addMemberToBoard(boardId, member) {
+    return httpService.post(`board/${boardId}/add`, member)
 }
 
 function getEmptyBoard() {
@@ -62,8 +62,7 @@ function getEmptyBoard() {
         lists: [],
         activities: [],
         isFavorite: false,
-        isTemplate: false,
-        notifications: []
+        isTemplate: false
     }
     return board;
 }
