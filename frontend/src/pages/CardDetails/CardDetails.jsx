@@ -120,7 +120,7 @@ export class _CardDetails extends Component {
 
     // DESCRIPTION //
     updateDescription = async (description) => {
-        const { board, card } = this.props;
+        const { card } = this.props;
         await this.props.updateCardCollection(card._id, { description });
         await this.props.setCard(card._id);
     }
@@ -176,7 +176,6 @@ export class _CardDetails extends Component {
 
     // DUE DATE //
     setDate = async (ev, dueDate) => {
-        debugger
         ev.preventDefault();
         const {  card } = this.props;
         await this.props.updateCardCollection(card._id, { dueDate })

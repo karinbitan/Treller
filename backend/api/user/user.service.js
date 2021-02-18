@@ -156,10 +156,10 @@ async function addBoardToUser(userId, boardId) {
     }
 }
 
-async function addMemberToBoard(boardId, member) {
+async function addMemberToBoard(boardId, memberId) {
     const collection = await dbService.getCollection('user');
     try {
-        const res = await collection.updateOne({ _id: ObjectId(member._id) },
+        const res = await collection.updateOne({ _id: ObjectId(memberId) },
             { $push: { boardsMember: ObjectId(boardId) } });
         return res;
     } catch (err) {
@@ -172,8 +172,13 @@ async function deleteBoardFromUser(userId, boardId) {
     const collection = await dbService.getCollection('user');
     try {
         await collection.updateOne({ _id: ObjectId(userId) },
-            { $pull: { boardsMember: boardId, boardsOwner: boardId } });
-        return boardId
+            {
+                $pull: {
+                    boardsMember: ObjectId(boardId), boardsOwner: ObjectId(boardId),
+                    favoriteBoards: ObjectId(boardId)
+                }
+            });
+        return userId
     } catch (err) {
         console.log(`ERROR: cannot deleted board ${boardId} form user ${userId}`)
         throw err;

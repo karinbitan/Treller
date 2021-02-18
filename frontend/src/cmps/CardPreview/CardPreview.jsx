@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { utilService } from '../../services/utilService';
 // import { socketService } from '../../services/socketService';
 
@@ -13,9 +13,21 @@ export function CardPreview(props) {
     const [isEditModalOpen, toggleEditModal] = useState(false);
     const [isEditBtnShow, toggleEditBtn] = useState(false);
     const [screenCard, setScreenCard] = useState({ top: null, left: null })
+    let history = useHistory();
+    const { card, isSearch } = props;
 
     useEffect(() => {
     })
+
+    const cardDetail = (ev) => {
+        ev.stopPropagation();
+        if (isEditModalOpen) return;
+        const x = {
+            pathname: `/treller/card/${card._id}`,
+            state: { background: location }
+        }
+        history.push(x)
+    }
 
     const deleteCard = async () => {
         const { card } = props;
@@ -35,11 +47,11 @@ export function CardPreview(props) {
     }
 
     const openEditModal = (ev) => {
+        ev.stopPropagation();
         setScreenCard({ top: ev.screenY, left: ev.screenX });
         toggleEditModal(true)
     }
 
-    const { card, isSearch } = props;
     return (
         <section>
             {card.style.cover && <div className="cover-container">
@@ -49,16 +61,14 @@ export function CardPreview(props) {
             <section className="card-preview"
                 onMouseEnter={() => toggleEditBtn(true)}
                 onMouseLeave={() => toggleEditBtn(false)}
+                onClick={cardDetail}
             >
                 {card.labels && <div className="flex">
                     {card.labels.map((label, idx) => {
                         return <div className={`label ${label}`} key={idx}></div>
                     })}
                 </div>}
-                <Link to={{
-                    pathname: `/treller/card/${card._id}`,
-                    state: { background: location }
-                }}>{card.title}</Link>
+                {card.title}
                 {!isSearch && <button className="edit-icon-btn"
                     onClick={(ev) => openEditModal(ev)}
                     style={{ display: isEditBtnShow ? 'block' : 'none' }}>

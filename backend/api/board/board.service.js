@@ -1,5 +1,6 @@
 const dbService = require('../../services/db.service');
 const cardService = require('./../card/card.service');
+const userService = require('./../user/user.service');
 const ObjectId = require('mongodb').ObjectId;
 
 module.exports = {
@@ -32,23 +33,21 @@ async function query() {
 async function getBoardById(boardId) {
     const collection = await dbService.getCollection('board');
     try {
-        //     let aggQuery = [{
-        //         $unwind: '$lists'
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: 'card',
-        //             localField: 'lists.cards',
-        //             foreignField: '_id',
-        //             as: 'lists.cards'
-        //         }
 
-        //     }
-        // ]
         // let board = await collection.aggregate(aggQuery).toArray();
         // return board;
 
         let board = await collection.findOne({ _id: ObjectId(boardId) });
+
+       let members =  await Promise.all(board.members.map(async (memberId) => {
+            const user = await userService.getUserById(memberId);
+            return memberId = {
+                _id: user._id,
+                fullName: user.fullName
+            }
+        }))
+
+        board.members = members;
 
         // Get all card ids from all board lists.
         const cardIds = board.lists.reduce((cardIds, list) => {
@@ -136,12 +135,11 @@ async function addBoard(board) {
     }
 }
 
-async function addMemberToBoard(boardId, member) {
+async function addMemberToBoard(boardId, memberId) {
     const collection = await dbService.getCollection('board');
-    const memberToAdd = { _id: member._id, fullName: member.fullName };
     try {
         const result = await collection.updateOne({ _id: ObjectId(boardId) },
-            { $push: { members: memberToAdd } });
+            { $push: { members: memberId } });
         return result
     } catch (err) {
         console.log(`ERROR: cannot add member ${member._id} to board ${boardId}`)

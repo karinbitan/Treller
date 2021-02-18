@@ -27,6 +27,22 @@ async function getBoard(req, res) {
     }
 }
 
+async function getBoardForBoardPage(req, res) {
+    try {
+        let board = await boardService.getBoardById(req.params.id);
+        board = {
+            _id: board._id,
+            title: board.title,
+            members: board.members,
+            style: board.style
+        }
+        res.send(board);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+
 async function deleteBoard(req, res) {
     const boardId = req.params.id;
     try {
@@ -52,12 +68,10 @@ async function addBoard(req, res) {
             board.createdBy = {
                 _id: req.session.user._id,
                 fullName: req.session.user.fullName
-                // imgUrl: req.session.user.imgUrl
             }
-            board.members.push({
-                _id: req.session.user._id,
-                fullName: req.session.user.fullName
-            })
+            board.members.push(
+                req.session.user._id,
+            )
         }
         await boardService.addBoard(board);
         await userService.addBoardToUser(req.session.user._id, board._id);
@@ -116,14 +130,13 @@ async function inviteMemberToBoard(req, res) {
 
 async function addMemberToBoard(req, res) {
     const boardId = req.params.id;
-    let member = req.body;
-    member = { _id: member._id, fullName: member.fullName }
+    let { memberId } = req.body;
     try {
-        await boardService.addMemberToBoard(boardId, member);
-        await userService.addMemberToBoard(boardId, member);
+        await boardService.addMemberToBoard(boardId, memberId);
+        await userService.addMemberToBoard(boardId, memberId);
         const realBoard = await boardService.getBoardById(boardId);
-        socketConnection.to(member._id).emit('newNotification',
-            { message: `You were added to board: ${realBoard.title}.`, id: boardId })
+        socketConnection.to(memberId).emit('newNotification',
+            { message: `You were added to board: ${realBoard.title},`, id: boardId })
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -169,7 +182,7 @@ async function deleteList(req, res) {
 }
 
 async function updateListTitle(req, res) {
-    const {id, listIdx} = req.params;
+    const { id, listIdx } = req.params;
     const title = req.body.title;
     try {
         const realList = await boardService.updateListTitle(id, listIdx, title);
@@ -197,10 +210,9 @@ async function deleteCardFromList(req, res) {
 
 async function _deleteBoardFromUser(boardId) {
     let board = await boardService.getBoardById(boardId);
-    console.log(boards.members);
     if (board.members || boards.members.length) {
-        board.members.forEach(async (memberId) => {
-            await userService.deleteBoard(memberId, boardId)
+        board.members.forEach(async (member) => {
+            await userService.deleteBoardFromUser(member._id, boardId)
         });
     }
 }
@@ -245,6 +257,7 @@ async function _deleteCardsFromList(boardId, listId) {
 module.exports = {
     getBoard,
     getBoards,
+    getBoardForBoardPage,
     deleteBoard,
     addBoard,
     updateBoard,

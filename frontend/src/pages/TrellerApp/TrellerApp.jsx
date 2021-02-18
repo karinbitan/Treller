@@ -46,11 +46,6 @@ class _TrellerApp extends Component {
         socketService.on('newNotification', (msg) => {
             this.setState({ notification: msg })
         })
-
-        // Move to app //
-        // socketService.on('newUserNotification', (msg) => {
-        //     this.addUserNotification(msg);
-        // })
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -106,6 +101,7 @@ class _TrellerApp extends Component {
         const board = await this.props.addBoard(boardToAdd);
         await this.props.setBoard(board._id);
         this.props.history.push(`/treller/board/${board._id}`);
+        await this.props.getLoggedInUser();
     }
 
     inviteMemberToBoard = async (member) => {
@@ -117,7 +113,11 @@ class _TrellerApp extends Component {
     deleteBoard = async () => {
         const { board, user } = this.props;
         await this.props.deleteBoard(board._id);
-        this.props.history.push(`/user/${user._id}/boards`);
+        await this.props.getLoggedInUser();
+        eventBus.emit('loadUser')
+        setTimeout(() => {
+            this.props.history.push(`/user/${user._id}/boards`);
+        }, 1000);
     }
 
     // LIST //

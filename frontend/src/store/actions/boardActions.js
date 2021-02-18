@@ -25,6 +25,17 @@ export function getBoardById(boardId) {
   }
 }
 
+export function getBoardForBoardPage(boardId) {
+  return async dispatch => {
+    try {
+      const board = await boardService.getBoardForBoardPage(boardId)
+      return board;
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
+
 export function setBoard(boardId) {
   return async dispatch => {
     try {
@@ -93,10 +104,10 @@ export function inviteMemberToBoard(board, member) {
   }
 }
 
-export function addMemberToBoard(boardId, member) {
+export function addMemberToBoard(boardId, memberId) {
   return async dispatch => {
     try {
-      const realBoard = await boardService.addMemberToBoard(boardId, member);
+      const realBoard = await boardService.addMemberToBoard(boardId, memberId);
       dispatch(_boardUpdate(realBoard));
     } catch (err) {
       console.log('ERROR!', err);

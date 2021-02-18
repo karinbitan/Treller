@@ -7,7 +7,7 @@ import Template4 from './../../assets/templates/bgc-small4.jpg';
 
 import { connect } from 'react-redux';
 import { getLoggedInUser } from '../../store/actions/authActions';
-import { addBoard } from '../../store/actions/boardActions';
+import { addBoard, getBoardForBoardPage } from '../../store/actions/boardActions';
 import { Link } from 'react-router-dom';
 
 import './Boards.scss';
@@ -17,8 +17,22 @@ import { eventBus } from '../../services/eventBusService';
 
 export class _Boards extends Component {
 
+    state = {
+        favoriteBoards: [],
+        boardsMember: []
+    }
+
     async componentDidMount() {
         await this.props.getLoggedInUser();
+        this.getBoardsForDisplay();
+        this.getFavBoardsForDisplay();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.user !== this.props.user) {
+            this.getBoardsForDisplay();
+            this.getFavBoardsForDisplay();
+        }
     }
 
     // Why it stops after add board? //
@@ -29,9 +43,29 @@ export class _Boards extends Component {
         this.props.history.push(`/treller/board/${board._id}`);
     }
 
+    getBoardsForDisplay = async () => {
+        let { user } = this.props;
+        if (user.boardsMember || user.boardsMember.length > 0) {
+            let boards = await Promise.all(user.boardsMember.map(async (boardId) => {
+                return boardId = await this.props.getBoardForBoardPage(boardId);
+            }))
+            this.setState({ boardsMember: boards })
+        }
+    }
+
+    getFavBoardsForDisplay = async () => {
+        let { user } = this.props;
+        if (user.favoriteBoards || user.favoriteBoards.length > 0) {
+            let boards = await Promise.all(user.favoriteBoards.map(async (boardId) => {
+                return boardId = await this.props.getBoardForBoardPage(boardId);
+            }))
+            this.setState({ favoriteBoards: boards })
+        }
+    }
 
     render() {
         const { user } = this.props;
+        const { favoriteBoards, boardsMember } = this.state;
         const templates = [
             {
                 name: 'Nature', boardId: "5ff1b13c36eed552e70fec47",
@@ -50,16 +84,7 @@ export class _Boards extends Component {
                 smallImg: Template4, largImg: "https://res.cloudinary.com/druhd0ddz/image/upload/v1612278509/treller/bgc-large2_zr62xq.jpg"
             }
         ];
-        // if (user) {
-        //     if (user.boardsMember && user.boardsMember.length > 0) {
-        //         var favBoards = user.boardsMember.map(board => {
-        //             return board;
-        //         })
-        //             .filter(favBoard => {
-        //                 return favBoard.isFavorite === true;
-        //             })
-        //     }
-        // }
+
         return (
             <section>
                 {user && <MainHeader isUserPage={true} user={user} />}
@@ -71,59 +96,60 @@ export class _Boards extends Component {
                         <ul className="flex justify-center flex-wrap">
                             {templates.map(template => {
                                 return (
-                                    <li className="template-img" style={{ backgroundImage: `url(${template.smallImg})` }}
+                                    <Link to={`/treller/board/${template.boardId}`} className="template-img" style={{ backgroundImage: `url(${template.smallImg})` }}
                                         key={template.name}>
-                                        <Link to={`/treller/board/${template.boardId}`}>
-                                            <span>Template</span>
-                                            <h2 className="template-name">{template.name}</h2>
-                                        </Link>
-                                    </li>
+                                        <span>Template</span>
+                                        <h2 className="template-name">{template.name}</h2>
+                                    </Link>
                                 )
                             })}
                         </ul>
                     </div>
                     <div className="user-boards-container">
-                        {/* {(user.favoriteBoards && user.favoriteBoards.length > 0) && <div className="boards-container">
+                        {(user.favoriteBoards && user.favoriteBoards.length > 0) && <div className="boards-container">
                             <div className="flex justify-center align-center"><i className="far fa-star"></i><h2>Starred Boards</h2></div>
-
-                            <ul className="starred-boards flex justify-center flex-wrap">
-                                {user.favoriteBoards.map(board => {
+                            <div className="starred-boards flex justify-center flex-wrap">
+                                {favoriteBoards.map(board => {
                                     return (
-                                        <li key={board._id} className="board-link flex column space-between"
+                                        <Link to={`/treller/board/${board._id}`} key={board._id}
+                                            className="board-link flex column space-between"
                                             style={{
                                                 backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : ''
                                                 , backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
                                             }}>
-                                            <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
-                                            <i style={{ color: "#f2d600" }} className="far fa-star"></i>
-                                            <div className="flex flex-end">
-                                                {board.members.map(member => {
-                                                    return (
-                                                        <Avatar name={member.fullName} size={20} round={true} key={member._id} />
-                                                    )
-                                                })}
+                                            {board.title}
+                                            <div className="flex space-between">
+                                                <button className="fav-board"><i style={{ color: "#f2d600" }} className="far fa-star"></i></button>
+                                                <div className="flex flex-end">
+                                                    {board.members.map(member => {
+                                                        return (
+                                                            <Avatar name={member.fullName} size={20} round={true} key={member._id} />
+                                                        )
+                                                    })}
+                                                </div>
                                             </div>
-                                        </li>
+                                        </Link>
                                     )
                                 })}
-                            </ul>
-                        </div>} */}
+                            </div>
+                        </div>}
                         <div className="boards-container">
                             <div className="flex justify-center align-center"><i className="fab fa-trello"></i><h2>Your Boards</h2></div>
                             <div className="flex justify-center">
                                 {(user.boardsMember && user.boardsMember.length > 0) &&
-                                    <ul className="other-boards flex justify-center flex-wrap">
-                                        {user.boardsMember.map(board => {
+                                    <div className="other-boards flex justify-center flex-wrap">
+                                        {boardsMember.map(board => {
                                             if (!board.style) {
                                                 return;
                                             } else {
                                                 return (
-                                                    <li key={board._id} className="board-link flex column space-between"
+                                                    <Link to={`/treller/board/${board._id}`} key={board._id}
+                                                        className="board-link flex column space-between"
                                                         style={{
                                                             backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
                                                             backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
                                                         }}>
-                                                        <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
+                                                        {board.title}
                                                         <div className="flex flex-end">
                                                             {board.members.map(member => {
                                                                 return (
@@ -131,12 +157,12 @@ export class _Boards extends Component {
                                                                 )
                                                             })}
                                                         </div>
-                                                    </li>
+                                                    </Link>
                                                 )
                                             }
 
                                         })}
-                                    </ul>}
+                                    </div>}
                                 <div className="board-link empty flex justify-center align-center"
                                     onClick={this.addBoard}>
                                     Create new board
@@ -159,6 +185,7 @@ function mapStateToProps(state) {
 }
 const mapDispatchToProps = {
     getLoggedInUser,
-    addBoard
+    addBoard,
+    getBoardForBoardPage
 }
 export const Boards = connect(mapStateToProps, mapDispatchToProps)(_Boards)

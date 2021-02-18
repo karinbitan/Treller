@@ -60,10 +60,12 @@
             padding: 5px;
             background-size: cover;
             cursor: pointer;
-            & a {
-                color: white;
-                font-weight: 700;
-                font-size: 1rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            & .fav-board {
+                border: unset;
+                background-color: unset;
             }
             &:hover {
                 opacity: 0.8;
@@ -71,6 +73,7 @@
             &.empty {
                 border: 1px solid #b3bac5;
                 background-color: rgba(9, 30, 66, 0.04);
+                color: black;
                 &:hover {
                     font-weight: bold;
                 }

@@ -3,6 +3,7 @@ import { httpService } from './httpService';
 export const boardService = {
     query,
     getBoardById,
+    getBoardForBoardPage,
     deleteBoard,
     addBoard,
     updateBoard,
@@ -26,6 +27,10 @@ function getBoardById(boardId) {
     return httpService.get(`board/${boardId}`);
 }
 
+function getBoardForBoardPage(boardId) {
+    return httpService.get(`board/${boardId}/boardPage`);
+}
+
 function deleteBoard(boardId) {
     return httpService.delete(`board/${boardId}`);
 }
@@ -46,8 +51,8 @@ function inviteMemberToBoard(board, member) {
     return httpService.post(`board/${board._id}/invite`, { board, member })
 }
 
-function addMemberToBoard(boardId, member) {
-    return httpService.post(`board/${boardId}/add`, member)
+function addMemberToBoard(boardId, memberId) {
+    return httpService.post(`board/${boardId}/add`, {memberId})
 }
 
 function getEmptyBoard() {

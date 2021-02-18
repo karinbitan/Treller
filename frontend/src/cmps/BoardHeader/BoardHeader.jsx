@@ -26,9 +26,9 @@ export class BoardHeader extends Component {
     }
 
     isFavorite = () => {
-        const {board} = this.props;
-        const isFavorite = this.props.user.favoriteBoards.some(favoriteBoard => {
-            return favoriteBoard._id === board._id;
+        const { board } = this.props;
+        const isFavorite = this.props.user.favoriteBoards.some(favoriteBoardId => {
+            return favoriteBoardId === board._id;
         })
         this.setState({ isFavorite })
         return isFavorite;
@@ -38,6 +38,7 @@ export class BoardHeader extends Component {
         if (prevProps.board !== this.props.board) {
             const boardToEdit = this.props.board;
             this.setState({ boardToEdit });
+            console.log('change')
         }
     }
 
@@ -65,9 +66,14 @@ export class BoardHeader extends Component {
     }
 
     onFavoriteBoard = async () => {
-        this.setState({ isFavorite: !this.state.isFavorite }, () => {
-            this.props.favoriteBoard(this.state.isFavorite);
-        });
+        const { isFavorite } = this.state;
+        if (isFavorite) {
+            this.props.favoriteBoard(false);
+            this.setState({isFavorite: false})
+        } else {
+            this.props.favoriteBoard(true);
+            this.setState({isFavorite: true})
+        }
     }
 
     toggleMenu = () => {

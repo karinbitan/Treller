@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { eventBus } from '../../services/eventBusService';
 import { connect } from 'react-redux';
 import { addMemberToBoard } from '../../store/actions/boardActions';
@@ -7,7 +6,6 @@ import { updateUserCollection } from '../../store/actions/userActions';
 import './Notifications.scss';
 
 export function _Notifications(props) {
-    const location = useLocation();
 
     useEffect(() => {
         eventBus.on('closeModal', () => {
@@ -20,7 +18,7 @@ export function _Notifications(props) {
         notification.status = { isSeen: true, msg: 'You approve the invitation' };
         notifications.splice(notificationIdx, 1, notification)
         await props.updateUserCollection(props.user._id, { notifications })
-        await props.addMemberToBoard(notification.id, props.user);
+        await props.addMemberToBoard(notification.id, props.user._id);
         eventBus.emit('loadUser');
     }
 

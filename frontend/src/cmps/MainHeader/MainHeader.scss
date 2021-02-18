@@ -4,11 +4,6 @@
     padding-top: 3px;
     padding-bottom: 3px;
     flex-wrap: wrap;
-    & button{
-        &:focus{
-            outline: unset;
-        }
-    }
     & .logo {
         width: 100px;
         font-family: "Yellowtail";
