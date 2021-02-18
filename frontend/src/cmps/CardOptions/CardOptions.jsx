@@ -7,30 +7,27 @@ import './CardOptions.scss';
 export function CardOptions(props) {
     const [checklist, newChecklist] = useState({ title: '', todos: [] });
     const [date, setDate] = useState(props.card.dueDate);
+    const { type, board, card } = props;
 
     const closePopUp = () => {
         props.closePopUp();
     }
 
-    const { type, board } = props;
+    const isMember = (userId) => {
+        const isMember = card.members.some(member => {
+            return member._id === userId;
+        })
+        return isMember;
+    }
+
+    const addMember = (member)=>{
+        if(isMember(member._id)) return;
+        props.func(member);
+    }
 
     return (
         <div className="card-options">
             <button className="close-btn" onClick={closePopUp}><i className="fas fa-times"></i></button>
-            {type === 'Members' && <div className="members-container">
-                <p className="headline-option">{type}</p>
-                <p className="add-members-info">Add members to card:</p>
-                {board.members && <ul>
-                    {board.members.map(member => {
-                        return (
-                            <li onClick={() => props.func(member)} className="member flex" key={member._id}>
-                                <Avatar className="avatar-logo" name={member.fullName} round={true}
-                                    size={30} />
-                                {member.fullName}
-                            </li>)
-                    })}
-                </ul>}
-            </div>}
             {type === 'Cover' && <div className="covers">
                 <p className="headline-option">{props.type}</p>
                 <p>Colors</p>
@@ -54,6 +51,22 @@ export function CardOptions(props) {
                     <li className="cover pic pic7" onClick={() => props.func({ picture: 'pic7' })}></li>
                 </ul>
             </div>}
+            {type === 'Members' && <div className="members-container">
+                <p className="headline-option">{type}</p>
+                <p className="add-members-info">Add members to card:</p>
+                {board.members && <ul>
+                    {board.members.map(member => {
+                        return (
+                            <li onClick={() => addMember(member)}
+                                className={`member flex align-center ${isMember(member._id) ? 'already-member' : ''}`} key={member._id}
+                                title={`${isMember(member._id) ? 'This user is already a member in this card' : ''}`}>
+                                <Avatar className="avatar-logo" name={member.fullName} round={true}
+                                    size={30} />
+                                {member.fullName}
+                            </li>)
+                    })}
+                </ul>}
+            </div>}
             {type === 'Labels' && <div className="labels-container">
                 <p className="headline-option">{props.type}</p>
                 <div className="labels">
@@ -69,12 +82,12 @@ export function CardOptions(props) {
             </div>}
             {type === 'Checklists' && <div className="checklists-container">
                 <p className="headline-option">{props.type}</p>
-                <span>Add Checklist:</span>
                 <form onSubmit={(ev) => props.func(ev, checklist)}>
-                    <input type="text" name="title" value={checklist.title}
-                        onChange={(ev) => newChecklist({ ...checklist, [ev.target.name]: ev.target.value })} />
+                    <input type="text" name="title" value={checklist.title} className="checklist-add-input"
+                        onChange={(ev) => newChecklist({ ...checklist, [ev.target.name]: ev.target.value })}
+                        placeholder="Add Checklist" />
                     <br />
-                    <button>Add</button>
+                    <button className="save-btn">Add</button>
                 </form>
             </div>}
             {type === 'Due Date' && <div className="due-date-form">
@@ -83,7 +96,7 @@ export function CardOptions(props) {
                     <input type="datetime-local" value={date} name="dueDate"
                         onChange={(ev) => setDate(ev.target.value)} />
                     <br />
-                    <button>Add</button>
+                    <button className="save-btn">Add</button>
                 </form>
             </div>}
         </div>)

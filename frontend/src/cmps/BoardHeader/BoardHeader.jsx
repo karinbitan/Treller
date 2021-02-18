@@ -31,7 +31,6 @@ export class BoardHeader extends Component {
             return favoriteBoard._id === board._id;
         })
         this.setState({ isFavorite })
-        console.log(isFavorite, this.props.user)
         return isFavorite;
     }
 
@@ -58,7 +57,7 @@ export class BoardHeader extends Component {
         this.setState({ style }, () => this.props.changeStyle(this.state.style));
     }
 
-    onUpdateBoard = (ev) => {
+    onUpdateBoardTitle = (ev) => {
         ev.preventDefault();
         const { boardToEdit } = this.state;
         this.myTextRef.blur();
@@ -98,10 +97,11 @@ export class BoardHeader extends Component {
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
-                    <form onSubmit={this.onUpdateBoard}>
+                    <form onSubmit={this.onUpdateBoardTitle}>
                         <input type="text" ref={el => this.myTextRef = el} className="board-header-icon board-name" name="title"
                             placeholder="Enter your board name here..."
-                            value={boardToEdit.title} onChange={this.handleChangeBoard} />
+                            value={boardToEdit.title} onChange={this.handleChangeBoard}
+                            onBlur={this.onUpdateBoardTitle} />
                     </form>
                     <button onClick={this.onFavoriteBoard} className="board-header-icon favorite-board">
                         <i style={isFavorite ? { color: "#f2d600" } : {}} className="far fa-star"></i></button>

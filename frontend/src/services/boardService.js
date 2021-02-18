@@ -9,10 +9,11 @@ export const boardService = {
     getEmptyBoard,
     addList,
     deleteList,
+    updateListTitle,
     getEmptyList,
     addMemberToBoard,
     updateBoardCollection,
-    deleteCard,
+    deleteCardFromList,
     inviteMemberToBoard
 }
 
@@ -33,7 +34,7 @@ function addBoard(board) {
     return httpService.post(`board`, board);
 }
 
-function updateBoard(board) { 
+function updateBoard(board) {
     return httpService.put(`board/${board._id}`, board);
 }
 
@@ -42,7 +43,7 @@ function updateBoardCollection(boardId, updatedObject) {
 }
 
 function inviteMemberToBoard(board, member) {
-    return httpService.post(`board/${board._id}/invite`, {board, member})
+    return httpService.post(`board/${board._id}/invite`, { board, member })
 }
 
 function addMemberToBoard(boardId, member) {
@@ -76,8 +77,12 @@ function deleteList(boardId, listId) {
     return httpService.delete(`board/${boardId}/list/${listId}`);
 }
 
+function updateListTitle(boardId, listIdx, title) {
+    return httpService.patch(`board/${boardId}/list/${listIdx}`, {title});
+}
+
 // CARD //
-function deleteCard(boardId, listIdx, cardId) {
+function deleteCardFromList(boardId, listIdx, cardId) {
     return httpService.delete(`board/${boardId}/list/${listIdx}/card/${cardId}`);
 }
 

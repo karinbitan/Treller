@@ -21,6 +21,7 @@ export function _Notifications(props) {
         notifications.splice(notificationIdx, 1, notification)
         await props.updateUserCollection(props.user._id, { notifications })
         await props.addMemberToBoard(notification.id, props.user);
+        eventBus.emit('loadUser');
     }
 
     const onDecline = async (notification, notificationIdx) => {
@@ -37,7 +38,7 @@ export function _Notifications(props) {
             {props.user.notifications &&
                 <ul>
                     {props.user.notifications.map((notification, idx) => {
-                        return <li key={idx}>
+                        return <li className="notification" key={idx}>
                             {!notification.status.isSeen && <i className="fas fa-circle circle"></i>}
                             <p>{notification.message}</p>
                             {!notification.status.isSeen ? <div>

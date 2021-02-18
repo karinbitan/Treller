@@ -1,5 +1,6 @@
 const boardService = require('./board.service');
 const userService = require('./../user/user.service');
+const cardService = require('./../card/card.service');
 const utilService = require('./../../services/util.service');
 const { socketConnection } = require('./../../server');
 
@@ -27,8 +28,11 @@ async function getBoard(req, res) {
 }
 
 async function deleteBoard(req, res) {
+    const boardId = req.params.id;
     try {
-        await boardService.deleteBoard(req.params.id);
+        _deleteBoardFromUser(boardId);
+        _deleteCardsFromBoard(boardId);
+        await boardService.deleteBoard(boardId);
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -56,7 +60,7 @@ async function addBoard(req, res) {
             })
         }
         await boardService.addBoard(board);
-        await userService.addBoard(req.session.user._id, board._id);
+        await userService.addBoardToUser(req.session.user._id, board._id);
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -98,8 +102,10 @@ async function inviteMemberToBoard(req, res) {
     let msg = null;
     try {
         socketConnection.to(member._id).emit('newUserNotification',
-            msg = { message: `${user.fullName} invited you to join board: ${board.title}.`,
-             id: board._id, status: {isSeen: false, msg: ''} });
+            msg = {
+                message: `${user.fullName} invited you to join board: ${board.title}.`,
+                id: board._id, status: { isSeen: false, msg: '' }
+            });
         await userService.addUserNotification(member._id, msg);
         res.send(msg);
     } catch (err) {
@@ -152,6 +158,7 @@ async function deleteList(req, res) {
     const boardId = req.params.id;
     const { listId } = req.params;
     try {
+        _deleteCardsFromList(boardId, listId);
         await boardService.deleteList(boardId, listId);
         socketConnection.to(boardId).emit('updatedBoard', boardId);
         res.end();
@@ -161,11 +168,24 @@ async function deleteList(req, res) {
     }
 }
 
+async function updateListTitle(req, res) {
+    const {id, listIdx} = req.params;
+    const title = req.body.title;
+    try {
+        const realList = await boardService.updateListTitle(id, listIdx, title);
+        socketConnection.to(id).emit('updatedBoard', id);
+        res.send(realList);
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        throw err;
+    }
+}
+
 // CARD //
-async function deleteCard(req, res) {
+async function deleteCardFromList(req, res) {
     const { id, listIdx, cardId } = req.params;
     try {
-        await boardService.deleteCard(id, listIdx, cardId);
+        await boardService.deleteCardFromList(id, listIdx, cardId);
         socketConnection.to(id).emit('updatedBoard', id);
         // socketConnection.to(boardId).emit('newNotification', { message: `Card ${} deleted`, id: cardId });
         res.end();
@@ -174,6 +194,53 @@ async function deleteCard(req, res) {
         throw err;
     }
 }
+
+async function _deleteBoardFromUser(boardId) {
+    let board = await boardService.getBoardById(boardId);
+    console.log(boards.members);
+    if (board.members || boards.members.length) {
+        board.members.forEach(async (memberId) => {
+            await userService.deleteBoard(memberId, boardId)
+        });
+    }
+}
+
+async function _deleteCardsFromBoard(boardId) {
+    let board = await boardService.getBoardById(boardId);
+    board.lists.forEach(list => {
+        if (list.cards || list.cards.length) {
+            list.cards.forEach(async (card) => {
+                await cardService.deleteCard(card._id)
+            })
+        }
+    })
+}
+
+async function _deleteCardsFromList(boardId, listId) {
+    let board = await boardService.getBoardById(boardId);
+    board.lists.forEach(list => {
+        if (list.cards || list.cards.length) {
+            if (list._id === listId) {
+                list.cards.forEach(async (card) => {
+                    await cardService.deleteCard(card._id)
+                })
+            }
+        }
+    })
+}
+
+// function _getListWithCardObjectId(board) {
+//     board.lists.map(list => {
+//         if (list.cards && list.cards.length) {
+//             list.cards = list.cards.map((card) => {
+//                 const cardId = card._id;
+//                 return card._id = ObjectId(cardId);
+//             })
+//         }
+//         return list;
+//     })
+// }
+
 
 module.exports = {
     getBoard,
@@ -185,6 +252,7 @@ module.exports = {
     addMemberToBoard,
     addList,
     deleteList,
-    deleteCard,
+    updateListTitle,
+    deleteCardFromList,
     inviteMemberToBoard
 }

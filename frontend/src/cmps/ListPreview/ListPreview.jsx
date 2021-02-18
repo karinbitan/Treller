@@ -60,7 +60,8 @@ export function ListPreview(props) {
         <section className="list-preview">
             {list && <form>
                 <textarea ref={listTitleRef} className="list-title" name="title" value={listTitleToEdit}
-                    onChange={(ev) => updateListToEditTitle(ev.target.value)} onKeyDown={onEnterPress}>
+                    onChange={(ev) => updateListToEditTitle(ev.target.value)} onKeyDown={onEnterPress}
+                    onBlur={updateListTitle}>
                 </textarea>
             </form>}
             <button onClick={() => toggleListAction(true)} className="list-menu-icon"><i className="fas fa-ellipsis-h"></i></button>

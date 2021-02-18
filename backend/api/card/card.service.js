@@ -8,6 +8,7 @@ module.exports = {
     updateCard,
     updateCardCollection,
     addCard,
+    addCardMember,
     addComment,
     deleteComment,
     addTodo,
@@ -30,11 +31,11 @@ async function query(filterBy = {}) {
 function _setFilter(filterBy) {
     const filter = [];
     if (filterBy.cardIds) {
-        filter.push({ _id: { $in: filterBy.cardIds }})
+        filter.push({ _id: { $in: filterBy.cardIds } })
     }
 
-     // TODO: Support lowercase
-     // TODO: Support search by all
+    // TODO: Support lowercase
+    // TODO: Support search by all
     if (filterBy.txt) {
         let textFields = []
         textFields.push({ "title": { $regex: `.*${filterBy.txt}.*` } });
@@ -117,6 +118,18 @@ async function addCard(card) {
     }
 }
 
+async function addCardMember(cardId, member) {
+    const collection = await dbService.getCollection('card');
+    try {
+        const res = await collection.updateOne({ _id: ObjectId(cardId) },
+            { $push: { members: member } });
+        return res;
+    } catch (err) {
+        console.log(`ERROR: cannot insert card`)
+        throw err;
+    }
+}
+
 async function addComment(cardId, comment) {
     const collection = await dbService.getCollection('card');
     try {
@@ -147,7 +160,7 @@ async function addTodo(cardId, checklistIdx, todo) {
     const field = 'checklists.' + checklistIdx + '.todos';
     try {
         const res = await collection.updateOne({ _id: ObjectId(cardId) },
-        { $push: { [field]: todo} });
+            { $push: { [field]: todo } });
         const card = await getCardById(cardId);
         console.log(res);
         return card;

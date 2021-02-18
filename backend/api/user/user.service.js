@@ -9,9 +9,12 @@ module.exports = {
     updateUser,
     updateUserCollection,
     addUser,
-    addBoard,
+    addBoardToUser,
     addMemberToBoard,
-    addUserNotification
+    addUserNotification,
+    deleteBoardFromUser,
+    addCardToUser,
+    deleteCardFromUser
 }
 
 async function query(filterBy = {}) {
@@ -36,8 +39,6 @@ function _setFilter(filterBy) {
         let textFields = []
         textFields.push({ "fullName": { $regex: `.*${filterBy.txt}.*` } });
         textFields.push({ "userName": { $regex: `.*${filterBy.txt}.*` } });
-        // textFields.push({ "about": { $regex: `.*${requestQuery.txt}.*` } });
-
         filter.push({
             $or: textFields
         });
@@ -55,28 +56,7 @@ function _setFilter(filterBy) {
 async function getUserById(userId) {
     const collection = await dbService.getCollection('user');
     try {
-        let aggQuery = [{
-            $match: { "_id": ObjectId(userId) }
-        },
-        {
-            $lookup: {
-                from: 'board',
-                localField: 'boardsMember',
-                foreignField: '_id',
-                as: 'boardsMember'
-            }
-        },
-        // {
-        //     $lookup: {
-        //         from: 'board',
-        //         localField: 'favoriteBoards',
-        //         foreignField: '_id',
-        //         as: 'favoriteBoards'
-        //     }
-        // }
-        ]
-        let user = await collection.aggregate(aggQuery).toArray();
-        // const user = await collection.findOne({ _id: ObjectId(userId) })
+        const user = await collection.findOne({ _id: ObjectId(userId) })
         if (user.length) {
             user = user[0]
         }
@@ -129,7 +109,7 @@ async function updateUserCollection(userId, updatedObject) {
         await collection.updateOne({ _id: ObjectId(userId) }, { $set: updatedObject });
         return updatedObject;
     } catch (err) {
-        console.log(`ERROR: cannot update user ${user._id}`)
+        console.log(`ERROR: cannot update user collection to user ${user._id}`)
         throw err;
     }
 }
@@ -149,25 +129,29 @@ async function addUserNotification(userId, notification) {
     const collection = await dbService.getCollection('user');
     try {
         await collection.updateOne({ _id: ObjectId(userId) },
-            { $push: { notifications: notification } });
+            {
+                $push: {
+                    notifications: { $each: [notification], $position: 0 }
+                }
+            });
         return notification;
     } catch (err) {
-        console.log(`ERROR: cannot insert card`)
+        console.log(`ERROR: cannot add notification to user ${userId}`)
         throw err;
     }
 }
 
 
-// BOARDS //
+// BOARD //
 
-async function addBoard(userId, boardId) {
+async function addBoardToUser(userId, boardId) {
     const collection = await dbService.getCollection('user');
     try {
         await collection.updateOne({ _id: ObjectId(userId) },
             { $push: { boardsMember: boardId, boardsOwner: boardId } });
         return boardId
     } catch (err) {
-        console.log(`ERROR: cannot update user ${user._id}`)
+        console.log(`ERROR: cannot add board ${boardId} to ${user._id}`)
         throw err;
     }
 }
@@ -179,7 +163,44 @@ async function addMemberToBoard(boardId, member) {
             { $push: { boardsMember: ObjectId(boardId) } });
         return res;
     } catch (err) {
-        console.log(`ERROR: cannot update user ${user._id}`)
+        console.log(`ERROR: cannot add user ${user._id} to board ${boardId}`)
+        throw err;
+    }
+}
+
+async function deleteBoardFromUser(userId, boardId) {
+    const collection = await dbService.getCollection('user');
+    try {
+        await collection.updateOne({ _id: ObjectId(userId) },
+            { $pull: { boardsMember: boardId, boardsOwner: boardId } });
+        return boardId
+    } catch (err) {
+        console.log(`ERROR: cannot deleted board ${boardId} form user ${userId}`)
+        throw err;
+    }
+}
+
+// CARD //
+async function addCardToUser(userId, cardId) {
+    const collection = await dbService.getCollection('user');
+    try {
+        await collection.updateOne({ _id: ObjectId(userId) },
+            { $push: { cardsMember: cardId } });
+        return userId;
+    } catch (err) {
+        console.log(`ERROR: cannot deleted card ${cardId} form user ${userId} `)
+        throw err;
+    }
+}
+
+async function deleteCardFromUser(userId, cardId) {
+    const collection = await dbService.getCollection('user');
+    try {
+        await collection.updateOne({ _id: ObjectId(userId) },
+            { $pull: { cardsMember: cardId } });
+        return userId;
+    } catch (err) {
+        console.log(`ERROR: cannot deleted card ${cardId} form user ${userId} `)
         throw err;
     }
 }

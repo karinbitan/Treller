@@ -110,36 +110,38 @@ export class _Boards extends Component {
                         </div>} */}
                         <div className="boards-container">
                             <div className="flex justify-center align-center"><i className="fab fa-trello"></i><h2>Your Boards</h2></div>
-                            {(user.boardsMember && user.boardsMember.length > 0) &&
-                                <ul className="other-boards flex justify-center flex-wrap">
-                                    {user.boardsMember.map(board => {
-                                        if (!board.style) {
-                                            return;
-                                        } else {
-                                            return (
-                                                <li key={board._id} className="board-link flex column space-between"
-                                                    style={{
-                                                        backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
-                                                        backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
-                                                    }}>
-                                                    <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
-                                                    <div className="flex flex-end">
-                                                        {board.members.map(member => {
-                                                            return (
-                                                                <Avatar name={member.fullName} size={20} round={true} key={member._id} />
-                                                            )
-                                                        })}
-                                                    </div>
-                                                </li>
-                                            )
-                                        }
+                            <div className="flex justify-center">
+                                {(user.boardsMember && user.boardsMember.length > 0) &&
+                                    <ul className="other-boards flex justify-center flex-wrap">
+                                        {user.boardsMember.map(board => {
+                                            if (!board.style) {
+                                                return;
+                                            } else {
+                                                return (
+                                                    <li key={board._id} className="board-link flex column space-between"
+                                                        style={{
+                                                            backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
+                                                            backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
+                                                        }}>
+                                                        <Link to={`/treller/board/${board._id}`}>{board.title}</Link>
+                                                        <div className="flex flex-end">
+                                                            {board.members.map(member => {
+                                                                return (
+                                                                    <Avatar name={member.fullName} size={20} round={true} key={member._id} />
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    </li>
+                                                )
+                                            }
 
-                                    })}
-                                    <li className="board-link empty flex justify-center align-center"
-                                        onClick={this.addBoard}>
-                                        Create new board
-                                        </li>
-                                </ul>}
+                                        })}
+                                    </ul>}
+                                <div className="board-link empty flex justify-center align-center"
+                                    onClick={this.addBoard}>
+                                    Create new board
+                                        </div>
+                            </div>
                         </div>
                     </div>
                 </section>}

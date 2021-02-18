@@ -41,6 +41,7 @@ async function getLoggedInUser(req, res) {
     try {
         if (req.session.user) {
             const user = await userService.getUserById(req.session.user._id);
+            req.session.user = user;
             res.json(user);
         }
     } catch (err) {

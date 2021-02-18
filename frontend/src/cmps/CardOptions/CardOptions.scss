@@ -4,12 +4,13 @@
     box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
     overflow: hidden;
     position: absolute;
-    width: 214px;
+    width: 240px;
     z-index: 70;
     right: 4px;
     top: 134px;
     min-height: 150px;
     padding: 10px;
+    color: #5e6c84;
     & .headline-option {
         border-bottom: 1px solid rgba(9, 30, 66, 0.13);
         color: #5e6c84;
@@ -27,6 +28,15 @@
                 background-color: rgba(9, 30, 66, 0.04);
             }
         }
+    }
+    & .save-btn {
+        background-color: #5aac44;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 3px;
+        margin-top: 5px;
     }
     & .labels-container {
         & .labels {
@@ -120,7 +130,7 @@
         & h4 {
             margin-bottom: 10px;
         }
-        & .add-members-info{
+        & .add-members-info {
             color: #5e6c84;
             font-size: 14px;
         }
@@ -133,6 +143,21 @@
             & .avatar-logo {
                 margin-right: 5px;
             }
+            &.already-member {
+                cursor: not-allowed;
+                color: gray;
+            }
+        }
+    }
+
+    & .checklists-container {
+        & .checklist-add-input {
+            font-size: 14px;
+            background-color: #fafbfc;
+            border: 2px solid #dfe1e6;
+            border-radius: 3px;
+            height: 44px;
+            width: 100%;
         }
     }
 }

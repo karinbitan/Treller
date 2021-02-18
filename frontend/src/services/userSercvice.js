@@ -26,7 +26,6 @@ function updateUser(user) {
 }
 
 function updateUserCollection(userId, updatedObject) {
-    debugger
     return httpService.patch(`user/${userId}`, updatedObject);
 }
 

@@ -15,11 +15,12 @@ import { Boards } from './pages/Boards/Boards';
 
 import { connect } from 'react-redux';
 import { getLoggedInUser } from './store/actions/authActions';
-import { NotificiationMsg } from "./cmps/NotificiationMsg/NotificiationMsg";
-import { useEffect, useRef, useState } from "react";
-import { socketService } from "./services/socketService";
+// import { NotificiationMsg } from "./cmps/NotificiationMsg/NotificiationMsg";
+import {  useRef, useState } from "react";
+// import { socketService } from "./services/socketService";
 
 import './App.scss';
+import { eventBus } from "./services/eventBusService";
 
 export default function ModalGalleryExample() {
   return (
@@ -33,13 +34,13 @@ export function _App(props) {
   const location = useLocation();
   const background = location.state && location.state.background;
 
-  const [notification, setNotification] = useState({});
-  const notificationRef = useRef(notification);
+  // const [notification, setNotification] = useState({});
+  // const notificationRef = useRef(notification);
 
-  const loadUser = async () => {
-    // await props.getLoggedInUser();
-  }
-
+  // const loadUser = async () => {
+  //   // await props.getLoggedInUser();
+  // }
+  eventBus.on('loadUser')
   // socketService.setup();
   // console.log('notification on!')
   // socketService.emit('register user', props.user._id);
@@ -51,12 +52,10 @@ export function _App(props) {
   //       socketService.off('newNotification');
   //     }
   // }, [])
-  
+
   // useEffect(() => {
   //   loadUser();
   // })
-
-
 
   return (
     <section className="App">

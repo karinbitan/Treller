@@ -12,8 +12,9 @@ module.exports = {
     addMemberToBoard,
     addList,
     deleteList,
-    addCard,
-    deleteCard
+    updateListTitle,
+    addCardToList,
+    deleteCardFromList
 }
 
 async function query() {
@@ -87,7 +88,6 @@ async function getBoardById(boardId) {
     }
 }
 
-
 async function deleteBoard(boardId) {
     const collection = await dbService.getCollection('board');
     try {
@@ -102,17 +102,9 @@ async function updateBoard(board) {
     const collection = await dbService.getCollection('board');
     const id = board._id;
     delete board._id;
-    
+
     try {
-        board.lists.map(list => {
-            if (list.cards && list.cards.length) {
-                list.cards = list.cards.map((card) => {
-                    const cardId = card._id;
-                    return card._id = ObjectId(cardId);
-                })
-            }
-            return list;
-        })
+        _getListWithCardObjectId(board);
         await collection.replaceOne({ _id: ObjectId(id) }, board);
         board._id = ObjectId(id)
         return board;
@@ -128,7 +120,7 @@ async function updateBoardCollection(boardId, updatedObject) {
         await collection.updateOne({ _id: ObjectId(boardId) }, { $set: updatedObject });
         return updatedObject;
     } catch (err) {
-        console.log(`ERROR: cannot update board ${boardId}`)
+        console.log(`ERROR: cannot update board collection of board ${boardId}`)
         throw err;
     }
 }
@@ -152,7 +144,7 @@ async function addMemberToBoard(boardId, member) {
             { $push: { members: memberToAdd } });
         return result
     } catch (err) {
-        console.log(`ERROR: cannot insert list`)
+        console.log(`ERROR: cannot add member ${member._id} to board ${boardId}`)
         throw err;
     }
 }
@@ -165,7 +157,7 @@ async function addList(boardId, list) {
             { $push: { lists: list } });
         return result.lists;
     } catch (err) {
-        console.log(`ERROR: cannot insert list`)
+        console.log(`ERROR: cannot add list ${list._id}`)
         throw err;
     }
 }
@@ -173,18 +165,30 @@ async function addList(boardId, list) {
 async function deleteList(boardId, listId) {
     const collection = await dbService.getCollection('board');
     try {
-        _deleteCards(boardId, listId);
         await collection.updateOne({ _id: ObjectId(boardId) },
-            //  { $pull: { lists: { $elemMatch: { _id: listId } } } });
             { $pull: { lists: { _id: listId } } });
     } catch (err) {
-        console.log(`ERROR: cannot delete board ${boardId}`)
+        console.log(`ERROR: cannot delete list ${listId}`)
+        throw err;
+    }
+}
+
+async function updateListTitle(boardId, listIdx, title) {
+    const collection = await dbService.getCollection('board');
+    const field = 'lists.' + listIdx + '.title';
+    try {
+        await collection.updateOne({ _id: ObjectId(boardId) },
+            { $set: { [field]: title } }
+        );
+        return title;
+    } catch (err) {
+        console.log(`ERROR: cannot update list index ${listIdx} title`)
         throw err;
     }
 }
 
 // CARD // 
-async function addCard(boardId, listIdx, card) {
+async function addCardToList(boardId, listIdx, card) {
     const collection = await dbService.getCollection('board');
     const field = 'lists.' + listIdx + '.cards';
     try {
@@ -193,12 +197,12 @@ async function addCard(boardId, listIdx, card) {
         );
         return card;
     } catch (err) {
-        console.log(`ERROR: cannot insert card`)
+        console.log(`ERROR: cannot add card ${card._id} to list index ${listIdx}`)
         throw err;
     }
 }
 
-async function deleteCard(boardId, listIdx, cardId) {
+async function deleteCardFromList(boardId, listIdx, cardId) {
     const collection = await dbService.getCollection('board');
     const field = 'lists.' + listIdx + '.cards';
     try {
@@ -206,20 +210,7 @@ async function deleteCard(boardId, listIdx, cardId) {
             { $pull: { [field]: ObjectId(cardId) } }
         );
     } catch (err) {
-        console.log(`ERROR: cannot delete board ${boardId}`)
+        console.log(`ERROR: cannot delete card ${cardId} from list ${listId} in board ${boardId}`)
         throw err;
     }
-}
-
-async function _deleteCards(boardId, listId) {
-    let board = await getBoardById(boardId);
-    board.lists.forEach(list => {
-        if (list.cards || list.cards.length) {
-            if (list._id === listId) {
-                list.cards.forEach(async (card) => {
-                    await cardService.deleteCard(card._id)
-                })
-            }
-        }
-    })
 }

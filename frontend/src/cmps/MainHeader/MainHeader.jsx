@@ -20,6 +20,7 @@ function _MainHeader(props) {
     const { user, board, isUserPage } = props;
 
     useEffect(() => {
+        unreadNotificationNumber();
         if (isAvatarOptionsOpen) {
             toggleNotificationsOptions(false);
         }
@@ -28,6 +29,16 @@ function _MainHeader(props) {
     const logout = async () => {
         await props.logout();
         toggleAvatarOptions(false)
+    }
+
+    const unreadNotificationNumber = () => {
+        if (user.notifications && user.notifications.length > 0) {
+            let notifications = user.notifications;
+            const unreadNotifications = notifications.filter(notification => {
+                return notification.status.isSeen === false;
+            })
+            return unreadNotifications.length;
+        }
     }
 
     return (
@@ -52,7 +63,8 @@ function _MainHeader(props) {
                     }
                 </div>
                 <div className="menu-container flex flex-end align-center">
-                    <div className="flex">
+                    <div className="flex relative">
+                        {unreadNotificationNumber() ? <span className="notification-badge">{unreadNotificationNumber()}</span> : ''}
                         <button className="icon-container no-button" onClick={() => toggleNotificationsOptions(!isNotificationOptionOpen)}>
                             <img className="icon" src={Notification} alt="notifications" />
                         </button>

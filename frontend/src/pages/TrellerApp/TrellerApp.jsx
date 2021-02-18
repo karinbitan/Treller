@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     setBoard, addBoard, updateBoard, addList, deleteList, updateBoardCollection,
-    inviteMemberToBoard, deleteBoard
+    inviteMemberToBoard, deleteBoard, updateListTitle
 } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { addCard, deleteCard, updateCard, updateCardCollection } from '../../store/actions/cardActions';
@@ -11,7 +11,6 @@ import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService.js';
 import { boardService } from '../../services/boardService';
-
 import { ListPreview } from './../../cmps/ListPreview';
 import { AddList } from '../../cmps/AddList/AddList';
 import { BoardHeader } from '../../cmps/BoardHeader/BoardHeader';
@@ -46,7 +45,6 @@ class _TrellerApp extends Component {
         });
         socketService.on('newNotification', (msg) => {
             this.setState({ notification: msg })
-            console.log(msg)
         })
 
         // Move to app //
@@ -71,6 +69,8 @@ class _TrellerApp extends Component {
     setBoard = async (boardId) => {
         await this.props.setBoard(boardId);
         this.setState({ boardToEdit: this.props.board })
+        console.log('props',this.props.board)
+        console.log('state',this.state.boardToEdit)
     }
 
     updateBoardTitle = async (title) => {
@@ -128,13 +128,13 @@ class _TrellerApp extends Component {
     }
 
     updateListTitle = async (listIdx, listTitle) => {
-        let { board } = this.props;
-        let lists = board.lists;
-        let list = lists[listIdx];
-        list.title = listTitle;
-        lists.splice(listIdx, 1, list);
-        board.lists = lists;
-        await this.props.updateBoard(board);
+        const { board } = this.props;
+        // let lists = board.lists;
+        // let list = lists[listIdx];
+        // list.title = listTitle;
+        // lists.splice(listIdx, 1, list);
+        // board.lists = lists;
+        await this.props.updateListTitle(board._id, listIdx, listTitle);
         await this.props.setBoard(board._id);
     }
 
@@ -160,7 +160,7 @@ class _TrellerApp extends Component {
     updateCardTitle = async (cardId, cardTitle) => {
         const { board } = this.props;
         const title = cardTitle;
-        await this.props.updateCardCollection(board._id, cardId, { title });
+        await this.props.updateCardCollection(cardId, { title });
         await this.props.setBoard(board._id)
     }
 
@@ -382,6 +382,7 @@ const mapDispatchToProps = {
     updateUser,
     updateUserCollection,
     updateCardCollection,
-    deleteBoard
+    deleteBoard,
+    updateListTitle
 }
 export const TrellerApp = connect(mapStateToProps, mapDispatchToProps)(_TrellerApp)

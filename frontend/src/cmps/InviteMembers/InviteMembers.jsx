@@ -44,7 +44,7 @@ class _InviteMembers extends Component {
 
     isMember = (userId) => {
         const { board } = this.props;
-        const isMember = board.members.find(member => {
+        const isMember = board.members.some(member => {
             return member._id === userId
         })
         return isMember;

@@ -29,7 +29,7 @@ export function deleteCard(boardId, listIdx, cardId) {
   return async dispatch => {
     try {
       await cardService.deleteCard(cardId);
-      await boardService.deleteCard(boardId, listIdx, cardId);
+      await boardService.deleteCardFromList(boardId, listIdx, cardId);
       dispatch({ type: 'DELETE_CARD', cardId })
     } catch (err) {
       console.log('ERROR!', err);
@@ -60,12 +60,23 @@ export function updateCard(boardId, card) {
   }
 }
 
-export function updateCardCollection(boardId, cardId, updateObject) {
+export function updateCardCollection(cardId, updateObject) {
   return async dispatch => {
     try {
-      const savedCard = await cardService.updateCardCollection(boardId, cardId, updateObject)
+      const savedCard = await cardService.updateCardCollection(cardId, updateObject)
       dispatch(_cardUpdate(savedCard));
       dispatch({ type: 'SET_CARD', card: savedCard })
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
+
+export function addCardMember(cardId, member) {
+  return async dispatch => {
+    try {
+      const realCard = await cardService.addCardMember(cardId, member);
+      dispatch(_cardUpdate(realCard));
     } catch (err) {
       console.log('ERROR!', err);
     }

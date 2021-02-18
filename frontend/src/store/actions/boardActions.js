@@ -129,6 +129,18 @@ export function deleteList(boardId, listId) {
   }
 }
 
+export function updateListTitle(boardId, listIdx,  title) {
+  return async dispatch => {
+    try {
+      await boardService.updateListTitle(boardId, listIdx, title);
+      const board = await boardService.getBoardById(boardId);
+      dispatch(_boardUpdate(board));
+    } catch (err) {
+      console.log('ERROR!', err);
+    }
+  }
+}
+
 function _boardUpdate(board) {
   return {
     type: 'UPDATE_BOARD',

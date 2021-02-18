@@ -18,6 +18,7 @@ export function _Filter(props) {
 
     const setFilter = async (ev) => {
         ev.preventDefault();
+        debugger
         let results = await props.getSearchResult(filterBy);
         setSearchResult(results);
         toggleIsSearch(true);
@@ -50,7 +51,7 @@ export function _Filter(props) {
 
     return (
         <section className="filter">
-            <form onSubmit={(ev) => setFilter(ev)}>
+            <form onSubmit={setFilter}>
                 <input type="search" className="search-input" name="txt" value={filterBy.txt}
                     onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })} onFocus={() => toggleForm(true)} />
                 {!isFormOpen && <button type="button" className="search-btn"><i className="fa fa-search"></i></button>}
@@ -62,7 +63,7 @@ export function _Filter(props) {
                     <div className="flex justify-center">
                         {(searchResult && searchResult.length > 0) ? <ul>
                             {searchResult.map(result => {
-                                if (!isBoardMember(result.createdBy.boardId)) return <span>Can't find search result...</span>;
+                                if (!isBoardMember(result.createdBy.boardId)) return;
                                 return (
                                     <li key={result._id} className="flex align-center">
                                         <div className="card-preview-search">

@@ -7,6 +7,7 @@ export const cardService = {
     addCard,
     updateCard,
     updateCardCollection,
+    addCardMember,
     getEmptyCard,
     addComment,
     deleteComment,
@@ -40,8 +41,12 @@ function updateCard(boardId, card) {
     return httpService.put(`card/${boardId}/${card._id}`, card);
 }
 
-function updateCardCollection(boardId, cardId, updatedObject) {
-    return httpService.patch(`card/${boardId}/${cardId}`, updatedObject);
+function updateCardCollection(cardId, updatedObject) {
+    return httpService.patch(`card/${cardId}`, updatedObject);
+}
+
+function addCardMember(cardId, member) {
+    return httpService.post(`card/${cardId}/members`, member);
 }
 
 function addComment(cardId, comment) {

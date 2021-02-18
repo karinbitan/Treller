@@ -43,11 +43,15 @@
     }
     & .info-btn-container{
         margin-top: 4px;
+        margin-bottom: 4px;
     }
     & .info-btn{
         border: none;
         background-color: unset;
         color: #6b778c;
+        &.due-date{
+            font-size: 12px;
+        }
     }
 }
 
