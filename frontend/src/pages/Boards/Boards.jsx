@@ -14,6 +14,7 @@ import './Boards.scss';
 import Avatar from 'react-avatar';
 import { boardService } from '../../services/boardService';
 import { eventBus } from '../../services/eventBusService';
+import { socketService } from '../../services/socketService';
 
 export class _Boards extends Component {
 
@@ -26,6 +27,13 @@ export class _Boards extends Component {
         await this.props.getLoggedInUser();
         this.getBoardsForDisplay();
         this.getFavBoardsForDisplay();
+
+        const { user } = this.props;
+        socketService.setup();
+        socketService.emit('register user', user._id);
+        socketService.on('newUserNotification', (userId) => {
+            this.loadUser()
+        })
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -33,6 +41,10 @@ export class _Boards extends Component {
             this.getBoardsForDisplay();
             this.getFavBoardsForDisplay();
         }
+    }
+
+    loadUser = async () =>{
+        await this.props.getLoggedInUser();
     }
 
     // Why it stops after add board? //
@@ -45,21 +57,25 @@ export class _Boards extends Component {
 
     getBoardsForDisplay = async () => {
         let { user } = this.props;
-        if (user.boardsMember || user.boardsMember.length > 0) {
-            let boards = await Promise.all(user.boardsMember.map(async (boardId) => {
-                return boardId = await this.props.getBoardForBoardPage(boardId);
-            }))
-            this.setState({ boardsMember: boards })
+        if (user) {
+            if (user.boardsMember && user.boardsMember.length > 0) {
+                let boards = await Promise.all(user.boardsMember.map(async (boardId) => {
+                    return boardId = await this.props.getBoardForBoardPage(boardId);
+                }))
+                this.setState({ boardsMember: boards })
+            }
         }
     }
 
     getFavBoardsForDisplay = async () => {
         let { user } = this.props;
-        if (user.favoriteBoards || user.favoriteBoards.length > 0) {
-            let boards = await Promise.all(user.favoriteBoards.map(async (boardId) => {
-                return boardId = await this.props.getBoardForBoardPage(boardId);
-            }))
-            this.setState({ favoriteBoards: boards })
+        if (user) {
+            if (user.favoriteBoards && user.favoriteBoards.length > 0) {
+                let boards = await Promise.all(user.favoriteBoards.map(async (boardId) => {
+                    return boardId = await this.props.getBoardForBoardPage(boardId);
+                }))
+                this.setState({ favoriteBoards: boards })
+            }
         }
     }
 

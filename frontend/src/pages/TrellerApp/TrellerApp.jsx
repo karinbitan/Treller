@@ -40,11 +40,15 @@ class _TrellerApp extends Component {
         socketService.setup();
         socketService.emit('register board', boardId);
         socketService.emit('register user', userId);
+
         socketService.on('updatedBoard', (boardId) => {
             this.setBoard(boardId)
         });
         socketService.on('newNotification', (msg) => {
             this.setState({ notification: msg })
+        })
+        socketService.on('newUserNotification', (userId) => {
+            this.loadUser()
         })
     }
 
@@ -56,16 +60,20 @@ class _TrellerApp extends Component {
         }
     }
 
-    // componentWillUnmount() {
-    //     socketService.off('register board', boardId);
-    //     socketService.terminate();
-    // }
+    componentWillUnmount() {
+        socketService.off('updatedBoard');
+        socketService.terminate();
+    }
 
     setBoard = async (boardId) => {
         await this.props.setBoard(boardId);
         this.setState({ boardToEdit: this.props.board })
         console.log('props',this.props.board)
         console.log('state',this.state.boardToEdit)
+    }
+
+    loadUser = async () =>{
+        await this.props.getLoggedInUser();
     }
 
     updateBoardTitle = async (title) => {
@@ -129,11 +137,6 @@ class _TrellerApp extends Component {
 
     updateListTitle = async (listIdx, listTitle) => {
         const { board } = this.props;
-        // let lists = board.lists;
-        // let list = lists[listIdx];
-        // list.title = listTitle;
-        // lists.splice(listIdx, 1, list);
-        // board.lists = lists;
         await this.props.updateListTitle(board._id, listIdx, listTitle);
         await this.props.setBoard(board._id);
     }

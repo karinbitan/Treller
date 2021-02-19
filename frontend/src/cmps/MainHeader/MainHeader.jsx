@@ -32,12 +32,14 @@ function _MainHeader(props) {
     }
 
     const unreadNotificationNumber = () => {
-        if (user.notifications && user.notifications.length > 0) {
-            let notifications = user.notifications;
-            const unreadNotifications = notifications.filter(notification => {
-                return notification.status.isSeen === false;
-            })
-            return unreadNotifications.length;
+        if (user) {
+            if (user.notifications && user.notifications.length > 0) {
+                let notifications = user.notifications;
+                const unreadNotifications = notifications.filter(notification => {
+                    return notification.status.isSeen === false;
+                })
+                return unreadNotifications.length;
+            }
         }
     }
 

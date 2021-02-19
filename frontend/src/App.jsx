@@ -16,8 +16,8 @@ import { Boards } from './pages/Boards/Boards';
 import { connect } from 'react-redux';
 import { getLoggedInUser } from './store/actions/authActions';
 // import { NotificiationMsg } from "./cmps/NotificiationMsg/NotificiationMsg";
-import {  useEffect, useRef, useState } from "react";
-// import { socketService } from "./services/socketService";
+import { useEffect, useRef, useState } from "react";
+import { socketService } from "./services/socketService";
 
 import './App.scss';
 import { eventBus } from "./services/eventBusService";
@@ -34,30 +34,31 @@ export function _App(props) {
   const location = useLocation();
   const background = location.state && location.state.background;
 
-  // const [notification, setNotification] = useState({});
+
+
   // const notificationRef = useRef(notification);
 
   const loadUser = async () => {
     await props.getLoggedInUser();
-    console.log(props.user)
   }
 
-  // socketService.setup();
-  // console.log('notification on!')
-  // socketService.emit('register user', props.user._id);
-  // socketService.on('newNotification', (msg) => {
-    //   setNotification(msg)
-    // })
-    useEffect(() => {
-    eventBus.on('loadUser',()=>{
-      console.log('user load on app after event bus')
-      loadUser();
-    })
-  })
+  useEffect( () => {
+   loadUser();
+  }, [])
 
-  useEffect(() => {
-    loadUser();
-  },[])
+  // useEffect(() => {
+  //   const { user } = props;
+  //   socketService.setup();
+  //   socketService.emit('register user', user._id);
+  //   socketService.on('newNotification', (msg) => {
+  //     // setNotification(msg)
+  //     console.log(msg)
+  //   });
+
+  //   return () => {
+  //     socketService.off('newNotification')
+  //   };
+  // });
 
   return (
     <section className="App">

@@ -30,6 +30,7 @@ async function getBoard(req, res) {
 async function getBoardForBoardPage(req, res) {
     try {
         let board = await boardService.getBoardById(req.params.id);
+        if (!board) return
         board = {
             _id: board._id,
             title: board.title,
@@ -115,11 +116,11 @@ async function inviteMemberToBoard(req, res) {
     const user = req.session.user;
     let msg = null;
     try {
-        socketConnection.to(member._id).emit('newUserNotification',
-            msg = {
-                message: `${user.fullName} invited you to join board: ${board.title}.`,
-                id: board._id, status: { isSeen: false, msg: '' }
-            });
+        socketConnection.to(member._id).emit('newUserNotification', member._id);
+        const msg = {
+            message: `${user.fullName} invited you to join board: ${board.title}.`,
+            id: board._id, status: { isSeen: false, msg: '' }
+        }
         await userService.addUserNotification(member._id, msg);
         res.send(msg);
     } catch (err) {
@@ -136,7 +137,7 @@ async function addMemberToBoard(req, res) {
         await userService.addMemberToBoard(boardId, memberId);
         const realBoard = await boardService.getBoardById(boardId);
         socketConnection.to(memberId).emit('newNotification',
-            { message: `You were added to board: ${realBoard.title},`, id: boardId })
+            { message: `You were added to board: ${realBoard.title}`, id: boardId })
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -155,7 +156,7 @@ async function addList(req, res) {
         socketConnection.to(boardId).emit('updatedBoard', boardId);
         socketConnection.to(boardId).emit('newNotification',
             {
-                message: `List ${list.title} was added by`, user: {
+                message: `List: ${list.title} was added by`, byUser: {
                     id: user._id,
                     fullName: user.fullName
                 }
@@ -174,6 +175,12 @@ async function deleteList(req, res) {
         _deleteCardsFromList(boardId, listId);
         await boardService.deleteList(boardId, listId);
         socketConnection.to(boardId).emit('updatedBoard', boardId);
+        // Need list title //
+        // socketConnection.to(boardId).emit('newNotification',
+        // {
+        //     message: `List: ${list.title} was deleted by`,
+        //     byUser: { id: member._id, fullName: member.fullName }
+        // })
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -210,10 +217,17 @@ async function deleteCardFromList(req, res) {
 
 async function _deleteBoardFromUser(boardId) {
     let board = await boardService.getBoardById(boardId);
-    if (board.members || boards.members.length) {
-        board.members.forEach(async (member) => {
-            await userService.deleteBoardFromUser(member._id, boardId)
-        });
+    if (board) {
+        if (board.members || boards.members.length) {
+            board.members.forEach(async (member) => {
+                await userService.deleteBoardFromUser(member._id, boardId)
+                socketConnection.to(member._id).emit('newNotification',
+                    {
+                        message: `${board.title} was deleted by`,
+                        byUser: { id: member._id, fullName: member.fullName }
+                    })
+            });
+        }
     }
 }
 

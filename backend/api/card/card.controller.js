@@ -36,8 +36,8 @@ async function deleteCard(req, res) {
         socketConnection.to(cardId).emit('updatedCard', cardId);
         socketConnection.to(card.createdBy.boardId).emit('newNotification',
             {
-                message: `Card title: ${card.title} was deleted by `,
-                id: null, user: { id: member._id, fullName: member.fullName }
+                message: `Card title: ${card.title} was deleted by`,
+                byUser: { _id: member._id, fullName: member.fullName }
             })
         res.end();
     } catch (err) {
@@ -58,13 +58,13 @@ async function addCard(req, res) {
     }
     try {
         const realCard = await cardService.addCard(card);
-        await boardService.addCardToList(boardId, listIdx, realCard);
-        socketConnection.to(boardId).emit('updatedBoard', boardId);
+        await boardService.addCardToList(card.createdBy.boardId, listIdx, realCard);
+        socketConnection.to(card.createdBy.boardId).emit('updatedBoard', card.createdBy.boardId);
         socketConnection.to(card._id).emit('updatedCard', card._id);
-        socketConnection.to(boardId).emit('newNotification',
+        socketConnection.to(card.createdBy.boardId).emit('newNotification',
             {
-                message: `Card title: ${card.title} was added by `,
-                user: { id: user._id, fullName: user.fullName }
+                message: `Card title: ${card.title} was added by`,
+                byUser: { id: user._id, fullName: user.fullName }
             })
         res.send(card);
     } catch (err) {
@@ -75,7 +75,7 @@ async function addCard(req, res) {
 
 async function updateCard(req, res) {
     const card = req.body;
-    const boardId = req.params.boardId;
+    const boardId = card.createdBy.boardId;
     try {
         await cardService.updateCard(card);
         const realCard = await cardService.getCardById(card._id)
@@ -90,7 +90,7 @@ async function updateCard(req, res) {
 
 async function updateCardCollection(req, res) {
     const cardId = req.params.id;
-    const boardId = req.session.board._id;
+    const boardId = card.createdBy.boardId;
     const updateObject = req.body;
     try {
         await cardService.updateCardCollection(cardId, updateObject);
@@ -120,7 +120,7 @@ async function addCardMember(req, res) {
         socketConnection.to(realCard.createdBy.boardId).emit('newNotification',
             {
                 message: `${member.fullName} was added to card: ${realCard.title} by`,
-                user: { id: member._id, fullName: member.fullName }
+                byUser: { id: member._id, fullName: member.fullName }
             })
         res.send(realCard);
     } catch (err) {
@@ -147,8 +147,11 @@ async function addComment(req, res) {
     try {
         const card = await cardService.addComment(cardId, comment);
         socketConnection.to(cardId).emit('updatedCard', cardId);
-        socketConnection.to(boardId).emit('newNotification',
-            { message: 'Comment added', id: card })
+        socketConnection.to(card.createdBy.boardId).emit('newNotification',
+            {
+                message: `Comment added on card: ${card.title} by`,
+                byUser: { _id: comment.byMember._id, fullName: comment.byMember.fullName }
+            })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)

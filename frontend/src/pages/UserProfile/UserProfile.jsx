@@ -4,6 +4,7 @@ import { setUser, updateUser } from '../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { uploadImg } from './../../services/img-upload-service';
 import Avatar from 'react-avatar';
+import { socketService } from '../../services/socketService';
 
 import { MainHeader } from '../../cmps/MainHeader/MainHeader';
 import Loading from './../../assets/loading.gif';
@@ -22,6 +23,16 @@ export class _UserProfile extends Component {
         await this.props.getLoggedInUser();
         let { user } = this.props;
         this.setState({ userToEdit: user });
+
+        socketService.setup();
+        socketService.emit('register user', user._id);
+        socketService.on('newUserNotification', (userId) => {
+            this.loadUser()
+        })
+    }
+
+    loadUser = async () =>{
+        await this.props.getLoggedInUser();
     }
 
     uploadImgProfile = async (ev) => {
