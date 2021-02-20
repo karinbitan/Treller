@@ -28,17 +28,22 @@ async function getCard(req, res) {
 
 async function deleteCard(req, res) {
     const cardId = req.params.id;
+    const user = req.session.user;
     let card = await cardService.getCardById(cardId);
-    card.members.forEach(async (member) => {
-        await userService.deleteCardFromUser(member._id, cardId)
-    });
+    if (cards.members && cards.members.length > 0) {
+        card.members.forEach(async (member) => {
+            if (member) {
+                await userService.deleteCardFromUser(member._id, cardId)
+            }
+        });
+    }
     try {
         await cardService.deleteCard(cardId);
         socketConnection.to(cardId).emit('updatedCard', cardId);
         socketConnection.to(card.createdBy.boardId).emit('newNotification',
             {
                 message: `Card title: ${card.title} was deleted by`,
-                byUser: { _id: member._id, fullName: member.fullName }
+                byUser: { _id: user._id, fullName: user.fullName }
             })
         res.end();
     } catch (err) {
