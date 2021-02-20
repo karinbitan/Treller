@@ -16,8 +16,8 @@ import { Boards } from './pages/Boards/Boards';
 import { connect } from 'react-redux';
 import { getLoggedInUser } from './store/actions/authActions';
 // import { NotificiationMsg } from "./cmps/NotificiationMsg/NotificiationMsg";
-import { useEffect, useRef, useState } from "react";
-import { socketService } from "./services/socketService";
+import { useEffect } from "react";
+// import { socketService } from "./services/socketService";
 
 import './App.scss';
 import { eventBus } from "./services/eventBusService";
@@ -42,23 +42,27 @@ export function _App(props) {
     await props.getLoggedInUser();
   }
 
-  useEffect( () => {
-   loadUser();
-  }, [])
+  // useEffect( () => {
+  //  loadUser();
+  // }, [])
 
-  // useEffect(() => {
-  //   const { user } = props;
-  //   socketService.setup();
-  //   socketService.emit('register user', user._id);
-  //   socketService.on('newNotification', (msg) => {
-  //     // setNotification(msg)
-  //     console.log(msg)
-  //   });
+  useEffect(() => {
+    eventBus.on('loadUser', ()=>{
+      loadUser();
+  })
 
-  //   return () => {
-  //     socketService.off('newNotification')
-  //   };
-  // });
+    // const { user } = props;
+    // socketService.setup();
+    // socketService.emit('register user', user._id);
+    // socketService.on('newNotification', (msg) => {
+    //   // setNotification(msg)
+    //   console.log(msg)
+    // });
+
+    // return () => {
+    //   socketService.off('newNotification')
+    // };
+  });
 
   return (
     <section className="App">

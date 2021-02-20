@@ -1,0 +1,100 @@
+.board-menu {
+    left: 0;
+    top: 32px;
+    width: 230px;
+    & .menu-option {
+        display: inline;
+        margin-left: 10px;
+    }
+    & .go-back {
+        position: absolute;
+        background-color: unset;
+        border: unset;
+        cursor: pointer;
+    }
+    & .close-btn {
+        color: #5e6c84;
+        float: right;
+        border: none;
+        background-color: unset;
+        cursor: pointer;
+    }
+    & .color-sample {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+    }
+
+    & .style-change-container {
+        & .style-change {
+            margin-top: 15px;
+        }
+        & .color-picker {
+            height: 50px;
+            width: 100px;
+            cursor: pointer;
+            margin-right: 5px;
+            &.blue {
+                background-color: rgb(0, 121, 191);
+            }
+            &.green {
+                background-color: rgb(81, 152, 57);
+            }
+            &.orange {
+                background-color: rgb(210, 144, 52);
+            }
+            &.red {
+                background-color: rgb(176, 70, 50);
+            }
+            &.purple {
+                background-color: rgb(137, 96, 158);
+            }
+        }
+    }
+    & .about-board-container {
+        & .about-board {
+            margin-top: 15px;
+            & .avatar-member-popup {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+            & .user-name {
+                font-size: small;
+                color: gray;
+                margin-left: 50px;
+                &:hover {
+                    background-color: unset;
+                }
+            }
+            & .full-name {
+                margin-left: 50px;
+                &:hover {
+                    background-color: unset;
+                }
+            }
+        }
+        & .board-description {
+            resize: none;
+            margin-top: 10px;
+            min-height: 70px;
+            width: 260px;
+            border: none;
+            &:focus {
+                border: 1px solid gray;
+            }
+        }
+        & .description-save-btn {
+            background-color: #5aac44;
+            box-shadow: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 6px 12px;
+            font-size: 14px;
+            &:hover {
+                background-color: #6cb459;
+            }
+        }
+    }
+}

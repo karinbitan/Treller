@@ -144,9 +144,14 @@
 
 .no-button {
     // padding: 0;
+    background-color: unset;
     border: none;
 }
 
 .relative {
     position: relative;
+}
+
+.inline{
+    display: inline;
 }

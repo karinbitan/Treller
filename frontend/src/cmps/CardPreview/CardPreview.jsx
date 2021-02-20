@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { utilService } from '../../services/utilService';
 // import { socketService } from '../../services/socketService';
@@ -15,9 +15,6 @@ export function CardPreview(props) {
     const [screenCard, setScreenCard] = useState({ top: null, left: null })
     let history = useHistory();
     const { card, isSearch } = props;
-
-    useEffect(() => {
-    })
 
     const cardDetail = (ev) => {
         ev.stopPropagation();

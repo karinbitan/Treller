@@ -50,6 +50,10 @@ class _TrellerApp extends Component {
         socketService.on('newUserNotification', (userId) => {
             this.loadUser()
         })
+
+        eventBus.on('loadUser', () => {
+            this.loadUser();
+        })
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -68,11 +72,9 @@ class _TrellerApp extends Component {
     setBoard = async (boardId) => {
         await this.props.setBoard(boardId);
         this.setState({ boardToEdit: this.props.board })
-        console.log('props',this.props.board)
-        console.log('state',this.state.boardToEdit)
     }
 
-    loadUser = async () =>{
+    loadUser = async () => {
         await this.props.getLoggedInUser();
     }
 
@@ -122,10 +124,15 @@ class _TrellerApp extends Component {
         const { board, user } = this.props;
         await this.props.deleteBoard(board._id);
         await this.props.getLoggedInUser();
-        eventBus.emit('loadUser')
         setTimeout(() => {
             this.props.history.push(`/user/${user._id}/boards`);
         }, 1000);
+    }
+
+    updateBoardDescription = async (description) => {
+        const { board } = this.props;
+        await this.props.updateBoardCollection(board._id, { description });
+        await this.props.setBoard(board._id);
     }
 
     // LIST //
@@ -209,24 +216,22 @@ class _TrellerApp extends Component {
         if (!result.destination) {
             return;
         }
-        const { boardToEdit } = this.state;
+        let { board } = this.props;
         if (result.type === 'list') {
-            const lists = this.reorder(
-                this.state.boardToEdit.lists,
+            const listsToChange = this.reorder(
+                board.lists,
                 result.source.index,
                 result.destination.index
             );
-            boardToEdit.lists = lists;
-            this.setState({ boardToEdit }, async () => {
-                await this.props.updateBoard(boardToEdit)
-            })
+            board.lists = listsToChange;
+            await this.props.updateBoard(board)
         } else if (result.type === 'card') {
             const destListId = result.destination.droppableId;
             const sourceListId = result.source.droppableId;
-            let lists = this.state.boardToEdit.lists;
+            let lists = board.lists;
             if (destListId === sourceListId) {
                 // Filter to find the curr list
-                let list = this.state.boardToEdit.lists.filter(list => {
+                let list = board.lists.filter(list => {
                     return list._id === destListId;
                 })
                 // List = list[0] because the filter return array
@@ -248,10 +253,10 @@ class _TrellerApp extends Component {
                 // Change the list to the curr list with the right card order
                 lists.splice(listIdx, 1, list);
             } else {
-                let destList = boardToEdit.lists.filter(list => {
+                let destList = board.lists.filter(list => {
                     return list._id === destListId;
                 })
-                let sourceList = boardToEdit.lists.filter(list => {
+                let sourceList = board.lists.filter(list => {
                     return list._id === sourceListId;
                 })
                 this.move(
@@ -271,11 +276,9 @@ class _TrellerApp extends Component {
                 lists.splice(destListIdx, 1, destList);
                 lists.splice(sourceListIdx, 1, sourceList);
             }
-            boardToEdit.lists = lists;
+            board.lists = lists;
 
-            this.setState({ boardToEdit }, async () => {
-                await this.props.updateBoard(boardToEdit)
-            })
+            await this.props.updateBoard(board)
         }
     };
 
@@ -300,13 +303,14 @@ class _TrellerApp extends Component {
                         changeStyle={this.changeStyle}
                         inviteMemberToBoard={this.inviteMemberToBoard}
                         addBoard={this.addBoard}
-                        onDeleteBoard={this.deleteBoard}
+                        deleteBoard={this.deleteBoard}
+                        updateBoardDescription={this.updateBoardDescription}
                     />
                     <div>
                         {notification && <NotificiationMsg notification={notification} user={user} />}
                     </div>
                     <section className="treller-app">
-                        <section className="lists flex column">
+                        <section className="lists flex">
                             <DragDropContext onDragEnd={this.onDragEnd}>
                                 <Droppable droppableId="dropable-list" direction="horizontal" type="list">
                                     {(provided, snapshot) => (
@@ -332,7 +336,9 @@ class _TrellerApp extends Component {
                                                                             style={this.getListStyle(snapshot.isDraggingOver)}
                                                                             {...provided.droppableProps}
                                                                             ref={provided.innerRef}>
-                                                                            <ListPreview list={list} listIdx={idx} key={idx} board={this.props.board}
+                                                                            <ListPreview
+                                                                                list={list} listIdx={idx} key={idx}
+                                                                                board={board}
                                                                                 innerRef={provided.innerRef}
                                                                                 provided={provided}
                                                                                 isDraggingOver={snapshot.isDraggingOver}

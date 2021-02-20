@@ -70,7 +70,7 @@ export class _Login extends Component {
     render() {
         const { isLogin, isSignup, loginCred, loginFailed } = this.state;
         return (
-            <section className="login-container container">
+            <section className="login-container">
                 <h1 className="logo">Treller</h1>
                 <p><span className="cred-type" onClick={() => this.setState({ isSignup: true, isLogin: false })}>Sign Up </span>
                      || <span className="cred-type" onClick={() => this.setState({ isLogin: true, isSignup: false })}>Login</span></p>

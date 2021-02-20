@@ -5,6 +5,7 @@ import {
     setCard, updateCard, updateCardCollection, deleteCard, addCard,
     addComment, deleteComment, addTodo, deleteTodo, addCardMember
 } from '../../store/actions/cardActions';
+import { getBoardById } from '../../store/actions/boardActions';
 import Avatar from 'react-avatar';
 import { socketService } from '../../services/socketService';
 
@@ -32,7 +33,6 @@ export class _CardDetails extends Component {
         await this.props.getLoggedInUser();
         this.setState({ cardToEdit: this.props.card });
         this.getListIdx();
-        this.getList();
 
         socketService.setup();
         socketService.emit('register card', cardId);
@@ -53,26 +53,28 @@ export class _CardDetails extends Component {
     //     socketService.terminate();
     // }
 
-    getListIdx = () => {
-        let { card, board } = this.props;
-        let listId = card.createdBy.listId;
-        const listIdx = board.lists.findIndex(list => {
-            return list._id === listId;
-        })
-        this.setState({ listIdx })
+    getListIdx = async () => {
+        const { card } = this.props;
+        if (card) {
+            let board = await this.props.getBoardById(card.createdBy.boardId);
+            let listId = card.createdBy.listId;
+            const listIdx = board.lists.findIndex(list => {
+                return list._id === listId;
+            })
+            this.setState({ listIdx })
+        }
+        this.getList();
     }
 
-    getList = () => {
+    getList = async () => {
         let { listIdx } = this.state;
-        let { board } = this.props;
-        const list = board.lists.find((list, idx) => {
-            return idx === listIdx;
-        })
-        this.setState({listTitle: list.title})
+        const { card } = this.props;
+            let board = await this.props.getBoardById(card.createdBy.boardId);
+            const list = board.lists[listIdx]
+            this.setState({ listTitle: list.title })
     }
 
     // CARD //
-
     setCard = async (cardId) => {
         await this.props.setCard(cardId);
         this.setState({ cardToEdit: this.props.card });
@@ -92,12 +94,12 @@ export class _CardDetails extends Component {
         if (ev.keyCode === 13 && ev.shiftKey === false) {
             ev.preventDefault();
             this.handleChangeCard(ev);
-            this.updateTitle(ev);
+            this.updateTitle();
         }
     }
 
-    updateTitle = async (ev) => {
-        ev.preventDefault();
+    updateTitle = async () => {
+        debugger
         const { cardToEdit } = this.state;
         const title = cardToEdit.title;
         await this.props.updateCardCollection(cardToEdit._id, { title });
@@ -177,7 +179,7 @@ export class _CardDetails extends Component {
     // DUE DATE //
     setDate = async (ev, dueDate) => {
         ev.preventDefault();
-        const {  card } = this.props;
+        const { card } = this.props;
         await this.props.updateCardCollection(card._id, { dueDate })
         await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
@@ -193,7 +195,7 @@ export class _CardDetails extends Component {
     }
 
     onDeleteDueDate = async () => {
-        const {  card } = this.props;
+        const { card } = this.props;
         const dueDate = '';
         await this.props.updateCardCollection(card._id, { dueDate })
         await this.props.setCard(card._id);
@@ -365,6 +367,7 @@ const mapDispatchToProps = {
     addComment,
     deleteComment,
     addTodo,
-    deleteTodo
+    deleteTodo,
+    getBoardById
 }
 export const CardDetails = connect(mapStateToProps, mapDispatchToProps)(_CardDetails)

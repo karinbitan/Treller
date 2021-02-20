@@ -39,14 +39,13 @@ async function getBoardById(boardId) {
 
         let board = await collection.findOne({ _id: ObjectId(boardId) });
 
-       let members =  await Promise.all(board.members.map(async (memberId) => {
-            const user = await userService.getUserById(memberId);
-            return memberId = {
+       let members =  await Promise.all(board.members.map(async (member) => {
+            const user = await userService.getUserById(member._id);
+            return member = {
                 _id: user._id,
                 fullName: user.fullName
             }
         }))
-
         board.members = members;
 
         // Get all card ids from all board lists.
@@ -103,7 +102,7 @@ async function updateBoard(board) {
     delete board._id;
 
     try {
-        _getListWithCardObjectId(board);
+        board.lists = _getListWithCardObjectId(board);
         await collection.replaceOne({ _id: ObjectId(id) }, board);
         board._id = ObjectId(id)
         return board;
@@ -135,11 +134,11 @@ async function addBoard(board) {
     }
 }
 
-async function addMemberToBoard(boardId, memberId) {
+async function addMemberToBoard(boardId, member) {
     const collection = await dbService.getCollection('board');
     try {
         const result = await collection.updateOne({ _id: ObjectId(boardId) },
-            { $push: { members: memberId } });
+            { $push: { members: member } });
         return result
     } catch (err) {
         console.log(`ERROR: cannot add member ${member._id} to board ${boardId}`)
@@ -211,4 +210,16 @@ async function deleteCardFromList(boardId, listIdx, cardId) {
         console.log(`ERROR: cannot delete card ${cardId} from list ${listId} in board ${boardId}`)
         throw err;
     }
+}
+
+function _getListWithCardObjectId(board) {
+    return board.lists.map(list => {
+        if (list.cards && list.cards.length) {
+            list.cards = list.cards.map((card) => {
+                const cardId = card._id;
+                return card._id = ObjectId(cardId);
+            })
+        }
+        return list;
+    })
 }

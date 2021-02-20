@@ -151,7 +151,7 @@ async function addBoardToUser(userId, boardId) {
             { $push: { boardsMember: boardId, boardsOwner: boardId } });
         return boardId
     } catch (err) {
-        console.log(`ERROR: cannot add board ${boardId} to ${user._id}`)
+        console.log(`ERROR: cannot add board ${boardId} to ${userId}`)
         throw err;
     }
 }

@@ -8,6 +8,7 @@ const { socketConnection } = require('./../../server');
 async function getCards(req, res) {
     try {
         const cards = await cardService.query(req.query);
+        req.session.card = card;
         res.send(cards);
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -90,13 +91,12 @@ async function updateCard(req, res) {
 
 async function updateCardCollection(req, res) {
     const cardId = req.params.id;
-    const boardId = card.createdBy.boardId;
     const updateObject = req.body;
     try {
         await cardService.updateCardCollection(cardId, updateObject);
         const realCard = await cardService.getCardById(cardId);
         socketConnection.to(cardId).emit('updatedCard', cardId);
-        socketConnection.to(boardId).emit('updatedBoard', boardId)
+        socketConnection.to(realCard.createdBy.boardId).emit('updatedBoard', realCard.createdBy.boardId)
         res.send(realCard);
     } catch (err) {
         console.log(`ERROR: ${err}`)

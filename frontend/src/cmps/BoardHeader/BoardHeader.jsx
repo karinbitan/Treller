@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import Avatar from 'react-avatar';
 import { InviteMembers } from '../InviteMembers/InviteMembers';
+import { BoardMenu } from '../BoardMenu/BoardMenu';
 
 import './BoardHeader.scss';
 
@@ -9,7 +10,6 @@ export class BoardHeader extends Component {
         boardToEdit: null,
         isFavorite: false,
         isMenuOpen: false,
-        isStyleMenuOpen: false,
         style: {
             backgroundColor: null
         },
@@ -38,7 +38,6 @@ export class BoardHeader extends Component {
         if (prevProps.board !== this.props.board) {
             const boardToEdit = this.props.board;
             this.setState({ boardToEdit });
-            console.log('change')
         }
     }
 
@@ -69,19 +68,19 @@ export class BoardHeader extends Component {
         const { isFavorite } = this.state;
         if (isFavorite) {
             this.props.favoriteBoard(false);
-            this.setState({isFavorite: false})
+            this.setState({ isFavorite: false })
         } else {
             this.props.favoriteBoard(true);
-            this.setState({isFavorite: true})
+            this.setState({ isFavorite: true })
         }
     }
 
-    toggleMenu = () => {
-        this.setState({ isMenuOpen: !this.state.isMenuOpen })
+    deleteBoard = () => {
+        this.props.deleteBoard();
     }
 
-    toggleStyleMenu = () => {
-        this.setState({ isStyleMenuOpen: !this.state.isStyleMenuOpen })
+    closeMenu = () => {
+        this.setState({ isMenuOpen: false })
     }
 
     inviteMemberToBoard = (member) => {
@@ -94,9 +93,14 @@ export class BoardHeader extends Component {
         this.props.addBoard(board);
     }
 
+    updateBoardDescription = (ev, description) =>{
+        ev.preventDefault();
+        this.props.updateBoardDescription(description);
+    }
+
     render() {
         const { board, user } = this.props;
-        const { boardToEdit, isFavorite, isMenuOpen, isStyleMenuOpen, templateMsg } = this.state;
+        const { boardToEdit, isFavorite, isMenuOpen, templateMsg } = this.state;
         const isAdmin = user.boardsOwner.some(boardId => {
             return boardId === board._id;
         });
@@ -120,32 +124,12 @@ export class BoardHeader extends Component {
         |
         <InviteMembers board={board} user={user} inviteMemberToBoard={this.inviteMemberToBoard} />
                     <div className="menu-container flex">
-                        <button className="board-header-icon show-menu-icon" onClick={this.toggleMenu}>
+                        <button className="board-header-icon show-menu-icon" onClick={() => this.setState({ isMenuOpen: !this.state.isMenuOpen })}>
                             <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
                         </button>
-                        {isMenuOpen && <div className="menu pop-up">
-                            <button onClick={this.toggleMenu} className="close-btn"><i className="fas fa-times"></i></button>
-                            {!isStyleMenuOpen ? <div>
-                                <p className="headline">Menu</p>
-                                <ul>
-                                    <li className="relative" onClick={this.toggleStyleMenu}>Change Style
-                                     <div className="color-sample" style={{ backgroundColor: board.style.backgroundColor }}></div>
-                                    </li>
-                                    {isAdmin && <li onClick={this.props.onDeleteBoard}>Delete Board</li>}
-                                </ul>
-                            </div>
-                                : <div className="style-change-container">
-                                    <button onClick={this.toggleStyleMenu}><i className="fas fa-arrow-left"></i></button>
-                                    <p>Change Style</p>
-                                    <div className="flex">
-                                        <div onClick={() => this.changeStyle('rgb(0, 121, 191)')} className="color-picker blue" ></div>
-                                        <div onClick={() => this.changeStyle('rgb(81, 152, 57)')} className="color-picker green" ></div>
-                                        <div onClick={() => this.changeStyle('rgb(210, 144, 52)')} className="color-picker orange" ></div>
-                                        <div onClick={() => this.changeStyle('rgb(176, 70, 50)')} className="color-picker red" ></div>
-                                        <div onClick={() => this.changeStyle('rgb(137, 96, 158)')} className="color-picker purple" ></div>
-                                    </div>
-                                </div>}
-                        </div>}
+                        {isMenuOpen && <BoardMenu isAdmin={isAdmin} board={board}
+                         user={user} closeMenu={this.closeMenu} onDeleteBoard={this.deleteBoard}
+                         onChangeStyle={this.changeStyle} onUpdateBoardDescription={this.updateBoardDescription} />}
                     </div>
                     {board.isTemplate && <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
                         {templateMsg}

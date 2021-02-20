@@ -71,7 +71,10 @@ async function addBoard(req, res) {
                 fullName: req.session.user.fullName
             }
             board.members.push(
-                req.session.user._id,
+                {
+                    _id: req.session.user._id,
+                    fullName: req.session.user._id
+                }
             )
         }
         await boardService.addBoard(board);
@@ -84,7 +87,7 @@ async function addBoard(req, res) {
 }
 
 async function updateBoard(req, res) {
-    const board = req.body;
+    let board = req.body;
     try {
         await boardService.updateBoard(board);
         const realBoard = await boardService.getBoardById(board._id);
@@ -131,12 +134,12 @@ async function inviteMemberToBoard(req, res) {
 
 async function addMemberToBoard(req, res) {
     const boardId = req.params.id;
-    let { memberId } = req.body;
+    const member = req.body;
     try {
-        await boardService.addMemberToBoard(boardId, memberId);
-        await userService.addMemberToBoard(boardId, memberId);
+        await boardService.addMemberToBoard(boardId, member);
+        await userService.addMemberToBoard(boardId, member._id);
         const realBoard = await boardService.getBoardById(boardId);
-        socketConnection.to(memberId).emit('newNotification',
+        socketConnection.to(member._id).emit('newNotification',
             { message: `You were added to board: ${realBoard.title}`, id: boardId })
         res.send(realBoard);
     } catch (err) {
@@ -254,18 +257,6 @@ async function _deleteCardsFromList(boardId, listId) {
         }
     })
 }
-
-// function _getListWithCardObjectId(board) {
-//     board.lists.map(list => {
-//         if (list.cards && list.cards.length) {
-//             list.cards = list.cards.map((card) => {
-//                 const cardId = card._id;
-//                 return card._id = ObjectId(cardId);
-//             })
-//         }
-//         return list;
-//     })
-// }
 
 
 module.exports = {

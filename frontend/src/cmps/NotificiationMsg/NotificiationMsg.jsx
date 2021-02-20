@@ -6,25 +6,22 @@ export function NotificiationMsg({ notification, user }) {
     let interval = null;
 
     useEffect(() => {
-        console.log(notification)
         interval = setTimeout(() => {
             setTime(true)
         }, 4000);
     }, []);
 
     const isUser = () => {
-        if (notification.user) {
-            if (notification.user.id === user._id) return true;
+        if (notification.byUser) {
+            if (notification.byUser.id === user._id) return true;
             else return false;
         }
     }
 
-    console.log(isUser())
-
     return (
         <section>
             {(notification && !isTimePass) && <div className="notification-msg">
-                <p>{`${notification.message} ${notification.user ? 'by' : ''} ${isUser ? 'You' : notification.user.fullName}`}</p>
+                <p>{`${notification.message} ${notification.byUser ? 'by' : ''} ${isUser ? 'You' : notification.user.fullName}`}</p>
             </div>}
         </section>
     )

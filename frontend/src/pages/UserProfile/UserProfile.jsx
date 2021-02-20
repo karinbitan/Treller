@@ -11,6 +11,7 @@ import Loading from './../../assets/loading.gif';
 import profilePic from './../../assets/profile-logo.png';
 
 import './UserProfile.scss';
+import { eventBus } from '../../services/eventBusService';
 
 export class _UserProfile extends Component {
 
@@ -28,6 +29,10 @@ export class _UserProfile extends Component {
         socketService.emit('register user', user._id);
         socketService.on('newUserNotification', (userId) => {
             this.loadUser()
+        })
+
+        eventBus.on('loadUser', ()=>{
+            this.loadUser();
         })
     }
 

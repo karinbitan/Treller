@@ -28,8 +28,8 @@ export function setCard(cardId) {
 export function deleteCard(boardId, listIdx, cardId) {
   return async dispatch => {
     try {
-      await cardService.deleteCard(cardId);
       await boardService.deleteCardFromList(boardId, listIdx, cardId);
+      await cardService.deleteCard(cardId);
       dispatch({ type: 'DELETE_CARD', cardId })
     } catch (err) {
       console.log('ERROR!', err);

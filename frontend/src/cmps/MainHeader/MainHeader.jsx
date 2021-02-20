@@ -47,11 +47,11 @@ function _MainHeader(props) {
         <header style={{ backgroundColor: board ? 'rgba(0,0,0,.15)' : isUserPage ? 'rgb(5, 97, 150)' : '' }}>
             {user && <section className="main-header flex align-center">
                 <div className="menu-container flex align-center">
-                    <button className="icon-container no-button">
+                    <button className="icon-container">
                         <Link to={`/user/${user._id}/boards`}><img className="icon" src={Home} alt="home" /></Link>
                     </button>
                     <div>
-                        <button className="icon-container no-button">
+                        <button className="icon-container">
                             <Link to={`/user/${user._id}/boards`}><img className="icon" src={Logo} alt="boards" /></Link>
                         </button>
                     </div>
@@ -67,7 +67,7 @@ function _MainHeader(props) {
                 <div className="menu-container flex flex-end align-center">
                     <div className="flex relative">
                         {unreadNotificationNumber() ? <span className="notification-badge">{unreadNotificationNumber()}</span> : ''}
-                        <button className="icon-container no-button" onClick={() => toggleNotificationsOptions(!isNotificationOptionOpen)}>
+                        <button className="icon-container" onClick={() => toggleNotificationsOptions(!isNotificationOptionOpen)}>
                             <img className="icon" src={Notification} alt="notifications" />
                         </button>
                         {isNotificationOptionOpen && <Notifications
@@ -92,7 +92,7 @@ function _MainHeader(props) {
                         </ul>
                     </div>}
                     {!user && <div>
-                        <button className="icon-container no-button">
+                        <button className="icon-container">
                             <Link to="/login"><img className="icon" src={LoginIcon} alt="login icon" /></Link>
                         </button>
                     </div>}

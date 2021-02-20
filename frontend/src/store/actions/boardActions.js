@@ -104,10 +104,10 @@ export function inviteMemberToBoard(board, member) {
   }
 }
 
-export function addMemberToBoard(boardId, memberId) {
+export function addMemberToBoard(boardId, member) {
   return async dispatch => {
     try {
-      const realBoard = await boardService.addMemberToBoard(boardId, memberId);
+      const realBoard = await boardService.addMemberToBoard(boardId, member);
       dispatch(_boardUpdate(realBoard));
     } catch (err) {
       console.log('ERROR!', err);

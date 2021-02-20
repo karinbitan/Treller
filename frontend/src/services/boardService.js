@@ -51,8 +51,8 @@ function inviteMemberToBoard(board, member) {
     return httpService.post(`board/${board._id}/invite`, { board, member })
 }
 
-function addMemberToBoard(boardId, memberId) {
-    return httpService.post(`board/${boardId}/add`, {memberId})
+function addMemberToBoard(boardId, member) {
+    return httpService.post(`board/${boardId}/add`, member)
 }
 
 function getEmptyBoard() {
@@ -64,10 +64,10 @@ function getEmptyBoard() {
             backgroundColor: 'rgb(0, 121, 191)',
             backgroundImg: null
         },
+        description: '',
         members: [],
         lists: [],
         activities: [],
-        isFavorite: false,
         isTemplate: false
     }
     return board;
@@ -88,6 +88,7 @@ function updateListTitle(boardId, listIdx, title) {
 
 // CARD //
 function deleteCardFromList(boardId, listIdx, cardId) {
+    debugger
     return httpService.delete(`board/${boardId}/list/${listIdx}/card/${cardId}`);
 }
 

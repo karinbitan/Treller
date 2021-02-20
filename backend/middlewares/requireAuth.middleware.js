@@ -34,18 +34,18 @@ async function requireBoardMember(req, res, next) {
   next();
 }
 
-// async function requireCardMember(req, res, next) {
-//   const user = req.session.user;
-//   const id = req.session.board._id;
-//   const isMember = user.boardsMember.some(boardId => {
-//     return boardId === id;
-//   });
-//   if (!isMember) {
-//     res.status(403).end('Unauthorized Enough..Not card member');
-//     return;
-//   }
-//   next();
-// }
+async function requireCardMember(req, res, next) {
+  const user = req.session.user;
+  const id = req.session.card._id;
+  const isMember = user.cardsMember.some(cardId => {
+    return cardId === id;
+  });
+  if (!isMember) {
+    res.status(403).end('Unauthorized Enough..Not card member');
+    return;
+  }
+  next();
+}
 
 
 // async function requireUser(req, res, next) {
@@ -64,5 +64,5 @@ module.exports = {
   requireAuth,
   requireBoardOwner,
   requireBoardMember,
-  // requireCardMember
+  requireCardMember
 }

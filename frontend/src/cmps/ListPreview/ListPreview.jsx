@@ -89,6 +89,7 @@ export function ListPreview(props) {
                                         )}
                                         ref={provided.innerRef}>
                                         <CardPreview
+                                            provided={provided}
                                             card={card}
                                             key={card._id}
                                             deleteCard={deleteCard}

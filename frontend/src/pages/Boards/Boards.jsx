@@ -34,6 +34,10 @@ export class _Boards extends Component {
         socketService.on('newUserNotification', (userId) => {
             this.loadUser()
         })
+        
+        eventBus.on('loadUser', ()=>{
+            this.loadUser();
+        })
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -155,9 +159,7 @@ export class _Boards extends Component {
                                 {(user.boardsMember && user.boardsMember.length > 0) &&
                                     <div className="other-boards flex justify-center flex-wrap">
                                         {boardsMember.map(board => {
-                                            if (!board.style) {
-                                                return;
-                                            } else {
+                                            if (!board.style) return;
                                                 return (
                                                     <Link to={`/treller/board/${board._id}`} key={board._id}
                                                         className="board-link flex column space-between"
@@ -175,8 +177,6 @@ export class _Boards extends Component {
                                                         </div>
                                                     </Link>
                                                 )
-                                            }
-
                                         })}
                                     </div>}
                                 <div className="board-link empty flex justify-center align-center"
