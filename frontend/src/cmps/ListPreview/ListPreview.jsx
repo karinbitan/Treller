@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { AddCard } from '../AddCard/AddCard';
 import { CardPreview } from '../CardPreview';
@@ -15,14 +15,32 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 export function ListPreview(props) {
-    const [listTitleToEdit, updateListToEditTitle] = useState(props.list.title);
-    const [isListActionOpen, toggleListAction] = useState(false);
-    // const [currListIdx, setCurrListIdx] = useState('');
-
     const { list, listIdx } = props;
     const { provided, innerRef, isDraggingOver } = props;
 
+    const [listTitleToEdit, updateListToEditTitle] = useState(props.list.title);
+    const [isListActionOpen, toggleListAction] = useState(false);
     const listTitleRef = useRef(null);
+    const node = useRef();
+
+    useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, []);
+
+    const handleClick = e => {
+        if (node.current) {
+            if (node.current.contains(e.target)) {
+                return;
+            }
+        }
+        toggleListAction(false)
+    };
+
 
     const onEnterPress = (ev) => {
         if (ev.keyCode === 13 && ev.shiftKey === false) {
@@ -65,7 +83,7 @@ export function ListPreview(props) {
                 </textarea>
             </form>}
             <button onClick={() => toggleListAction(true)} className="list-menu-icon"><i className="fas fa-ellipsis-h"></i></button>
-            {isListActionOpen && <div className="list-actions">
+            {isListActionOpen && <div ref={node} className="list-actions">
                 <button className="close-btn" onClick={() => toggleListAction(false)}><i className="fas fa-times"></i></button>
                 <p>List Actions</p>
                 <ul>

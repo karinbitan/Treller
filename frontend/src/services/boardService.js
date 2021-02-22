@@ -88,7 +88,6 @@ function updateListTitle(boardId, listIdx, title) {
 
 // CARD //
 function deleteCardFromList(boardId, listIdx, cardId) {
-    debugger
     return httpService.delete(`board/${boardId}/list/${listIdx}/card/${cardId}`);
 }
 

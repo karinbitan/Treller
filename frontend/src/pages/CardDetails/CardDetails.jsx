@@ -99,7 +99,6 @@ export class _CardDetails extends Component {
     }
 
     updateTitle = async () => {
-        debugger
         const { cardToEdit } = this.state;
         const title = cardToEdit.title;
         await this.props.updateCardCollection(cardToEdit._id, { title });

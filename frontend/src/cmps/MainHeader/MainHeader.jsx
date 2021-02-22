@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import { logout } from '../../store/actions/authActions';
 import { addBoard } from '../../store/actions/boardActions';
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
 
 import Avatar from 'react-avatar';
 import Logo from './../../assets/treller-logo.png';
@@ -13,11 +13,14 @@ import { Notifications } from '../Notifications/Notifications';
 import { Filter } from '../Filter/Filter';
 
 import './MainHeader.scss';
+import { AvatarOptions } from '../AvatarOptions/AvatarOptions';
 
 function _MainHeader(props) {
     const [isAvatarOptionsOpen, toggleAvatarOptions] = useState(false);
     const [isNotificationOptionOpen, toggleNotificationsOptions] = useState(false);
     const { user, board, isUserPage } = props;
+    const history = useHistory();
+    const node = useRef();
 
     useEffect(() => {
         unreadNotificationNumber();
@@ -29,6 +32,7 @@ function _MainHeader(props) {
     const logout = async () => {
         await props.logout();
         toggleAvatarOptions(false)
+        history.push('/')
     }
 
     const unreadNotificationNumber = () => {
@@ -61,7 +65,7 @@ function _MainHeader(props) {
                     {board ?
                         <Link to={`/treller/board/${board._id}`} className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
                         : user ? <Link to={`/user/${user._id}/boards`} className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
-                            : <Link to="/"></Link>
+                            : <Link to="/" className="logo"><img className="icon" src={Logo} alt="logo" />Treller</Link>
                     }
                 </div>
                 <div className="menu-container flex flex-end align-center">
@@ -77,20 +81,8 @@ function _MainHeader(props) {
                     </div>
                     {user && <Avatar className="avatar-member" name={user.fullName} size="40" round={true}
                         onClick={() => toggleAvatarOptions(!isAvatarOptionsOpen)} />}
-                    {(user && isAvatarOptionsOpen) && <div className="avatar-options">
-                        <button onClick={() => toggleAvatarOptions(false)} className="close-btn"><i className="fas fa-times"></i></button>
-                        <p className="options-headline">Account</p>
-                        <Avatar className="avatar-member-popup" name={user.fullName} size="40" round={true} />
-                        <ul>
-                            <div className="account-info">
-                                <li className="full-name flex">{user.fullName}</li>
-                                <li className="user-name flex">{user.userName}</li>
-                            </div>
-                            <li><Link to={`/user/${user._id}/boards`}>Boards</Link></li>
-                            <li onClick={() => toggleAvatarOptions(false)}><Link to={`/user/${user._id}`}>Profile</Link></li>
-                            <li onClick={logout}><Link to="/">Log Out</Link></li>
-                        </ul>
-                    </div>}
+                    {(user && isAvatarOptionsOpen) && <AvatarOptions user={user} 
+                    closePopUp={() => toggleAvatarOptions(false)} logout={logout} />}
                     {!user && <div>
                         <button className="icon-container">
                             <Link to="/login"><img className="icon" src={LoginIcon} alt="login icon" /></Link>

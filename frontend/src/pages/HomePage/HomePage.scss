@@ -6,6 +6,35 @@
     // & .home-page-container {
     //     margin-top: 10px;
     // }
+    & header {
+        background-color: rgb(5, 97, 150);
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-right: 10px;
+        padding-left: 10px;
+        flex-wrap: wrap;
+        & .logo {
+            width: 100px;
+            font-family: "Yellowtail";
+            color: white;
+            font-size: 1.75rem;
+            opacity: 0.6;
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+        & .loggin-btn {
+            border: unset;
+            background-color: hsla(0, 0%, 100%, 0.3);
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+    }
     & p {
         align-self: flex-end;
         text-align: center;
@@ -24,7 +53,7 @@
             font-weight: bold;
         }
     }
-    & img {
+    & .banner {
         max-width: 657px;
     }
 }

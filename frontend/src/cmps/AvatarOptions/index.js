@@ -1,0 +1,1 @@
+export { AvatarOptions } from './AvatarOptions'

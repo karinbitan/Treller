@@ -1,55 +1,59 @@
+import { useEffect, useRef, useState } from 'react';
 import { boardService } from './../../services/boardService.js';
-import { Component } from 'react';
 
 import './AddList.scss';
 
-export class AddList extends Component {
+export function AddList(props) {
+    const emptyList = boardService.getEmptyList();
+    const [listToEdit, setListToEdit] = useState(emptyList);
+    const [showingAddListForm, toggleForm] = useState(false);
+    const inputRef = useRef()
+    const node = useRef();
 
-    state = {
-        listToEdit: null,
-        showingAddListForm: false
-    }
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus()
+        }
+    })
 
-    componentDidMount() {
-        const listToEdit = boardService.getEmptyList();
-        this.setState({ listToEdit });
-    }
+    useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+          document.removeEventListener("mousedown", handleClick);
+        };
+      }, []);
 
-    handleChangeList = ({ target }) => {
-        const field = target.name;
-        const value = target.value;
-        this.setState(prevState => ({ listToEdit: { ...prevState.listToEdit, [field]: value } }));
-    }
+      const handleClick = e => {
+        if (node.current.contains(e.target)) {
+          return;
+        }
+       toggleForm(false)
+      };
 
-
-    toggleListForm = (ev) => {
-        ev.stopPropagation();
-        this.setState({ showingAddListForm: !this.state.showingAddListForm })
-    }
-
-    onAddList = (ev) => {
+    const onAddList = (ev) => {
         ev.preventDefault();
-        const { listToEdit } = this.state;
-        this.props.addList(listToEdit);
-        this.setState({ showingAddListForm: false });
-        this.setState(({ listToEdit: { ...this.state.listToEdit, title: '' } }));
+        props.addList(listToEdit);
+        toggleForm(false);
+        setListToEdit(emptyList)
     }
 
-    render() {
-        const { listToEdit, showingAddListForm } = this.state;
-        return (
-            <section className="add-container">
-                {!showingAddListForm ? <div className="add-btn" onClick={this.toggleListForm}><i className="fas fa-plus"></i> Add another list</div>
-                    : <form onSubmit={this.onAddList} className="add-list-form">
-                        <input type="text" className="add-form" name="title"
-                            value={listToEdit.title} onChange={this.handleChangeList}
-                            placeholder="Enter a title for this card" onBlur={this.toggleListForm} />
-                        <br />
-                        <button className="add-form-btn">Add list</button>
-                        <button className="exit-btn" onClick={this.toggleListForm}><i className="fas fa-times"></i></button>
-                    </form>}
-            </section>
-        )
-    }
+    return (
+        <section ref={node} className="add-container">
+            {!showingAddListForm ? <div className="add-btn" onClick={()=>toggleForm(true)}>
+                <i className="fas fa-plus"></i> Add another list
+                </div>
+                : <form onSubmit={(ev) => onAddList(ev)} className="add-list-form">
+                    <input type="text" className="add-form" name="title"
+                        value={listToEdit.title} ref={inputRef} onChange={(ev) => setListToEdit({ ...listToEdit, [ev.target.name]: ev.target.value })}
+                        placeholder="Enter a title for this card" />
+                    <br />
+                    <button className="add-form-btn">Add list</button>
+                    <button type="button" className="exit-btn" onClick={() => toggleForm(false)}><i className="fas fa-times"></i></button>
+                </form>}
+        </section>
+
+    )
 }
 

@@ -211,7 +211,7 @@ async function deleteCardFromList(req, res) {
         await boardService.deleteCardFromList(id, listIdx, cardId);
         socketConnection.to(id).emit('updatedBoard', id);
         // socketConnection.to(boardId).emit('newNotification', { message: `Card ${} deleted`, id: cardId });
-        res.end();
+        res.send();
     } catch (err) {
         console.log(`ERROR: ${err}`)
         throw err;
@@ -236,26 +236,27 @@ async function _deleteBoardFromUser(boardId) {
 
 async function _deleteCardsFromBoard(boardId) {
     let board = await boardService.getBoardById(boardId);
-    board.lists.forEach(list => {
-        if (list.cards || list.cards.length) {
-            list.cards.forEach(async (card) => {
-                await cardService.deleteCard(card._id)
-            })
-        }
-    })
-}
-
-async function _deleteCardsFromList(boardId, listId) {
-    let board = await boardService.getBoardById(boardId);
-    board.lists.forEach(list => {
-        if (list.cards || list.cards.length) {
-            if (list._id === listId) {
+    if (board.lists) {
+        board.lists.forEach(list => {
+            if (list.cards || list.cards.length > 0) {
                 list.cards.forEach(async (card) => {
                     await cardService.deleteCard(card._id)
                 })
             }
-        }
-    })
+        })
+    }
+}
+
+async function _deleteCardsFromList(boardId, listId) {
+    let board = await boardService.getBoardById(boardId);
+    let list = board.lists.find(list => {
+        return list._id === listId;
+    });
+    if (list.cards || list.cards.length > 0) {
+        list.cards.forEach(async (card) => {
+            await cardService.deleteCard(card._id);
+        })
+    }
 }
 
 

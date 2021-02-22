@@ -30,11 +30,9 @@ async function deleteCard(req, res) {
     const cardId = req.params.id;
     const user = req.session.user;
     let card = await cardService.getCardById(cardId);
-    if (cards.members && cards.members.length > 0) {
+    if (card.members && card.members.length > 0) {
         card.members.forEach(async (member) => {
-            if (member) {
-                await userService.deleteCardFromUser(member._id, cardId)
-            }
+            await userService.deleteCardFromUser(member._id, cardId)
         });
     }
     try {

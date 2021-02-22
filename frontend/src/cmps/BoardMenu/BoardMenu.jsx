@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Avatar from 'react-avatar';
 import './BoardMenu.scss';
 
@@ -6,9 +6,26 @@ export function BoardMenu(props) {
     const [description, setDescription] = useState(props.board.description)
     const [menuType, toggleMenuType] = useState('');
     const [onForm, toggleOnForm] = useState(false);
+    const node = useRef()
+
+    useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, []);
+
+    const handleClick = e => {
+        if (node.current.contains(e.target)) {
+            return;
+        }
+        props.closeMenu();
+    };
 
     return (
-        <section className="board-menu pop-up">
+        <section ref={node} className="board-menu pop-up">
             {menuType === '' && <div>
                 <button onClick={props.closeMenu} className="close-btn"><i className="fas fa-times"></i></button>
                 <p className="headline">Menu</p>

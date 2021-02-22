@@ -4,9 +4,11 @@ const cardService = require('./../card/card.service');
 
 async function getSearchResult(req, res) {
     try {
-        if (req.query && !req.query.length > 0) {
+        if (req.query && req.query.txt.length > 0) {
             const result = await cardService.query(req.query);
             res.send(result);
+        } else {
+            res.end();
         }
     } catch (err) {
         console.log(`ERROR: ${err}`)

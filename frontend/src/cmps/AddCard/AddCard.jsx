@@ -1,15 +1,28 @@
 import { cardService } from '../../services/cardService';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import './AddCard.scss';
 
 export function AddCard(props) {
     const [cardTitleToEdit, newCardTitle] = useState('');
     const [isFormShow, toggleForm] = useState(false);
+    const node = useRef(); 
 
     useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+          document.removeEventListener("mousedown", handleClick);
+        };
+      }, []);
 
-    })
+      const handleClick = e => {
+        if (node.current.contains(e.target)) {
+          return;
+        }
+       toggleForm(false)
+      };
 
     const onAddCard = (ev) => {
         ev.preventDefault();
@@ -21,7 +34,7 @@ export function AddCard(props) {
     }
 
     return (
-        <section className="add-card-container">
+        <section ref={node} className="add-card-container">
             {!isFormShow ? <div onClick={() => toggleForm(true)} className="add-card"><i className="fas fa-plus"></i> Add a card</div>
                 : <form onSubmit={(ev) => onAddCard(ev)} className="add-card-form">
                     <input type="text" className="add-form" name="title"

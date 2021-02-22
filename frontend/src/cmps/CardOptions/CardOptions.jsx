@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Avatar from 'react-avatar';
 
 import './CardOptions.scss';
@@ -8,6 +8,24 @@ export function CardOptions(props) {
     const [checklist, newChecklist] = useState({ title: '', todos: [] });
     const [date, setDate] = useState(props.card.dueDate);
     const { type, board, card } = props;
+    const node = useRef();
+
+    useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, []);
+
+    const handleClick = e => {
+        if (node.current.contains(e.target)) {
+            return;
+        }
+        props.closePopUp();
+
+    };
 
     const closePopUp = () => {
         props.closePopUp();
@@ -26,7 +44,7 @@ export function CardOptions(props) {
     }
 
     return (
-        <div className="card-options">
+        <div ref={node} className="card-options">
             <button className="close-btn" onClick={closePopUp}><i className="fas fa-times"></i></button>
             {type === 'Cover' && <div className="covers">
                 <p className="headline-option">{props.type}</p>

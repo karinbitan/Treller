@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { eventBus } from '../../services/eventBusService';
 import { connect } from 'react-redux';
 import { addMemberToBoard } from '../../store/actions/boardActions';
@@ -6,13 +6,25 @@ import { updateUserCollection } from '../../store/actions/userActions';
 import './Notifications.scss';
 
 export function _Notifications(props) {
-    const [showMoreNum, showMore] = useState(3)
+    const [showMoreNum, showMore] = useState(3);
+    const node = useRef();
 
     useEffect(() => {
-        eventBus.on('closeModal', () => {
-            props.closePopUp();
-        })
-    }, [props]);
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, []);
+
+    const handleClick = e => {
+        if (node.current.contains(e.target)) {
+            return;
+        }
+        props.closePopUp();
+
+    };
 
     const onApprove = async (notification, notificationIdx) => {
         let notifications = props.user.notifications;
@@ -38,7 +50,7 @@ export function _Notifications(props) {
     }
 
     return (
-        <div className="notifications-container">
+        <div className="notifications-container" ref={node}>
             <button onClick={props.closePopUp} className="close-btn"><i className="fas fa-times"></i></button>
             <p className="headline">Notifications</p>
             {props.user.notifications &&

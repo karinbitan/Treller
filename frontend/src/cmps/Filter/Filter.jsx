@@ -3,7 +3,7 @@ import { getSearchResult } from './../../store/actions/searchActions';
 import { getBoardById } from './../../store/actions/boardActions';
 import { Link, useLocation } from 'react-router-dom';
 import { CardPreview } from './../CardPreview/CardPreview';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import './Filter.scss';
 
@@ -15,22 +15,49 @@ export function _Filter(props) {
     const [isFormOpen, toggleForm] = useState(false);
     const [listTitle, setListTitle] = useState('');
     const [boardTitle, setBoardTitle] = useState('');
+    const node = useRef();
+
+    useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+          document.removeEventListener("mousedown", handleClick);
+        };
+      }, []);
+
+      const handleClick = e => {
+        if (node.current.contains(e.target)) {
+          return;
+        }
+       toggleForm(false)
+      };
 
     const setFilter = async (ev) => {
         ev.preventDefault();
         debugger
+        if (!filterBy.txt || filterBy.txt.length < 0) return;
         let results = await props.getSearchResult(filterBy);
         setSearchResult(results);
         toggleIsSearch(true);
-        results.forEach(async (result) => {
-            let board = await props.getBoardById(result.createdBy.boardId);
-            let list = board.lists.find(list => {
-                return list._id === result.createdBy.listId;
+        if (results) {
+            results.forEach(async (result) => {
+                let board = await props.getBoardById(result.createdBy.boardId);
+                let list = board.lists.find(list => {
+                    return list._id === result.createdBy.listId;
+                })
+                setBoardTitle(board.title);
+                setListTitle(list.title);
             })
-            setBoardTitle(board.title);
-            setListTitle(list.title);
-        })
+        }
     }
+
+    // useEffect(() => {
+    //     setFilterBy(filterBy)
+    //     return () => {
+    //         setFilterBy({ txt: '' })
+    //     }
+    // })
 
     const closeForm = () => {
         toggleForm(false);
@@ -50,10 +77,11 @@ export function _Filter(props) {
     // How to set new board after click on card link //
 
     return (
-        <section className="filter">
+        <section ref={node} className="filter">
             <form onSubmit={setFilter}>
                 <input type="search" className="search-input" name="txt" value={filterBy.txt}
-                    onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })} onFocus={() => toggleForm(true)} />
+                    onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })} 
+                    onFocus={() => toggleForm(true)} onBlur={closeForm} />
                 {!isFormOpen && <button type="button" className="search-btn"><i className="fa fa-search"></i></button>}
             </form>
             {isFormOpen && <div className="search-tab pop-up" >
