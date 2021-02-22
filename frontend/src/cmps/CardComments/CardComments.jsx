@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Avatar from 'react-avatar';
 
 import './CardComments.scss';
@@ -6,6 +6,24 @@ import './CardComments.scss';
 export function CardComments(props) {
     const [comment, setComment] = useState({ txt: '' });
     const [onCommentOption, toggleCommentOption] = useState(false);
+    const node = useRef();
+
+    useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, []);
+
+    const handleClick = e => {
+        if (node.current.contains(e.target)) {
+            return;
+        }
+        toggleCommentOption(false)
+    };
+
 
     const onAddComment = async (ev) => {
         ev.preventDefault();
@@ -16,7 +34,7 @@ export function CardComments(props) {
 
     const { comments, user } = props;
     return (
-        <section className="card-comment">
+        <section ref={node} className="card-comment">
             <div className="headline flex align-center">
                 <i className="fas fa-comments icon"></i><h3>  Comments</h3>
             </div>

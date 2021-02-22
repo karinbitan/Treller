@@ -64,7 +64,7 @@ function _InviteMembers(props) {
                         <input className="invite-search" type="search" name="txt" 
                         onChange={(ev)=>setFilter({...filter, [ev.target.name]: ev.target.value})} value={filter.txt}
                             placeholder="Enter full name or user name" />
-                        <button>
+                        <button className="search-btn">
                             <i className="fa fa-search search-icon"></i>
                         </button>
                     </form>

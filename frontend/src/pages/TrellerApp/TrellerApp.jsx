@@ -316,37 +316,36 @@ class _TrellerApp extends Component {
                                     {(provided, snapshot) => (
                                         <div className="droppable-container flex"
                                             style={this.getListStyle(snapshot.isDraggingOver)}
-                                            {...provided.droppableProps}
-                                            ref={provided.innerRef}>
+                                            ref={provided.innerRef}
+                                            {...provided.droppableProps}>
                                             {board.lists.map((list, idx) => {
                                                 return (
                                                     <Draggable draggableId={list._id} key={list._id} index={idx}>
                                                         {(provided, snapshot) => (
                                                             <div className="list"
+                                                                ref={provided.innerRef}
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
                                                                 style={this.getItemStyle(
                                                                     snapshot.isDragging,
                                                                     provided.draggableProps.style
-                                                                )}
-                                                                ref={provided.innerRef}>
+                                                                )}>
                                                                 <Droppable droppableId={list._id} direction="vertical" type="card">
                                                                     {(provided, snapshot) => (
                                                                         <div className="card-list flex column"
                                                                             style={this.getListStyle(snapshot.isDraggingOver)}
-                                                                            {...provided.droppableProps}
-                                                                            ref={provided.innerRef}>
+                                                                            ref={provided.innerRef}
+                                                                            {...provided.droppableProps}>
                                                                             <ListPreview
-                                                                                list={list} listIdx={idx} key={idx}
+                                                                                list={list} listIdx={idx}
                                                                                 board={board}
-                                                                                innerRef={provided.innerRef}
-                                                                                provided={provided}
                                                                                 isDraggingOver={snapshot.isDraggingOver}
                                                                                 deleteList={this.deleteList}
                                                                                 updateListTitle={this.updateListTitle}
                                                                                 deleteCard={this.deleteCard}
                                                                                 updateCardTitle={this.updateCardTitle}
                                                                                 addCard={this.addCard} />
+                                                                        {provided.placeholder}
                                                                         </div>
                                                                     )}
                                                                 </Droppable>

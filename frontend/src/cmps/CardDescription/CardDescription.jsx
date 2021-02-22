@@ -1,25 +1,43 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './CardDescription.scss';
 
 export function CardDescription(props) {
     const [description, setDescription] = useState(props.description);
     const [isDescriptionFormShow, toggleDescriptionForm] = useState(false)
     const [descriptionFormType, changeDescriptionForm] = useState('fake')
+    const node = useRef();
+
+    useEffect(() => {
+        // add when mounted
+        document.addEventListener("mousedown", handleClick);
+        // return function to be called when unmounted
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, []);
+
+    const handleClick = e => {
+        if (node.current.contains(e.target)) {
+            return;
+        }
+        toggleDescriptionForm(false)
+        changeDescriptionForm('fake')
+
+    };
 
     const onUpdateDescription = (ev) => {
         ev.preventDefault();
         props.updateDescription(description);
-        setDescription(description);
         toggleDescriptionForm(false);
         changeDescriptionForm('fake');
     }
 
-    const openDescriptionForm = () =>{
+    const openDescriptionForm = () => {
         toggleDescriptionForm(true);
         changeDescriptionForm('textarea');
     }
 
-    const closeDescriptionForm = () =>{
+    const closeDescriptionForm = () => {
         toggleDescriptionForm(false);
         changeDescriptionForm('fake');
     }
@@ -35,7 +53,7 @@ export function CardDescription(props) {
                         Edit
                         </button>}
             </div>
-            <form className="description-form"
+            <form ref={node} className="description-form"
                 onSubmit={(ev) => onUpdateDescription(ev)}>
                 <textarea
                     onClick={() => openDescriptionForm()}

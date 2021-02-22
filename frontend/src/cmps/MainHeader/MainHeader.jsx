@@ -2,9 +2,8 @@ import { connect } from 'react-redux';
 import { logout } from '../../store/actions/authActions';
 import { addBoard } from '../../store/actions/boardActions';
 import { Link, useHistory } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import Avatar from 'react-avatar';
 import Logo from './../../assets/treller-logo.png';
 import Home from './../../assets/home-icon.png';
 import Notification from './../../assets/bell-icon.png';
@@ -16,22 +15,12 @@ import './MainHeader.scss';
 import { AvatarOptions } from '../AvatarOptions/AvatarOptions';
 
 function _MainHeader(props) {
-    const [isAvatarOptionsOpen, toggleAvatarOptions] = useState(false);
     const [isNotificationOptionOpen, toggleNotificationsOptions] = useState(false);
     const { user, board, isUserPage } = props;
     const history = useHistory();
-    const node = useRef();
-
-    useEffect(() => {
-        unreadNotificationNumber();
-        if (isAvatarOptionsOpen) {
-            toggleNotificationsOptions(false);
-        }
-    }, [isAvatarOptionsOpen])
 
     const logout = async () => {
         await props.logout();
-        toggleAvatarOptions(false)
         history.push('/')
     }
 
@@ -79,11 +68,8 @@ function _MainHeader(props) {
                             user={user}
                         />}
                     </div>
-                    {user && <Avatar className="avatar-member" name={user.fullName} size="40" round={true}
-                        onClick={() => toggleAvatarOptions(!isAvatarOptionsOpen)} />}
-                    {(user && isAvatarOptionsOpen) && <AvatarOptions user={user} 
-                    closePopUp={() => toggleAvatarOptions(false)} logout={logout} />}
-                    {!user && <div>
+                    {user ? <AvatarOptions user={user} onLogout={logout} />
+                    : <div>
                         <button className="icon-container">
                             <Link to="/login"><img className="icon" src={LoginIcon} alt="login icon" /></Link>
                         </button>

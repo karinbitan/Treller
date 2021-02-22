@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { userService } from '../../services/userSercvice';
 import { connect } from 'react-redux';
 import { login, signup } from '../../store/actions/authActions';

@@ -1,6 +1,7 @@
 .invite-container {
     & .invite-form {
         margin: 10px 8px;
+        position: relative;
         & .invite-search {
             font-size: 14px;
             background-color: #fafbfc;
@@ -9,14 +10,22 @@
             height: 44px;
             width: 100%;
         }
+        & .search-btn {
+            border: unset;
+            background: unset;
+            position: absolute;
+            right: 5px;
+            top: 12px;
+            cursor: pointer;
+        }
     }
     & .result-container {
         box-shadow: 0 8px 16px -4px #dfe1e6, 0 0 0 1px #dfe1e6;
         margin: 10px;
-        & .user-name{
+        & .user-name {
             margin: 5px;
         }
-        & .already-member{
+        & .already-member {
             cursor: not-allowed;
             color: gray;
         }

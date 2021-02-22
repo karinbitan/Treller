@@ -16,7 +16,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
 export function ListPreview(props) {
     const { list, listIdx } = props;
-    const { provided, innerRef, isDraggingOver } = props;
+    const { isDraggingOver } = props;
 
     const [listTitleToEdit, updateListToEditTitle] = useState(props.list.title);
     const [isListActionOpen, toggleListAction] = useState(false);
@@ -76,8 +76,8 @@ export function ListPreview(props) {
 
     return (
         <section className="list-preview">
-            {list && <form>
-                <textarea ref={listTitleRef} className="list-title" name="title" value={listTitleToEdit}
+            {list && <form className="list-title-form">
+                <textarea ref={listTitleRef} className="list-title-textarea" name="title" value={listTitleToEdit}
                     onChange={(ev) => updateListToEditTitle(ev.target.value)} onKeyDown={onEnterPress}
                     onBlur={updateListTitle}>
                 </textarea>
@@ -90,24 +90,22 @@ export function ListPreview(props) {
                     <li onClick={onDeleteList}>Delete List</li>
                 </ul>
             </div>}
-            {(list.cards && list.cards.length > 0) && <div className={"card-container" + (isDraggingOver ? " isDraggingOver" : "")}
-                {...provided.droppableProps}
-                ref={innerRef}>
+            {(list.cards && list.cards.length > 0) && <div className={"card-container" + (isDraggingOver ? " isDraggingOver" : "")}>
                 {list.cards.map((card, idx) => {
-                    if (card)
                         return (
                             <Draggable draggableId={card._id} key={card._id} index={idx}>
                                 {(provided, snapshot) => (
                                     <div className="card"
+                                        ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
+                                        
                                         style={getItemStyle(
                                             snapshot.isDragging,
                                             provided.draggableProps.style
                                         )}
-                                        ref={provided.innerRef}>
+                                    >
                                         <CardPreview
-                                            provided={provided}
                                             card={card}
                                             key={card._id}
                                             deleteCard={deleteCard}
@@ -118,7 +116,6 @@ export function ListPreview(props) {
                             </Draggable>
                         )
                 })}
-                {provided.placeholder}
             </div>}
             <AddCard addCard={addCard} />
         </section >
