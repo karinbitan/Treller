@@ -1,11 +1,9 @@
 const bcrypt = require('bcrypt');
 const userService = require('../user/user.service');
-const logger = require('../../services/logger.service');
 
 const saltRounds = 10;
 
 async function login(userName, password) {
-    logger.debug(`auth.service - login with userName: ${userName}`);
     if (!userName || !password) throw new Error('userName and password are required!');
 
     const user = await userService.getByUserName(userName);
@@ -19,7 +17,6 @@ async function login(userName, password) {
 
 async function signup(user) {
     const userName = user.userName;
-    logger.debug(`auth.service - signup with userName: ${userName}`);
     if (!userName || !user.password) return Promise.reject('username and password are required!');
 
     const userExist = await userService.getByUserName(userName);

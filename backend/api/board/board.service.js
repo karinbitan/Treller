@@ -100,7 +100,6 @@ async function updateBoard(board) {
     const collection = await dbService.getCollection('board');
     const id = board._id;
     delete board._id;
-
     try {
         board.lists = _getListWithCardObjectId(board);
         await collection.replaceOne({ _id: ObjectId(id) }, board);
@@ -174,10 +173,10 @@ async function updateListTitle(boardId, listIdx, title) {
     const collection = await dbService.getCollection('board');
     const field = 'lists.' + listIdx + '.title';
     try {
-        await collection.updateOne({ _id: ObjectId(boardId) },
+        const result = await collection.updateOne({ _id: ObjectId(boardId) },
             { $set: { [field]: title } }
         );
-        return title;
+        return result.title;
     } catch (err) {
         console.log(`ERROR: cannot update list index ${listIdx} title`)
         throw err;

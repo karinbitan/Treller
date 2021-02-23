@@ -38,8 +38,8 @@ function _setFilter(filterBy) {
     // TODO: Support search by all
     if (filterBy.txt) {
         let textFields = []
-        textFields.push({ "title": { $regex: `.*${filterBy.txt}.*` } });
-        textFields.push({ "description": { $regex: `.*${filterBy.txt}.*` } });
+        textFields.push({ "title": { $regex: `${filterBy.txt}.*`, '$options': 'i' } });
+        textFields.push({ "description": { $regex: `${filterBy.txt}.*`, '$options': 'i' } });
         // textFields.push({ "about": { $regex: `.*${requestQuery.txt}.*` } });
 
         filter.push({

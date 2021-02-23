@@ -1,6 +1,5 @@
 const authService = require('./auth.service');
 const userService = require('./../user/user.service');
-const logger = require('../../services/logger.service');
 
 async function login(req, res) {
     const { userName, password } = req.body;
@@ -11,6 +10,7 @@ async function login(req, res) {
         res.json(user);
     } catch (err) {
         res.status(401).send({ error: err });
+        // next({status: 500, message: err})
     }
 }
 
@@ -23,8 +23,8 @@ async function signup(req, res) {
         // req.session.save();
         res.json(user);
     } catch (err) {
-        logger.error('[SIGNUP] ' + err);
         res.status(500).send({ error: err });
+        // next({status: 500, message: err})
     }
 }
 
@@ -34,6 +34,7 @@ async function logout(req, res) {
         res.send({ message: 'logged out successfully' })
     } catch (err) {
         res.status(500).send({ error: err })
+        // next({status: 500, message: err})
     }
 }
 
@@ -43,10 +44,12 @@ async function getLoggedInUser(req, res) {
             const user = await userService.getUserById(req.session.user._id);
             req.session.user = user;
             res.json(user);
+        } else {
+            res.status(401).send('User not authorized');
+            // next({status: 500, message: err})
         }
     } catch (err) {
-        // res.json({});
-        logger.error('no signedin users', err);
+        // next({status: 500, message: err})
         res.status(500).send({ error: 'no signedin users' });
     }
 }

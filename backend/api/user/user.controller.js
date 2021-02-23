@@ -7,7 +7,7 @@ async function getUsers(req, res) {
         res.send(users)
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -17,7 +17,7 @@ async function getUserById(req, res) {
         res.send(user)
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -27,7 +27,7 @@ async function deleteUser(req, res) {
         res.end()
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -38,7 +38,7 @@ async function updateUser(req, res) {
         res.send(savedUser)
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -51,7 +51,7 @@ async function updateUserCollection(req, res) {
         res.send(realUser)
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 

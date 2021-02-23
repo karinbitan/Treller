@@ -37,8 +37,9 @@ function _setFilter(filterBy) {
     // TODO: Support search by all
     if (filterBy.txt) {
         let textFields = []
-        textFields.push({ "fullName": { $regex: `.*${filterBy.txt}.*` } });
-        textFields.push({ "userName": { $regex: `.*${filterBy.txt}.*` } });
+        textFields.push({ "fullName": { $regex: `${filterBy.txt}.*`, '$options': 'i' } });
+        textFields.push({ "userName": { $regex: `${filterBy.txt}.*`, '$options': 'i' } });
+        
         filter.push({
             $or: textFields
         });

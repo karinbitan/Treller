@@ -3,9 +3,16 @@ import './CardDescription.scss';
 
 export function CardDescription(props) {
     const [description, setDescription] = useState(props.description);
-    const [isDescriptionFormShow, toggleDescriptionForm] = useState(false)
-    const [descriptionFormType, changeDescriptionForm] = useState('fake')
+    const [isDescriptionFormShow, toggleDescriptionForm] = useState(false);
+    const [descriptionFormType, changeDescriptionForm] = useState('fake');
     const node = useRef();
+
+    const prevDesc = usePrevious(props.description);
+    useEffect(() => {
+        if (prevDesc !== props.description) {
+           setDescription(props.description)
+        }
+    }, [props.description])
 
     useEffect(() => {
         // add when mounted
@@ -22,7 +29,6 @@ export function CardDescription(props) {
         }
         toggleDescriptionForm(false)
         changeDescriptionForm('fake')
-
     };
 
     const onUpdateDescription = (ev) => {
@@ -76,5 +82,13 @@ export function CardDescription(props) {
             </form>
         </section>
     )
+}
+
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
 }
 

@@ -1,8 +1,7 @@
 const cardService = require('./../card/card.service');
-// const boardService = require('./../board/board.service');
-// BOARD CRUD //
+const userService = require('./../user/user.service');
 
-async function getSearchResult(req, res) {
+async function getCardSearchResult(req, res) {
     try {
         if (req.query && req.query.txt.length > 0) {
             const result = await cardService.query(req.query);
@@ -12,11 +11,25 @@ async function getSearchResult(req, res) {
         }
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
+async function getUserSearchResult(req, res) {
+    try {
+        if (req.query && req.query.txt.length > 0) {
+            const result = await userService.query(req.query);
+            res.send(result);
+        } else {
+            res.end();
+        }
+    } catch (err) {
+        console.log(`ERROR: ${err}`)
+        next({status: 500, message: err})
+    }
+}
 
 module.exports = {
-    getSearchResult
+    getCardSearchResult,
+    getUserSearchResult
 }

@@ -12,7 +12,7 @@ async function getCards(req, res) {
         res.send(cards);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -22,7 +22,7 @@ async function getCard(req, res) {
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -40,13 +40,13 @@ async function deleteCard(req, res) {
         socketConnection.to(cardId).emit('updatedCard', cardId);
         socketConnection.to(card.createdBy.boardId).emit('newNotification',
             {
-                message: `Card title: ${card.title} was deleted by`,
+                message: `Card title: ${card.title} was deleted`,
                 byUser: { _id: user._id, fullName: user.fullName }
             })
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -67,13 +67,13 @@ async function addCard(req, res) {
         socketConnection.to(card._id).emit('updatedCard', card._id);
         socketConnection.to(card.createdBy.boardId).emit('newNotification',
             {
-                message: `Card title: ${card.title} was added by`,
+                message: `Card title: ${card.title} was added`,
                 byUser: { id: user._id, fullName: user.fullName }
             })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -88,7 +88,7 @@ async function updateCard(req, res) {
         res.send(realCard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -99,11 +99,12 @@ async function updateCardCollection(req, res) {
         await cardService.updateCardCollection(cardId, updateObject);
         const realCard = await cardService.getCardById(cardId);
         socketConnection.to(cardId).emit('updatedCard', cardId);
-        socketConnection.to(realCard.createdBy.boardId).emit('updatedBoard', realCard.createdBy.boardId)
+        socketConnection.to(realCard.createdBy.boardId).emit('updatedBoard',
+         realCard.createdBy.boardId);
         res.send(realCard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -119,16 +120,17 @@ async function addCardMember(req, res) {
         await userService.addCardToUser(member._id, cardId)
         const realCard = await cardService.getCardById(cardId);
         socketConnection.to(cardId).emit('updatedCard', cardId);
-        socketConnection.to(realCard.createdBy.boardId).emit('updatedBoard', realCard.createdBy.boardId);
+        socketConnection.to(realCard.createdBy.boardId).emit('updatedBoard',
+         realCard.createdBy.boardId);
         socketConnection.to(realCard.createdBy.boardId).emit('newNotification',
             {
-                message: `${member.fullName} was added to card: ${realCard.title} by`,
+                message: `${member.fullName} was added to card: ${realCard.title}`,
                 byUser: { id: member._id, fullName: member.fullName }
             })
         res.send(realCard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -152,13 +154,13 @@ async function addComment(req, res) {
         socketConnection.to(cardId).emit('updatedCard', cardId);
         socketConnection.to(card.createdBy.boardId).emit('newNotification',
             {
-                message: `Comment added on card: ${card.title} by`,
+                message: `Comment added on card: ${card.title}`,
                 byUser: { _id: comment.byMember._id, fullName: comment.byMember.fullName }
             })
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -170,7 +172,7 @@ async function deleteComment(req, res) {
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 
@@ -184,7 +186,7 @@ async function addTodo(req, res) {
         res.send(card);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        throw err;
+        next({status: 500, message: err})
     }
 }
 

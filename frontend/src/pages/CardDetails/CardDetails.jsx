@@ -22,7 +22,6 @@ export class _CardDetails extends Component {
         isCardOptionOpen: false,
         cardOptionType: '',
         cardOptionFunc: '',
-        isCardComplete: false,
         listIdx: null,
         listTitle: null
     }
@@ -68,10 +67,12 @@ export class _CardDetails extends Component {
 
     getList = async () => {
         let { listIdx } = this.state;
-        const { card } = this.props;
+        const { card, board } = this.props;
+        if (board) {
             let board = await this.props.getBoardById(card.createdBy.boardId);
             const list = board.lists[listIdx]
             this.setState({ listTitle: list.title })
+        }
     }
 
     // CARD //
@@ -102,7 +103,6 @@ export class _CardDetails extends Component {
         const { cardToEdit } = this.state;
         const title = cardToEdit.title;
         await this.props.updateCardCollection(cardToEdit._id, { title });
-        await this.props.setCard(cardToEdit._id);
         this.myTextareaRef.blur();
     }
 
@@ -123,14 +123,12 @@ export class _CardDetails extends Component {
     updateDescription = async (description) => {
         const { card } = this.props;
         await this.props.updateCardCollection(card._id, { description });
-        await this.props.setCard(card._id);
     }
 
     // MEMBERS //
     addMember = async (member) => {
         const { card } = this.props;
         await this.props.addCardMember(card._id, member);
-        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
@@ -141,7 +139,6 @@ export class _CardDetails extends Component {
         let checklists = card.checklists;
         checklists.push(checklist);
         await this.props.updateCardCollection(card._id, { checklists });
-        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
@@ -150,13 +147,11 @@ export class _CardDetails extends Component {
         let checklists = card.checklists;
         checklists.splice(checklistIdx, 1);
         await this.props.updateCardCollection(card._id, { checklists });
-        await this.props.setCard(card._id);
     }
 
     addTodo = async (checklistIdx, todo) => {
         const { card } = this.props;
         await this.props.addTodo(card._id, checklistIdx, todo);
-        await this.props.setCard(card._id);
     }
 
     handleCheckChecklist = async (todo, checklistIdx, todoIdx) => {
@@ -166,13 +161,11 @@ export class _CardDetails extends Component {
         checklist.todos.splice(todoIdx, 1, todo);
         checklists.splice(checklistIdx, 1, checklist);
         await this.props.updateCardCollection(card._id, { checklists });
-        await this.props.setCard(card._id)
     }
 
     deleteTodo = async (checklistIdx, todoId) => {
         const { card } = this.props;
         await this.props.deleteTodo(card._id, checklistIdx, todoId);
-        await this.props.setCard(card._id);
     }
 
     // DUE DATE //
@@ -180,24 +173,25 @@ export class _CardDetails extends Component {
         ev.preventDefault();
         const { card } = this.props;
         await this.props.updateCardCollection(card._id, { dueDate })
-        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
-    handleCheckDueDate = ({ target }) => {
-        const field = 'isCardComplete';
+    handleCheckDueDate = async ({ target }) => {
+        const {card} = this.props;
+        let isComplete = null;
         if (target.checked) {
-            this.setState(({ cardToEdit: { ...this.state.cardToEdit, [field]: true } }));
+           isComplete = true;
         } else {
-            this.setState(({ cardToEdit: { ...this.state.cardToEdit, [field]: false } }));
+            isComplete = false;
         }
+        await this.props.updateCardCollection(card._id, { isComplete });
     }
 
     onDeleteDueDate = async () => {
         const { card } = this.props;
         const dueDate = '';
-        await this.props.updateCardCollection(card._id, { dueDate })
-        await this.props.setCard(card._id);
+        const isComplete = false;
+        await this.props.updateCardCollection(card._id, { dueDate, isComplete })
     }
 
     // LABEL //
@@ -209,7 +203,6 @@ export class _CardDetails extends Component {
         })) return;
         labels.push(addedLabel);
         await this.props.updateCardCollection(card._id, { labels });
-        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
@@ -218,7 +211,6 @@ export class _CardDetails extends Component {
         const { card } = this.props;
         const style = { cover };
         await this.props.updateCardCollection(card._id, { style });
-        await this.props.setCard(card._id);
         this.setState({ isCardOptionOpen: false });
     }
 
@@ -226,13 +218,11 @@ export class _CardDetails extends Component {
     addComment = async (comment) => {
         const { card } = this.props;
         await this.props.addComment(card._id, comment);
-        await this.props.setCard(card._id);
     }
 
     deleteComment = async (commentId) => {
         const cardId = this.props.card._id;
         await this.props.deleteComment(cardId, commentId);
-        await this.props.setCard(cardId);
     }
 
     // CARD OPTIONS //
@@ -300,14 +290,14 @@ export class _CardDetails extends Component {
                                     </div>}
                                 {card.dueDate && <div className="due-date-container">
                                     <h5 className="other-details-headline">Due Date</h5>
-                                    <input type="checkbox" onChange={this.handleCheckDueDate} />
+                                    <input type="checkbox" onChange={this.handleCheckDueDate} checked={card.isComplete ? true : false} />
                                     <button className="due-date">
                                         {card.dueDate.replace('T', ' at ')}
-                                        {card.isCardComplete && <span className="due-status complete">Complete</span>}
+                                        {card.isComplete && <span className="due-status complete">Complete</span>}
                                         {new Date() > new Date(card.dueDate) &&
                                             <span className="due-status over-due">Over Due</span>}
                                     </button>
-                                    <button className="delete-due-date" onClick={this.onDeleteDueDate}>
+                                    <button className="delete-due-date" onClick={this.onDeleteDueDate} title="Delete due date">
                                         <i className="far fa-calendar-times"></i>
                                     </button>
                                 </div>}

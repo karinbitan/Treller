@@ -56,6 +56,11 @@ const cardRoutes = require('./api/card/card.routes');
 const searchRoutes = require('./api/search/search.routes');
 const { listenToSocketEvents } = require('./api/socket/socket.routes');
 
+app.use((err, req, res, next) => {
+    res.status(500).json({
+        error: "Got an error"
+    })
+})
 
 // routes
 app.use('/api/auth', authRoutes);

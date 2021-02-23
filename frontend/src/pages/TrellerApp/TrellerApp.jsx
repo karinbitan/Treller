@@ -22,38 +22,28 @@ import './TrellerApp.scss';
 class _TrellerApp extends Component {
 
     state = {
-        boardToEdit: null,
         notification: null
     }
 
     async componentDidMount() {
         const boardId = this.props.match.params.id;
         await this.props.setBoard(boardId);
-        this.setState({ boardToEdit: this.props.board })
+
         await this.props.getLoggedInUser();
+        const userId = this.props.user._id;
 
         eventBus.on('onSetBoard', async (boardId) => {
             await this.props.setBoard(boardId);
             this.props.history.push(`/treller/board/${boardId}`);
         })
-        const userId = this.props.user._id;
+        eventBus.on('loadUser', () => this.loadUser());
+
         socketService.setup();
         socketService.emit('register board', boardId);
         socketService.emit('register user', userId);
-
-        socketService.on('updatedBoard', (boardId) => {
-            this.setBoard(boardId)
-        });
-        socketService.on('newNotification', (msg) => {
-            this.setState({ notification: msg })
-        })
-        socketService.on('newUserNotification', (userId) => {
-            this.loadUser()
-        })
-
-        eventBus.on('loadUser', () => {
-            this.loadUser();
-        })
+        socketService.on('updatedBoard', (boardId) => this.setBoard(boardId));
+        socketService.on('newNotification', (msg) => this.setState({ notification: msg }));
+        socketService.on('newUserNotification', (userId) => this.loadUser());
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -64,30 +54,32 @@ class _TrellerApp extends Component {
         }
     }
 
-    componentWillUnmount() {
-        socketService.off('updatedBoard');
-        socketService.terminate();
-    }
+    // componentWillUnmount() {
+    //     socketService.off('updatedBoard');
+    //     socketService.terminate();
+    // }
 
     setBoard = async (boardId) => {
         await this.props.setBoard(boardId);
-        this.setState({ boardToEdit: this.props.board })
     }
 
     loadUser = async () => {
         await this.props.getLoggedInUser();
     }
 
+    updateBoard = async (board) => {
+        await this.props.updateBoard(board);
+        console.log(board)
+    }
+
     updateBoardTitle = async (title) => {
         const { board } = this.props;
         await this.props.updateBoardCollection(board._id, { title });
-        await this.props.setBoard(board._id);
     }
 
     changeStyle = async (style) => {
         const { board } = this.props;
         await this.props.updateBoardCollection(board._id, { style });
-        await this.props.setBoard(board._id);
     }
 
     favoriteBoard = async (isFavorite) => {
@@ -101,7 +93,6 @@ class _TrellerApp extends Component {
             favoriteBoards.splice(idx);
         }
         await this.props.updateUserCollection(user._id, { favoriteBoards });
-        await this.props.setBoard(board._id);
     }
 
     addBoard = async (boardToAdd = null) => {
@@ -117,7 +108,6 @@ class _TrellerApp extends Component {
     inviteMemberToBoard = async (member) => {
         const { board } = this.props;
         await this.props.inviteMemberToBoard(board, member);
-        await this.props.setBoard(board._id);
     }
 
     deleteBoard = async () => {
@@ -132,46 +122,38 @@ class _TrellerApp extends Component {
     updateBoardDescription = async (description) => {
         const { board } = this.props;
         await this.props.updateBoardCollection(board._id, { description });
-        await this.props.setBoard(board._id);
     }
 
     // LIST //
     addList = async (list) => {
         const { board } = this.props;
         await this.props.addList(board._id, list);
-        await this.props.setBoard(board._id);
     }
 
     updateListTitle = async (listIdx, listTitle) => {
         const { board } = this.props;
         await this.props.updateListTitle(board._id, listIdx, listTitle);
-        await this.props.setBoard(board._id);
     }
 
     deleteList = async (listId) => {
         const { board } = this.props;
         await this.props.deleteList(board._id, listId);
-        await this.props.setBoard(board._id);
     }
 
     // CARD //
     addCard = async (listId, listIdx, card) => {
         const { board } = this.props;
         await this.props.addCard(board._id, listId, listIdx, card);
-        await this.props.setBoard(board._id);
     }
 
     deleteCard = async (listIdx, cardId) => {
         const { board } = this.props;
         await this.props.deleteCard(board._id, listIdx, cardId);
-        await this.props.setBoard(board._id);
     }
 
     updateCardTitle = async (cardId, cardTitle) => {
-        const { board } = this.props;
         const title = cardTitle;
         await this.props.updateCardCollection(cardId, { title });
-        await this.props.setBoard(board._id)
     }
 
     // DRAG AND DROP //
@@ -197,7 +179,6 @@ class _TrellerApp extends Component {
         return result;
     };
 
-    //
     getListStyle = isDraggingOver => ({
         background: isDraggingOver ? 'rgba(0,0,0,.15)' : this.props.board.style.backgroundColor
     });
@@ -210,7 +191,6 @@ class _TrellerApp extends Component {
         // styles we need to apply on draggables
         ...draggableStyle,
     });
-    //
 
     onDragEnd = async (result) => {
         if (!result.destination) {
@@ -224,7 +204,7 @@ class _TrellerApp extends Component {
                 result.destination.index
             );
             board.lists = listsToChange;
-            await this.props.updateBoard(board)
+            this.updateBoard(board);
         } else if (result.type === 'card') {
             const destListId = result.destination.droppableId;
             const sourceListId = result.source.droppableId;
@@ -277,17 +257,16 @@ class _TrellerApp extends Component {
                 lists.splice(sourceListIdx, 1, sourceList);
             }
             board.lists = lists;
-
-            await this.props.updateBoard(board)
+            this.updateBoard(board);
         }
     };
 
     render() {
         const { board, user } = this.props;
-        const { boardToEdit, notification } = this.state;
+        const { notification } = this.state;
         return (
             <section>
-                {((board && boardToEdit) && user) && <section className="background" style={{
+                {(board && user) && <section className="background" style={{
                     backgroundColor: board.style.backgroundColor ? board.style.backgroundColor : '',
                     backgroundImage: board.style.backgroundImg ? `url(${board.style.backgroundImg})` : ''
                 }}>
@@ -345,7 +324,7 @@ class _TrellerApp extends Component {
                                                                                 deleteCard={this.deleteCard}
                                                                                 updateCardTitle={this.updateCardTitle}
                                                                                 addCard={this.addCard} />
-                                                                        {provided.placeholder}
+                                                                            {provided.placeholder}
                                                                         </div>
                                                                     )}
                                                                 </Droppable>

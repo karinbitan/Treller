@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { getSearchResult } from './../../store/actions/searchActions';
+import { getCardSearchResult } from './../../store/actions/searchActions';
 import { getBoardById } from './../../store/actions/boardActions';
 import { Link, useLocation } from 'react-router-dom';
 import { CardPreview } from './../CardPreview/CardPreview';
@@ -37,7 +37,7 @@ export function _Filter(props) {
         ev.preventDefault();
         debugger
         if (!filterBy.txt || filterBy.txt.length < 0) return;
-        let results = await props.getSearchResult(filterBy);
+        let results = await props.getCardSearchResult(filterBy);
         setSearchResult(results);
         toggleIsSearch(true);
         if (results) {
@@ -70,11 +70,6 @@ export function _Filter(props) {
         })
         return isMember;
     }
-
-    // onSetBoard = async(boardId)=>{
-    //     eventBus.emit('onSetBoard', boardId)
-    // }
-    // How to set new board after click on card link //
 
     return (
         <section ref={node} className="filter">
@@ -118,13 +113,8 @@ export function _Filter(props) {
     )
 }
 
-function mapStateToProps(state) {
-    return {
-        searchResult: state.searchReducer.searchResult
-    }
-}
 const mapDispatchToProps = {
-    getSearchResult,
+    getCardSearchResult,
     getBoardById
 }
-export const Filter = connect(mapStateToProps, mapDispatchToProps)(_Filter)
+export const Filter = connect(null, mapDispatchToProps)(_Filter)

@@ -3,13 +3,12 @@ import './NotificiationMsg.scss';
 
 export function NotificiationMsg({ notification, user }) {
     const [isTimePass, setTime] = useState(false)
-    let interval = null;
 
     useEffect(() => {
-        interval = setTimeout(() => {
+        setTimeout(() => {
             setTime(true)
         }, 4000);
-    }, []);
+    }, [notification]);
 
     const isUser = () => {
         if (notification.byUser) {
@@ -21,7 +20,7 @@ export function NotificiationMsg({ notification, user }) {
     return (
         <section>
             {(notification && !isTimePass) && <div className="notification-msg">
-                <p>{`${notification.message} ${notification.byUser ? 'by' : ''} ${isUser ? 'You' : notification.user.fullName}`}</p>
+                <p>{`${notification.message} ${notification.byUser ? 'by' : ''} ${isUser() ? 'You' : notification.byUser.fullName}`}</p>
             </div>}
         </section>
     )

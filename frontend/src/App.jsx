@@ -1,4 +1,3 @@
-// import { BrowserRouter as Router, Route, Switch, useLocation, } from 'react-router-dom';
 import {
   BrowserRouter as Router,
   Switch,
@@ -33,8 +32,6 @@ export default function ModalGalleryExample() {
 export function _App(props) {
   const location = useLocation();
   const background = location.state && location.state.background;
-
-
 
   // const notificationRef = useRef(notification);
 

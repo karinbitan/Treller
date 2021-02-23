@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import Avatar from 'react-avatar';
 import { connect } from 'react-redux';
-import { getUsers } from '../../store/actions/userActions';
+import { getUserSearchResult } from '../../store/actions/searchActions';
 
 import './InviteMembers.scss';
 
 function _InviteMembers(props) {
-    const [filter, setFilter] = useState({txt: ''});
+    const [filter, setFilter] = useState({ txt: '' });
     const [isInvitePopUpOpen, togglePopUp] = useState(false);
     const [searchResult, setSearchResult] = useState([])
+    const [onForm, toggleOnForm] = useState(false);
+    const [onSearch, toggleOnSearch] = useState(false);
 
     const node = useRef();
 
@@ -25,17 +27,20 @@ function _InviteMembers(props) {
         if (node.current.contains(e.target)) {
             return;
         }
-        togglePopUp();
-
+        togglePopUp(false);
+        setFilter({txt: ''})
     };
- 
-    const filterUsers = async (filter) => {
-        const res = await props.getUsers(filter);
+
+    const filterUsers = async (ev) => {
+        if (ev) ev.preventDefault();
+        if (!filter.txt || filter.txt.length < 0) return;
+        const res = await props.getUserSearchResult(filter);
         setSearchResult(res);
+        toggleOnSearch(true);
     }
 
     const onInviteMember = (member) => {
-        if (this.isMember(member._id)) return;
+        if (isMember(member._id)) return;
         togglePopUp(false);
         props.inviteMemberToBoard(member);
     }
@@ -54,42 +59,46 @@ function _InviteMembers(props) {
         else return false;
     }
 
-        return (
-            <section ref={node} className="invite-container" >
-                <button onClick={()=>togglePopUp(!isInvitePopUpOpen)} className="board-header-icon invite-btn">Invite</button>
-                { isInvitePopUpOpen && <div className="invite pop-up">
-                    <button onClick={()=>togglePopUp(false)} className="close-btn"><i className="fas fa-times"></i></button>
-                    <p className="headline">Invite</p>
-                    <form onSubmit={filterUsers} className="invite-form">
-                        <input className="invite-search" type="search" name="txt" 
-                        onChange={(ev)=>setFilter({...filter, [ev.target.name]: ev.target.value})} value={filter.txt}
-                            placeholder="Enter full name or user name" />
-                        <button className="search-btn">
-                            <i className="fa fa-search search-icon"></i>
-                        </button>
-                    </form>
-                    {(searchResult && searchResult.length > 0) && <div>
+    return (
+        <section ref={node} className="invite-container" >
+            <button onClick={() => togglePopUp(!isInvitePopUpOpen)} className="board-header-icon invite-btn">Invite</button>
+            { isInvitePopUpOpen && <div className="invite pop-up">
+                <button onClick={() => togglePopUp(false)} className="close-btn"><i className="fas fa-times"></i></button>
+                <p className="headline">Invite</p>
+                <form onSubmit={(ev)=>filterUsers(ev)} className="invite-form">
+                    <input className="invite-search" type="search" name="txt"
+                        onChange={(ev) => setFilter({ ...filter, [ev.target.name]: ev.target.value })}
+                        onKeyUp={filterUsers} value={filter.txt}
+                        placeholder="Enter full name or user name" onFocus={() => toggleOnForm(true)}
+                        onBlur={() => toggleOnForm(false)} />
+                    {!onForm && <button type="button" className="search-btn">
+                        <i className="fa fa-search search-icon"></i>
+                    </button>}
+                </form>
+                {onSearch && <div>
+                    {(searchResult && searchResult.length > 0) ?
                         <ul className="result-container">
                             {searchResult.map(user => {
                                 if (isUser(user._id)) return;
                                 return (
                                     <li onClick={() => onInviteMember(user)}
                                         className={`flex align-center ${isMember(user._id) ? 'already-member' : ''}`}
-                                        title={`${this.isMember(user._id) ? 'This user is already a member in this board' : ''}`}
+                                        title={`${isMember(user._id) ? 'This user is already a member in this board' : ''}`}
                                         key={user._id}>
                                         <Avatar name={user.fullName} size={20} round={true} />
                                         <span className="user-name">{user.fullName}</span>
                                     </li>)
                             })}
                         </ul>
-                    </div>}
+                        : <p>We couldnt fount any match...</p>}
                 </div>}
-            </section>
-        )
+            </div>}
+        </section>
+    )
 }
 
 const mapDispatchToProps = {
-    getUsers
+    getUserSearchResult
 }
 
 export const InviteMembers = connect(null, mapDispatchToProps)(_InviteMembers)
