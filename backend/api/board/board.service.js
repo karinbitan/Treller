@@ -39,14 +39,16 @@ async function getBoardById(boardId) {
 
         let board = await collection.findOne({ _id: ObjectId(boardId) });
 
-       let members =  await Promise.all(board.members.map(async (member) => {
-            const user = await userService.getUserById(member._id);
-            return member = {
-                _id: user._id,
-                fullName: user.fullName
-            }
-        }))
-        board.members = members;
+        if (board.members || board.members.length > 0) {
+            let members = await Promise.all(board.members.map(async (member) => {
+                const user = await userService.getUserById(member._id);
+                return member = {
+                    _id: user._id,
+                    fullName: user.fullName
+                }
+            }))
+            board.members = members;
+        }
 
         // Get all card ids from all board lists.
         const cardIds = board.lists.reduce((cardIds, list) => {

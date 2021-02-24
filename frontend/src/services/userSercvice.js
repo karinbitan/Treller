@@ -5,7 +5,9 @@ export const userService = {
     updateUser,
     getEmptyUser,
     updateUserCollection,
-    addUserNotification
+    addUserNotification,
+    addBoardToFavorite,
+    removeBoardFromFavorite
 }
 
 function query(filter = null) {
@@ -31,6 +33,14 @@ function updateUserCollection(userId, updatedObject) {
 
 function addUserNotification(userId, notification) {
     return httpService.post(`user/${userId}/notification`, notification);
+}
+
+function addBoardToFavorite(userId, boardId) {
+    return httpService.post(`user/${userId}/favoriteBoards`, {boardId});
+}
+
+function removeBoardFromFavorite(userId, boardId) {
+    return httpService.patch(`user/${userId}/favoriteBoards`, {boardId});
 }
 
 function getEmptyUser() {

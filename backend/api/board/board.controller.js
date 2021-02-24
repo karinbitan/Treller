@@ -40,7 +40,7 @@ async function getBoardForBoardPage(req, res, next) {
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({ status: 500, message: err })
+        next({ status: 403, message: err })
     }
 }
 
@@ -53,7 +53,7 @@ async function deleteBoard(req, res, next) {
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({ status: 500, message: err })
+        next({ status: 403, message: err })
     }
 }
 
@@ -82,7 +82,7 @@ async function addBoard(req, res, next) {
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({ status: 500, message: err })
+        next({ status: 403, message: err })
     }
 }
 
@@ -96,7 +96,7 @@ async function updateBoard(req, res, next) {
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({ status: 500, message: err })
+        next({ status: 403, message: err })
     }
 }
 
@@ -110,7 +110,7 @@ async function updateBoardCollection(req, res, next) {
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({ status: 500, message: err })
+        next({ status: 403, message: err })
     }
 }
 
@@ -128,7 +128,7 @@ async function inviteMemberToBoard(req, res, next) {
         res.send(msg);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({ status: 500, message: err })
+        next({ status: 403, message: err })
     }
 }
 
@@ -160,7 +160,7 @@ async function addList(req, res, next) {
         socketConnection.to(boardId).emit('updatedBoard', boardId);
         socketConnection.to(boardId).emit('newNotification',
             {
-                message: `List: ${list.title} was added by`,
+                message: `List title: ${list.title} was added by`,
                 byUser: {
                     _id: user._id, fullName: user.fullName
                 }
@@ -224,7 +224,7 @@ async function _deleteBoardFromUser(boardId) {
         if (board.members || boards.members.length) {
             board.members.forEach(async (member) => {
                 await userService.deleteBoardFromUser(member._id, boardId);
-                socketConnection.to(member._id).emit('updateUser', userId);
+                socketConnection.to(member._id).emit('updateUser', member._id);
                 socketConnection.to(member._id).emit('newNotification',
                     {
                         message: `${board.title} was deleted by`,

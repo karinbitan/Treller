@@ -23,7 +23,7 @@ async function signup(req, res) {
         // req.session.save();
         res.json(user);
     } catch (err) {
-        res.status(500).send({ error: err });
+        res.status(401).send({ error: err });
         // next({status: 500, message: err})
     }
 }
@@ -33,7 +33,7 @@ async function logout(req, res) {
         req.session.destroy()
         res.send({ message: 'logged out successfully' })
     } catch (err) {
-        res.status(500).send({ error: err })
+        res.status(401).send({ error: err })
         // next({status: 500, message: err})
     }
 }
@@ -50,7 +50,7 @@ async function getLoggedInUser(req, res) {
         }
     } catch (err) {
         // next({status: 500, message: err})
-        res.status(500).send({ error: 'no signedin users' });
+        res.status(401).send({ error: 'no signedin users' });
     }
 }
 

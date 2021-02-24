@@ -34,35 +34,22 @@ async function requireBoardMember(req, res, next) {
   next();
 }
 
-async function requireCardMember(req, res, next) {
-  const user = req.session.user;
-  const id = req.session.card._id;
-  const isMember = user.cardsMember.some(cardId => {
-    return cardId === id;
-  });
-  if (!isMember) {
-    res.status(403).end('Unauthorized Enough..Not card member');
-    return;
-  }
-  next();
-}
-
-
-// async function requireUser(req, res, next) {
+// async function requireCardMember(req, res, next) {
 //   const user = req.session.user;
-//   if (!user.isAdmin) {
-//     res.status(403).end('Unauthorized Enough..');
+//   const id = req.session.card._id;
+//   const isMember = user.cardsMember.some(cardId => {
+//     return cardId === id;
+//   });
+//   if (!isMember) {
+//     res.status(403).end('Unauthorized Enough..Not card member');
 //     return;
 //   }
 //   next();
 // }
 
-
-// module.exports = requireAuth;
-
 module.exports = {
   requireAuth,
   requireBoardOwner,
   requireBoardMember,
-  requireCardMember
+  // requireCardMember
 }

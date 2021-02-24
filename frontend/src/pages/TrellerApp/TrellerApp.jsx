@@ -6,7 +6,7 @@ import {
 } from '../../store/actions/boardActions';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { addCard, deleteCard, updateCard, updateCardCollection } from '../../store/actions/cardActions';
-import { getUsers, updateUser, updateUserCollection } from './../../store/actions/userActions';
+import { getUsers, updateUser, updateUserCollection, addBoardToFavorite, removeBoardFromFavorite } from './../../store/actions/userActions';
 import { getLoggedInUser } from '../../store/actions/authActions';
 import { eventBus } from '../../services/eventBusService';
 import { socketService } from '../../services/socketService.js';
@@ -84,15 +84,12 @@ class _TrellerApp extends Component {
 
     favoriteBoard = async (isFavorite) => {
         const { board, user } = this.props;
-        const favoriteBoards = [];
-        if (isFavorite) favoriteBoards.push(board._id);
-        else {
-            const idx = favoriteBoards.findIndex(favoriteBoard => {
-                return favoriteBoard._id === board._id;
-            })
-            favoriteBoards.splice(idx);
+        if (isFavorite){
+            await this.props.addBoardToFavorite(user._id, board._id)
         }
-        await this.props.updateUserCollection(user._id, { favoriteBoards });
+        else {
+            await this.props.removeBoardFromFavorite(user._id, board._id );
+        }
     }
 
     addBoard = async (boardToAdd = null) => {
@@ -376,6 +373,8 @@ const mapDispatchToProps = {
     updateUserCollection,
     updateCardCollection,
     deleteBoard,
-    updateListTitle
+    updateListTitle,
+    addBoardToFavorite,
+    removeBoardFromFavorite
 }
 export const TrellerApp = connect(mapStateToProps, mapDispatchToProps)(_TrellerApp)

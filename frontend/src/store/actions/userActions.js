@@ -37,8 +37,30 @@ export function setUser(userId) {
   export function addUserNotification(userId, notification) {
     return async dispatch => {
       try {
-        await userService.addUserNotification(userId, notification);
-        // dispatch({ type: 'ADD_NOTIFICIATIONS', notification });
+        const user = await userService.addUserNotification(userId, notification);
+        dispatch({ type: 'UPDATE_USER', user });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
+  export function addBoardToFavorite(userId, boardId) {
+    return async dispatch => {
+      try {
+        const user = await userService.addBoardToFavorite(userId, boardId);
+        dispatch({ type: 'UPDATE_USER', user });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
+  export function removeBoardFromFavorite(userId, boardId) {
+    return async dispatch => {
+      try {
+        const user = await userService.removeBoardFromFavorite(userId, boardId);
+        dispatch({ type: 'UPDATE_USER', user });
       } catch (err) {
         console.log(err);
       }

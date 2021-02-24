@@ -13,6 +13,8 @@ module.exports = {
     addMemberToBoard,
     addUserNotification,
     deleteBoardFromUser,
+    addBoardToFavorites,
+    removeBoardToFavorites,
     addCardToUser,
     deleteCardFromUser
 }
@@ -149,7 +151,7 @@ async function addBoardToUser(userId, boardId) {
     const collection = await dbService.getCollection('user');
     try {
         await collection.updateOne({ _id: ObjectId(userId) },
-            { $push: { boardsMember: boardId, boardsOwner: boardId } });
+            { $push: { boardsMember: ObjectId(boardId), boardsOwner: ObjectId(boardId) } });
         return boardId
     } catch (err) {
         console.log(`ERROR: cannot add board ${boardId} to ${userId}`)
@@ -182,6 +184,30 @@ async function deleteBoardFromUser(userId, boardId) {
         return userId
     } catch (err) {
         console.log(`ERROR: cannot deleted board ${boardId} form user ${userId}`)
+        throw err;
+    }
+}
+
+async function addBoardToFavorites(userId, boardId) {
+    const collection = await dbService.getCollection('user');
+    try {
+        const res = await collection.updateOne({ _id: ObjectId(userId) },
+            { $push: { favoriteBoards: ObjectId(boardId) } });
+        return res;
+    } catch (err) {
+        console.log(`ERROR: cannot add board ${boardId} to favorite boards`)
+        throw err;
+    }
+}
+
+async function removeBoardToFavorites(userId, boardId) {
+    const collection = await dbService.getCollection('user');
+    try {
+        const res = await collection.updateOne({ _id: ObjectId(userId) },
+            { $pull: { favoriteBoards: ObjectId(boardId) } });
+        return res;
+    } catch (err) {
+        console.log(`ERROR: cannot remove board ${boardId} from favorite boards`)
         throw err;
     }
 }

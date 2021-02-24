@@ -7,6 +7,7 @@ export function CardComments(props) {
     const [comment, setComment] = useState({ txt: '' });
     const [onCommentOption, toggleCommentOption] = useState(false);
     const node = useRef();
+    const { comments, user } = props;
 
     useEffect(() => {
         // add when mounted
@@ -24,7 +25,6 @@ export function CardComments(props) {
         toggleCommentOption(false)
     };
 
-
     const onAddComment = async (ev) => {
         ev.preventDefault();
         toggleCommentOption(false);
@@ -32,7 +32,14 @@ export function CardComments(props) {
         setComment({ txt: '' })
     }
 
-    const { comments, user } = props;
+    const isUser = (comment) =>{
+        if (comment.byMember._id === user._id) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     return (
         <section ref={node} className="card-comment">
             <div className="headline flex align-center">
@@ -62,9 +69,9 @@ export function CardComments(props) {
                         <div className="txt-container">
                             <p>{comment.txt}</p>
                         </div>
-                        <div className="comment-actions">
+                       {isUser(comment) &&  <div className="comment-actions">
                             <span onClick={() => props.onDeleteComment(comment._id)}>Delete</span>
-                        </div>
+                        </div>}
                     </div>
                 </div>
             })}
