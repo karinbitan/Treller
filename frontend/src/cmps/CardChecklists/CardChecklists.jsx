@@ -47,11 +47,12 @@ export function CardChecklists(props) {
                                 <i className="fas fa-tasks icon"></i><h3>
                                     {checklist.title}
                                 </h3>
-                                <button className="card-details-btn" onClick={()=>props.onDeleteChecklist(checklistIdx)}>Delete</button>
+                                {!props.board.isTemplate && <button className="card-details-btn"
+                                 onClick={()=>props.onDeleteChecklist(checklistIdx)}>Delete</button>}
                             </div>
                             {checklist.todos && checklist.todos.length > 0 && <ul>
                                 {checklist.todos.map((todo, todoIdx) => {
-                                    return <li className="todo flex space-between" key={todoIdx}
+                                    return <li className="todo flex align-center space-between" key={todoIdx}
                                         onMouseEnter={(ev) => showTodoDeleteBtn(ev, todoIdx)}
                                         onMouseLeave={(ev) => hideTodoDeleteBtn(ev, todoIdx)}>
                                         <input type="checkbox" id={`todo${todoIdx}`}
@@ -61,13 +62,14 @@ export function CardChecklists(props) {
                                         <label htmlFor={`todo${todoIdx}`} style={{ textDecoration: todo.isDone ? 'line-through' : 'none' }}>
                                             {todo.title}
                                         </label>
-                                        <button onClick={() => props.onDeleteTodo(checklistIdx, todo._id)} className="delete-todo"
+                                       {!props.board.isTemplate && <button onClick={() => props.onDeleteTodo(checklistIdx, todo._id)} className="delete-todo"
                                             style={{ display: isDeleteBtnShow && currTodoIdx === todoIdx ? 'block' : 'none' }}>
                                             <i className="fas fa-trash"></i>
-                                        </button>
+                                        </button>}
                                     </li>
                                 })}
                             </ul>}
+                           {!props.board.isTemplate &&  <div>
                             {!isAddTodoFormShow ? <button className="card-details-btn flex open-form" onClick={toggleAddTodoForm}>Add Todo</button>
                                 : <form onSubmit={ev => onAddTodo(ev, checklistIdx)} className="add-todo">
                                     <textarea name="title" value={todo.title}
@@ -79,6 +81,7 @@ export function CardChecklists(props) {
                                         </button>
                                     </div>
                                 </form>}
+                            </div>}
                         </div>)
                 })}
             </div>

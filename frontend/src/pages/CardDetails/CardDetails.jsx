@@ -243,8 +243,8 @@ export class _CardDetails extends Component {
 
         return (
             <section className="card-details modal">
-                {(card && cardToEdit) && <section className="modal-content">
-                    <button className="close-btn" onClick={this.onCloseModal}>
+                {(card && cardToEdit && user) && <section className="modal-content">
+                    <button className="close-btn close-details-modal" onClick={this.onCloseModal}>
                         <i className="fas fa-times"></i>
                     </button>
                     {card.style.cover &&
@@ -254,13 +254,14 @@ export class _CardDetails extends Component {
                     <div className="title-container">
                         <div className="headline flex align-center">
                             <i className="far fa-file-alt icon"></i>
-                            <form className="card-title-form">
+                           {!board.isTemplate ? <form className="card-title-form">
                                 <textarea className="card-title" ref={el => this.myTextareaRef = el}
                                     name="title" value={cardToEdit.title}
                                     onChange={this.handleChangeCard} onKeyDown={this.onEnterPress}
                                     onBlur={this.updateTitle}>
                                 </textarea>
                             </form>
+                            :<div className="card-title">{cardToEdit.title}</div>}
                         </div>
                         <p className="list-name">in list {listTitle}</p>
                     </div>
@@ -302,15 +303,17 @@ export class _CardDetails extends Component {
                                     </button>
                                 </div>}
                             </div>
-                            <CardDescription description={card.description} updateDescription={this.updateDescription} />
+                            <CardDescription description={card.description} updateDescription={this.updateDescription}
+                            board={board} />
                             {(card.checklists && card.checklists.length > 0) &&
                                 <CardChecklists checklists={card.checklists} addTodo={this.addTodo} onDeleteTodo={this.deleteTodo}
-                                    handleCheckChecklist={this.handleCheckChecklist} onDeleteChecklist={this.deleteChecklist} />}
-                            <CardComments comments={card.comments} user={user}
+                                    handleCheckChecklist={this.handleCheckChecklist} onDeleteChecklist={this.deleteChecklist} 
+                                    board={board} />}
+                            {!board.isTemplate && <CardComments comments={card.comments} user={user}
                                 addComment={this.addComment}
-                                onDeleteComment={this.deleteComment} />
+                                onDeleteComment={this.deleteComment} />}
                         </div>
-                        <div className="side-container flex column align-center">
+                       {!board.isTemplate && <div className="side-container flex column align-center">
                             <h5>ADD TO CARD</h5>
                             <button onClick={() => this.openPopUp('Members', this.addMember)} className="card-details-btn">
                                 <i className="fas fa-user-friends"></i> Members</button>
@@ -328,7 +331,7 @@ export class _CardDetails extends Component {
                                 <i className="fas fa-copy"></i> Copy</button>
                             <button onClick={this.deleteCard} className="card-details-btn">
                                 <i className="fas fa-trash"></i> Delete</button>
-                        </div>
+                        </div> }
                     </div>
                     {isCardOptionOpen && <CardOptions board={board} type={cardOptionType} card={card}
                         closePopUp={this.closePopUp} func={cardOptionFunc} />}

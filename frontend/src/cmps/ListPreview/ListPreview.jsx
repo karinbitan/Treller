@@ -15,7 +15,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 export function ListPreview(props) {
-    const { list, listIdx } = props;
+    const { list, listIdx, board } = props;
 
     const [listToEdit, updateListToEdit] = useState(list);
     const [isListActionOpen, toggleListAction] = useState(false);
@@ -82,20 +82,25 @@ export function ListPreview(props) {
 
     return (
         <section className="list-preview">
-            {(list && listToEdit) && <form className="list-title-form">
+           {(list && listToEdit) && <div>
+             {!board.isTemplate ? <form className="list-title-form">
                 <textarea ref={listTitleRef} className="list-title-textarea" name="title" value={listToEdit.title}
                     onChange={(ev) => updateListToEdit({...listToEdit, [ev.target.name]:ev.target.value})} onKeyDown={onEnterPress}
                     onBlur={updateListTitle}>
                 </textarea>
-            </form>}
-            <button onClick={() => toggleListAction(true)} className="list-menu-icon"><i className="fas fa-ellipsis-h"></i></button>
-            {isListActionOpen && <div ref={node} className="list-actions">
+            </form>
+            :<div className="list-title-textarea">{listToEdit.title}</div> }
+            </div>}
+            <div ref={node}>
+            <button onClick={() => toggleListAction(!isListActionOpen)} className="list-menu-icon"><i className="fas fa-ellipsis-h"></i></button>
+            {isListActionOpen && <div className="list-actions">
                 <button className="close-btn" onClick={() => toggleListAction(false)}><i className="fas fa-times"></i></button>
                 <p>List Actions</p>
                 <ul>
                     <li onClick={onDeleteList}>Delete List</li>
                 </ul>
             </div>}
+            </div>
             {(list.cards && list.cards.length > 0) && <div>
                 {list.cards.map((card, idx) => {
                     return (
@@ -112,6 +117,7 @@ export function ListPreview(props) {
                                 >
                                     <CardPreview
                                         card={card}
+                                        board={board}
                                         key={card._id}
                                         deleteCard={deleteCard}
                                         updateCardTitle={updateCardTitle}
@@ -122,7 +128,7 @@ export function ListPreview(props) {
                     )
                 })}
             </div>}
-            <AddCard addCard={addCard} />
+           {!board.isTemplate &&  <AddCard addCard={addCard} />}
         </section >
     )
 }

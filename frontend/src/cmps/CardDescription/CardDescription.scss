@@ -1,9 +1,14 @@
 .description-container {
     margin-top: 30px;
     margin-bottom: 30px;
+    & .edit {
+        margin-left: 5px;
+    }
     & .description-form {
         margin-left: 40px;
+    }
         & .description {
+            text-align: start;
             resize: none;
             width: 100%;
             font-size: 16px;
@@ -11,7 +16,7 @@
             box-shadow: none;
             border: none;
             border-radius: 3px;
-            min-height: 50px;
+            min-height: 80px;
             text-align: start;
             margin-top: 10px;
             font-family: unset;
@@ -32,5 +37,4 @@
                 background-color: white;
             }
         }
-    }
 }

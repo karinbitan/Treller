@@ -43,11 +43,9 @@ function _MainHeader(props) {
                     }
                 </div>
                 <div className="menu-container flex flex-end align-center">
-                    <div className="flex relative">
                         <Notifications
                             user={user}
                         />
-                    </div>
                     {user ? <AvatarOptions user={user} onLogout={logout} />
                         : <div>
                             <button className="icon-container">

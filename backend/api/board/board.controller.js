@@ -6,7 +6,7 @@ const { socketConnection } = require('./../../server');
 
 // BOARD CRUD //
 
-async function getBoards(req, res) {
+async function getBoards(req, res, next) {
     try {
         const boards = await boardService.query(req.query);
         res.send(boards);
@@ -16,7 +16,7 @@ async function getBoards(req, res) {
     }
 }
 
-async function getBoard(req, res) {
+async function getBoard(req, res, next) {
     try {
         const board = await boardService.getBoardById(req.params.id);
         req.session.board = board;
@@ -27,7 +27,7 @@ async function getBoard(req, res) {
     }
 }
 
-async function getBoardForBoardPage(req, res) {
+async function getBoardForBoardPage(req, res, next) {
     try {
         let board = await boardService.getBoardById(req.params.id);
         if (!board) return
@@ -44,7 +44,7 @@ async function getBoardForBoardPage(req, res) {
     }
 }
 
-async function deleteBoard(req, res) {
+async function deleteBoard(req, res, next) {
     const boardId = req.params.id;
     try {
         await _deleteBoardFromUser(boardId);
@@ -57,7 +57,7 @@ async function deleteBoard(req, res) {
     }
 }
 
-async function addBoard(req, res) {
+async function addBoard(req, res, next) {
     let board = req.body;
     try {
         if (board.isTemplate) {
@@ -86,7 +86,7 @@ async function addBoard(req, res) {
     }
 }
 
-async function updateBoard(req, res) {
+async function updateBoard(req, res, next) {
     let board = req.body;
     let boardId = board._id;
     try {
@@ -100,7 +100,7 @@ async function updateBoard(req, res) {
     }
 }
 
-async function updateBoardCollection(req, res) {
+async function updateBoardCollection(req, res, next) {
     const boardId = req.params.id;
     const updatedObject = req.body;
     try {
@@ -114,7 +114,7 @@ async function updateBoardCollection(req, res) {
     }
 }
 
-async function inviteMemberToBoard(req, res) {
+async function inviteMemberToBoard(req, res, next) {
     let { board, member } = req.body;
     member = { _id: member._id, fullName: member.fullName }
     const user = req.session.user;
@@ -132,7 +132,7 @@ async function inviteMemberToBoard(req, res) {
     }
 }
 
-async function addMemberToBoard(req, res) {
+async function addMemberToBoard(req, res, next) {
     const boardId = req.params.id;
     const member = req.body;
     try {
@@ -150,7 +150,7 @@ async function addMemberToBoard(req, res) {
 }
 
 // LIST CRUDL //
-async function addList(req, res) {
+async function addList(req, res, next) {
     const boardId = req.params.id;
     const user = req.session.user;
     let list = req.body;
@@ -172,7 +172,7 @@ async function addList(req, res) {
     }
 }
 
-async function deleteList(req, res) {
+async function deleteList(req, res, next) {
     const boardId = req.params.id;
     const { listId } = req.params;
     try {
@@ -192,7 +192,7 @@ async function deleteList(req, res) {
     }
 }
 
-async function updateListTitle(req, res) {
+async function updateListTitle(req, res, next) {
     const { id, listIdx } = req.params;
     const title = req.body.title;
     try {
@@ -206,12 +206,11 @@ async function updateListTitle(req, res) {
 }
 
 // CARD //
-async function deleteCardFromList(req, res) {
+async function deleteCardFromList(req, res, next) {
     const { id, listIdx, cardId } = req.params;
     try {
         await boardService.deleteCardFromList(id, listIdx, cardId);
         socketConnection.to(id).emit('updatedBoard', id);
-        // socketConnection.to(boardId).emit('newNotification', { message: `Card ${} deleted`, id: cardId });
         res.send();
     } catch (err) {
         console.log(`ERROR: ${err}`)
@@ -224,7 +223,8 @@ async function _deleteBoardFromUser(boardId) {
     if (board) {
         if (board.members || boards.members.length) {
             board.members.forEach(async (member) => {
-                await userService.deleteBoardFromUser(member._id, boardId)
+                await userService.deleteBoardFromUser(member._id, boardId);
+                socketConnection.to(member._id).emit('updateUser', userId);
                 socketConnection.to(member._id).emit('newNotification',
                     {
                         message: `${board.title} was deleted by`,

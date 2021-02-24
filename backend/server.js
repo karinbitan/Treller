@@ -39,7 +39,7 @@ let sessionOptions = {
 app.use(session(sessionOptions))
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.resolve(__dirname, 'public')));
+    //app.use(express.static(path.resolve(__dirname, 'public')));
 } else {
     const corsOptions = {
         origin: ['http://127.0.0.1:4000', 'http://localhost:4000', 'http://127.0.0.1:3000', 'http://localhost:3000'],
@@ -57,8 +57,8 @@ const searchRoutes = require('./api/search/search.routes');
 const { listenToSocketEvents } = require('./api/socket/socket.routes');
 
 app.use((err, req, res, next) => {
-    res.status(500).json({
-        error: "Got an error"
+    res.status(err.status || 500).json({
+        error: err.message
     })
 })
 
@@ -71,9 +71,9 @@ app.use('/api/search', searchRoutes);
 
 listenToSocketEvents(io)
 
-app.get('/**', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-})
+// app.get('/**', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// })
 
 const logger = require('./services/logger.service')
 const port = process.env.PORT || 4000;

@@ -1,7 +1,7 @@
 const userService = require('./user.service')
 
 
-async function getUsers(req, res) {
+async function getUsers(req, res, next) {
     try {
         const users = await userService.query(req.query)
         res.send(users)
@@ -11,7 +11,7 @@ async function getUsers(req, res) {
     }
 }
 
-async function getUserById(req, res) {
+async function getUserById(req, res, next) {
     try {
         const user = await userService.getUserById(req.params.id)
         res.send(user)
@@ -21,7 +21,7 @@ async function getUserById(req, res) {
     }
 }
 
-async function deleteUser(req, res) {
+async function deleteUser(req, res, next) {
     try {
         await userService.delete(req.params.id)
         res.end()
@@ -31,7 +31,7 @@ async function deleteUser(req, res) {
     }
 }
 
-async function updateUser(req, res) {
+async function updateUser(req, res, next) {
     const user = req.body;
     try {
         const savedUser = await userService.updateUser(user)
@@ -42,7 +42,7 @@ async function updateUser(req, res) {
     }
 }
 
-async function updateUserCollection(req, res) {
+async function updateUserCollection(req, res, next) {
     const userId = req.params.id;
     const updatedObject = req.body;
     try {

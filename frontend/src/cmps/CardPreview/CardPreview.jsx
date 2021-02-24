@@ -66,7 +66,7 @@ export function CardPreview(props) {
                     })}
                 </div>}
                 {card.title}
-                {!isSearch && <button className="edit-icon-btn"
+                {(!isSearch && !props.board.isTemplate) && <button className="edit-icon-btn"
                     onClick={(ev) => openEditModal(ev)}
                     style={{ display: isEditBtnShow ? 'block' : 'none' }}>
                     <i className="fas fa-pen edit-icon"></i>
@@ -93,7 +93,7 @@ export function CardPreview(props) {
                             })}
                         </div>}
                 </div>
-                {isEditModalOpen && <CardEditModal
+                {(isEditModalOpen && !props.board.isTemplate) && <CardEditModal
                     cardTitle={card.title}
                     onCloseEditModal={() => toggleEditModal(false)}
                     updateCardTitle={updateCardTitle}

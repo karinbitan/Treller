@@ -5,7 +5,7 @@ const utilService = require('./../../services/util.service');
 
 const { socketConnection } = require('./../../server');
 
-async function getCards(req, res) {
+async function getCards(req, res, next) {
     try {
         const cards = await cardService.query(req.query);
         req.session.card = card;
@@ -16,7 +16,7 @@ async function getCards(req, res) {
     }
 }
 
-async function getCard(req, res) {
+async function getCard(req, res, next) {
     try {
         const card = await cardService.getCardById(req.params.id);
         res.send(card);
@@ -26,7 +26,7 @@ async function getCard(req, res) {
     }
 }
 
-async function deleteCard(req, res) {
+async function deleteCard(req, res, next) {
     const cardId = req.params.id;
     const user = req.session.user;
     let card = await cardService.getCardById(cardId);
@@ -50,7 +50,7 @@ async function deleteCard(req, res) {
     }
 }
 
-async function addCard(req, res) {
+async function addCard(req, res, next) {
     let { boardId, listId, listIdx, card } = req.body
     const user = req.session.user;
     if (req.session.user) {
@@ -77,7 +77,7 @@ async function addCard(req, res) {
     }
 }
 
-async function updateCard(req, res) {
+async function updateCard(req, res, next) {
     const card = req.body;
     const boardId = card.createdBy.boardId;
     try {
@@ -92,7 +92,7 @@ async function updateCard(req, res) {
     }
 }
 
-async function updateCardCollection(req, res) {
+async function updateCardCollection(req, res, next) {
     const cardId = req.params.id;
     const updateObject = req.body;
     try {
@@ -108,7 +108,7 @@ async function updateCardCollection(req, res) {
     }
 }
 
-async function addCardMember(req, res) {
+async function addCardMember(req, res, next) {
     const cardId = req.params.id;
     let member = req.body;
     member = {
@@ -134,7 +134,7 @@ async function addCardMember(req, res) {
     }
 }
 
-async function addComment(req, res) {
+async function addComment(req, res, next) {
     const cardId = req.params.id;
     let comment = req.body;
     comment._id = utilService._makeId();
@@ -164,7 +164,7 @@ async function addComment(req, res) {
     }
 }
 
-async function deleteComment(req, res) {
+async function deleteComment(req, res, next) {
     const { id, commentId } = req.params;
     try {
         const card = await cardService.deleteComment(id, commentId);
@@ -176,7 +176,7 @@ async function deleteComment(req, res) {
     }
 }
 
-async function addTodo(req, res) {
+async function addTodo(req, res, next) {
     const { id, checklistIdx } = req.params;
     let todo = req.body;
     todo._id = utilService._makeId();
@@ -190,7 +190,7 @@ async function addTodo(req, res) {
     }
 }
 
-async function deleteTodo(req, res) {
+async function deleteTodo(req, res, next) {
     const { id, checklistIdx, todoId } = req.params;
     try {
         const card = await cardService.deleteTodo(id, checklistIdx, todoId);

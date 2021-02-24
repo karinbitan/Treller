@@ -10,7 +10,7 @@ export function CardDescription(props) {
     const prevDesc = usePrevious(props.description);
     useEffect(() => {
         if (prevDesc !== props.description) {
-           setDescription(props.description)
+            setDescription(props.description)
         }
     }, [props.description])
 
@@ -24,8 +24,10 @@ export function CardDescription(props) {
     }, []);
 
     const handleClick = e => {
-        if (node.current.contains(e.target)) {
-            return;
+        if (node.current) {
+            if (node.current.contains(e.target)) {
+                return;
+            }
         }
         toggleDescriptionForm(false)
         changeDescriptionForm('fake')
@@ -53,13 +55,13 @@ export function CardDescription(props) {
             <div className="headline flex align-center">
                 <i className="fas fa-align-left icon"></i>
                 <h3>Description</h3>
-                {(description && !isDescriptionFormShow) &&
-                    <button className="card-details-btn"
+                {(description && !isDescriptionFormShow && !props.board.isTemplate) &&
+                    <button className="card-details-btn edit"
                         onClick={() => openDescriptionForm()}>
                         Edit
                         </button>}
             </div>
-            <form ref={node} className="description-form"
+            {!props.board.isTemplate ? <form ref={node} className="description-form"
                 onSubmit={(ev) => onUpdateDescription(ev)}>
                 <textarea
                     onClick={() => openDescriptionForm()}
@@ -80,6 +82,7 @@ export function CardDescription(props) {
                         </button>
                     </div>}
             </form>
+                : <div className="description-form description value fake">{description}</div>}
         </section>
     )
 }

@@ -34,6 +34,9 @@ export class _Boards extends Component {
         socketService.on('newUserNotification', (userId) => {
             this.loadUser()
         })
+        socketService.on('updateUser', (userId) => {
+            this.loadUser()
+        })
         
         eventBus.on('loadUser', ()=>{
             this.loadUser();

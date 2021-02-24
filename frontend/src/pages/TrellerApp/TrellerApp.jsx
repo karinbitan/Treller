@@ -193,10 +193,16 @@ class _TrellerApp extends Component {
     });
 
     onDragEnd = async (result) => {
+        let { board } = this.props;
+
+        if (board.isTemplate) {
+            return
+        }
+
         if (!result.destination) {
             return;
         }
-        let { board } = this.props;
+
         if (result.type === 'list') {
             const listsToChange = this.reorder(
                 board.lists,
@@ -338,7 +344,7 @@ class _TrellerApp extends Component {
                                     )}
                                 </Droppable>
                             </DragDropContext>
-                            <AddList addList={this.addList} />
+                            {!board.isTemplate && <AddList addList={this.addList} />}
                         </section>
                     </section>
                 </section>}

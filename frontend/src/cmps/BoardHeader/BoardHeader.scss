@@ -8,6 +8,7 @@
         font-weight: bold;
         font-size: x-large;
         color: white;
+        padding: 5px;
     }
     & .favorite-board {
         cursor: pointer;
@@ -49,24 +50,6 @@
         margin-left: 5px;
     }
 
-    & .menu-container {
-        position: relative;
-        & .show-menu-icon {
-            cursor: pointer;
-            color: white;
-            float: right;
-            height: 35px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: none;
-            padding: 10px;
-            & span {
-                margin-left: 4px;
-                font-size: 16px;
-            }
-        }
-    }
     & .add-from-template {
         border: unset;
         font-size: larger;

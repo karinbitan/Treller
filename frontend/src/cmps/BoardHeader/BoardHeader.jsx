@@ -89,7 +89,7 @@ export class BoardHeader extends Component {
         this.props.addBoard(board);
     }
 
-    updateBoardDescription = (ev, description) =>{
+    updateBoardDescription = (ev, description) => {
         ev.preventDefault();
         this.props.updateBoardDescription(description);
     }
@@ -103,12 +103,14 @@ export class BoardHeader extends Component {
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
-                    <form onSubmit={this.onUpdateBoardTitle}>
-                        <input type="text" ref={el => this.myTextRef = el} className="board-header-icon board-name" name="title"
+                    {!board.isTemplate ? <form onSubmit={this.onUpdateBoardTitle}>
+                        <input type="text" ref={el => this.myTextRef = el}
+                            className="board-header-icon board-name" name="title"
                             placeholder="Enter your board name here..."
                             value={boardToEdit.title} onChange={this.handleChangeBoard}
                             onBlur={this.onUpdateBoardTitle} />
                     </form>
+                        : <div className="board-header-icon board-name">{boardToEdit.title}</div>}
                     <button onClick={this.onFavoriteBoard} className="board-header-icon favorite-board">
                         <i style={isFavorite ? { color: "#f2d600" } : {}} className="far fa-star"></i></button>
                          |
@@ -118,12 +120,11 @@ export class BoardHeader extends Component {
                         })}
                     </div>
         |
-        <InviteMembers board={board} user={user} inviteMemberToBoard={this.inviteMemberToBoard} />
-                    <div className="menu-container flex">
-                        <BoardMenu isAdmin={isAdmin} board={board}
-                         user={user} onDeleteBoard={this.deleteBoard}
-                         onChangeStyle={this.changeStyle} onUpdateBoardDescription={this.updateBoardDescription} />
-                    </div>
+                        {!board.isTemplate && <InviteMembers board={board} user={user}
+                        inviteMemberToBoard={this.inviteMemberToBoard} />}
+                    <BoardMenu isAdmin={isAdmin} board={board}
+                        user={user} onDeleteBoard={this.deleteBoard}
+                        onChangeStyle={this.changeStyle} onUpdateBoardDescription={this.updateBoardDescription} />
                     {board.isTemplate && <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
                         {templateMsg}
                     </button>}
