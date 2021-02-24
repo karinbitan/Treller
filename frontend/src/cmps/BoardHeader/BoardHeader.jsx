@@ -9,7 +9,6 @@ export class BoardHeader extends Component {
     state = {
         boardToEdit: null,
         isFavorite: false,
-        isMenuOpen: false,
         style: {
             backgroundColor: null
         },
@@ -79,9 +78,6 @@ export class BoardHeader extends Component {
         this.props.deleteBoard();
     }
 
-    closeMenu = () => {
-        this.setState({ isMenuOpen: false })
-    }
 
     inviteMemberToBoard = (member) => {
         this.props.inviteMemberToBoard(member);
@@ -100,7 +96,7 @@ export class BoardHeader extends Component {
 
     render() {
         const { board, user } = this.props;
-        const { boardToEdit, isFavorite, isMenuOpen, templateMsg } = this.state;
+        const { boardToEdit, isFavorite, templateMsg } = this.state;
         const isAdmin = user.boardsOwner.some(boardId => {
             return boardId === board._id;
         });
@@ -124,12 +120,9 @@ export class BoardHeader extends Component {
         |
         <InviteMembers board={board} user={user} inviteMemberToBoard={this.inviteMemberToBoard} />
                     <div className="menu-container flex">
-                        <button className="board-header-icon show-menu-icon" onClick={() => this.setState({ isMenuOpen: !this.state.isMenuOpen })}>
-                            <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
-                        </button>
-                        {isMenuOpen && <BoardMenu isAdmin={isAdmin} board={board}
-                         user={user} closeMenu={this.closeMenu} onDeleteBoard={this.deleteBoard}
-                         onChangeStyle={this.changeStyle} onUpdateBoardDescription={this.updateBoardDescription} />}
+                        <BoardMenu isAdmin={isAdmin} board={board}
+                         user={user} onDeleteBoard={this.deleteBoard}
+                         onChangeStyle={this.changeStyle} onUpdateBoardDescription={this.updateBoardDescription} />
                     </div>
                     {board.isTemplate && <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
                         {templateMsg}

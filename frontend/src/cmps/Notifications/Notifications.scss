@@ -1,64 +1,76 @@
 .notifications-container {
-    margin-left: 5px;
-    background: #fff;
-    border-radius: 3px;
-    box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
-    position: absolute;
-    width: 303px;
-    z-index: 70;
-    top: 37px;
-    right: 0;
-    max-height: 300px;
-    padding: 10px;
-    overflow-y: auto;
-    & .headline {
-        border-bottom: 1px solid rgba(9, 30, 66, 0.13);
-        color: #5e6c84;
-        text-align: center;
-    }
-    & .circle {
-        color: cornflowerblue;
+    & .notification-badge {
         position: absolute;
-        right: 10px;
+        top: -4px;
+        left: -5px;
+        padding: 3px 6px;
+        border-radius: 50%;
+        background: red;
+        color: white;
+        font-size: 12px;
     }
-    & ul {
-        text-align: center;
-        color: #172b4d;
-        & .notification {
-            margin: 0 10px;
-            font-size: 14px;
+    & .notifications {
+        margin-left: 5px;
+        background: #fff;
+        border-radius: 3px;
+        box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+        position: absolute;
+        width: 303px;
+        z-index: 70;
+        top: 37px;
+        right: 0;
+        max-height: 300px;
+        padding: 10px;
+        overflow-y: auto;
+        & .headline {
             border-bottom: 1px solid rgba(9, 30, 66, 0.13);
-            padding-bottom: 5px;
-            & .notification-message {
-                margin: 0;
-            }
-            & .notification-action {
-                cursor: pointer;
-                margin-left: 5px;
-                border: 1px solid black;
-                &.approve {
-                    background-color: cornflowerblue;
-                    color: white;
-                    padding: 6px;
-                    font-weight: bold;
-                    &:hover {
-                        background-color: rgb(83, 122, 194);
-                    }
-                }
-                &.decline {
-                    padding: 6px;
-                    font-weight: bold;
-                    &:hover {
-                        background-color: rgb(199, 197, 197);
-                    }
-                }
-            }
-        }
-        & .show-more {
-            font-weight: bold;
-            font-size: 18px;
             color: #5e6c84;
-            cursor: pointer;
+            text-align: center;
+        }
+        & .circle {
+            color: cornflowerblue;
+            position: absolute;
+            right: 10px;
+        }
+        & ul {
+            text-align: center;
+            color: #172b4d;
+            & .notification {
+                margin: 0 10px;
+                font-size: 14px;
+                border-bottom: 1px solid rgba(9, 30, 66, 0.13);
+                padding-bottom: 5px;
+                & .notification-message {
+                    margin: 0;
+                }
+                & .notification-action {
+                    cursor: pointer;
+                    margin-left: 5px;
+                    border: 1px solid black;
+                    &.approve {
+                        background-color: cornflowerblue;
+                        color: white;
+                        padding: 6px;
+                        font-weight: bold;
+                        &:hover {
+                            background-color: rgb(83, 122, 194);
+                        }
+                    }
+                    &.decline {
+                        padding: 6px;
+                        font-weight: bold;
+                        &:hover {
+                            background-color: rgb(199, 197, 197);
+                        }
+                    }
+                }
+            }
+            & .show-more {
+                font-weight: bold;
+                font-size: 18px;
+                color: #5e6c84;
+                cursor: pointer;
+            }
         }
     }
 }

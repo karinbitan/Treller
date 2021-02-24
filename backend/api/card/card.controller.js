@@ -68,7 +68,7 @@ async function addCard(req, res) {
         socketConnection.to(card.createdBy.boardId).emit('newNotification',
             {
                 message: `Card title: ${card.title} was added`,
-                byUser: { id: user._id, fullName: user.fullName }
+                byUser: { _id: user._id, fullName: user.fullName }
             })
         res.send(card);
     } catch (err) {
@@ -125,7 +125,7 @@ async function addCardMember(req, res) {
         socketConnection.to(realCard.createdBy.boardId).emit('newNotification',
             {
                 message: `${member.fullName} was added to card: ${realCard.title}`,
-                byUser: { id: member._id, fullName: member.fullName }
+                byUser: { _id: member._id, fullName: member.fullName }
             })
         res.send(realCard);
     } catch (err) {

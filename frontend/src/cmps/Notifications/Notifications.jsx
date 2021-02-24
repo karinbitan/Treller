@@ -3,10 +3,14 @@ import { eventBus } from '../../services/eventBusService';
 import { connect } from 'react-redux';
 import { addMemberToBoard } from '../../store/actions/boardActions';
 import { updateUserCollection } from '../../store/actions/userActions';
+
+import Notification from './../../assets/bell-icon.png';
+
 import './Notifications.scss';
 
 export function _Notifications(props) {
     const [showMoreNum, showMore] = useState(3);
+    const [isNotificationOptionOpen, toggleNotificationsOptions] = useState(false);
     const node = useRef();
 
     useEffect(() => {
@@ -22,7 +26,7 @@ export function _Notifications(props) {
         if (node.current.contains(e.target)) {
             return;
         }
-        props.closePopUp();
+        toggleNotificationsOptions(false);
 
     };
 
@@ -49,9 +53,26 @@ export function _Notifications(props) {
         }
     }
 
+    const unreadNotificationNumber = () => {
+        if (props.user) {
+            if (props.user.notifications && props.user.notifications.length > 0) {
+                let notifications = props.user.notifications;
+                const unreadNotifications = notifications.filter(notification => {
+                    return notification.status.isSeen === false;
+                })
+                return unreadNotifications.length;
+            }
+        }
+    }
+
     return (
-        <div className="notifications-container" ref={node}>
-            <button onClick={props.closePopUp} className="close-btn"><i className="fas fa-times"></i></button>
+        <section className="notifications-container" ref={node}>
+        {unreadNotificationNumber() ? <span className="notification-badge">{unreadNotificationNumber()}</span> : ''}
+        <button className="icon-container" onClick={() => toggleNotificationsOptions(!isNotificationOptionOpen)}>
+            <img className="icon" src={Notification} alt="notifications" />
+        </button>
+       {isNotificationOptionOpen &&  <div className="notifications">
+            <button onClick={() => toggleNotificationsOptions(false)} className="close-btn"><i className="fas fa-times"></i></button>
             <p className="headline">Notifications</p>
             {props.user.notifications &&
                 <ul>
@@ -75,7 +96,9 @@ export function _Notifications(props) {
                 </ul>}
             {!props.user.notifications &&
                 <span>No notifications yet...</span>}
-        </div>)
+        </div>}
+        </section>
+        )
 }
 
 const mapDispatchToProps = {

@@ -12,7 +12,7 @@ async function getBoards(req, res) {
         res.send(boards);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -23,7 +23,7 @@ async function getBoard(req, res) {
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -40,20 +40,20 @@ async function getBoardForBoardPage(req, res) {
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
 async function deleteBoard(req, res) {
     const boardId = req.params.id;
     try {
-        _deleteBoardFromUser(boardId);
-        _deleteCardsFromBoard(boardId);
+        await _deleteBoardFromUser(boardId);
+        await _deleteCardsFromBoard(boardId);
         await boardService.deleteBoard(boardId);
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -82,7 +82,7 @@ async function addBoard(req, res) {
         res.send(board);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -96,7 +96,7 @@ async function updateBoard(req, res) {
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -110,7 +110,7 @@ async function updateBoardCollection(req, res) {
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -128,7 +128,7 @@ async function inviteMemberToBoard(req, res) {
         res.send(msg);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -139,12 +139,13 @@ async function addMemberToBoard(req, res) {
         await boardService.addMemberToBoard(boardId, member);
         await userService.addMemberToBoard(boardId, member._id);
         const realBoard = await boardService.getBoardById(boardId);
+        socketConnection.to(boardId).emit('updatedBoard', boardId); 
         socketConnection.to(member._id).emit('newNotification',
             { message: `You were added to board: ${realBoard.title}`, id: boardId })
         res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -159,15 +160,15 @@ async function addList(req, res) {
         socketConnection.to(boardId).emit('updatedBoard', boardId);
         socketConnection.to(boardId).emit('newNotification',
             {
-                message: `List: ${list.title} was added by`, byUser: {
-                    id: user._id,
-                    fullName: user.fullName
+                message: `List: ${list.title} was added by`,
+                byUser: {
+                    _id: user._id, fullName: user.fullName
                 }
             })
         res.send(realList);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -175,7 +176,7 @@ async function deleteList(req, res) {
     const boardId = req.params.id;
     const { listId } = req.params;
     try {
-        _deleteCardsFromList(boardId, listId);
+        await _deleteCardsFromList(boardId, listId);
         await boardService.deleteList(boardId, listId);
         socketConnection.to(boardId).emit('updatedBoard', boardId);
         // Need list title //
@@ -187,7 +188,7 @@ async function deleteList(req, res) {
         res.end();
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -200,7 +201,7 @@ async function updateListTitle(req, res) {
         res.send(realList);
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -214,7 +215,7 @@ async function deleteCardFromList(req, res) {
         res.send();
     } catch (err) {
         console.log(`ERROR: ${err}`)
-        next({status: 500, message: err})
+        next({ status: 500, message: err })
     }
 }
 
@@ -227,7 +228,7 @@ async function _deleteBoardFromUser(boardId) {
                 socketConnection.to(member._id).emit('newNotification',
                     {
                         message: `${board.title} was deleted by`,
-                        byUser: { id: member._id, fullName: member.fullName }
+                        byUser: { _id: member._id, fullName: member.fullName }
                     })
             });
         }

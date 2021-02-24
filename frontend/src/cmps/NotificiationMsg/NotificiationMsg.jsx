@@ -5,22 +5,24 @@ export function NotificiationMsg({ notification, user }) {
     const [isTimePass, setTime] = useState(false)
 
     useEffect(() => {
+        console.log(notification)
         setTimeout(() => {
             setTime(true)
         }, 4000);
+        setTime(false)
     }, [notification]);
 
     const isUser = () => {
         if (notification.byUser) {
-            if (notification.byUser.id === user._id) return true;
-            else return false;
-        }
+            const isUser = (notification.byUser._id === user._id ? 'You' : notification.byUser.fullName);
+            return isUser;
+        } else return ''
     }
 
     return (
         <section>
             {(notification && !isTimePass) && <div className="notification-msg">
-                <p>{`${notification.message} ${notification.byUser ? 'by' : ''} ${isUser() ? 'You' : notification.byUser.fullName}`}</p>
+                <p>{`${notification.message} ${notification.byUser ? 'by' : ''} ${isUser()}`}</p>
             </div>}
         </section>
     )

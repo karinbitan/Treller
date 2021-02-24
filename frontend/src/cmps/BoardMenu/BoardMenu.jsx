@@ -4,6 +4,7 @@ import './BoardMenu.scss';
 
 export function BoardMenu(props) {
     const [description, setDescription] = useState(props.board.description)
+    const [isMenuOpen, toggleMenu] = useState(false)
     const [menuType, toggleMenuType] = useState('');
     const [onForm, toggleOnForm] = useState(false);
     const node = useRef()
@@ -21,13 +22,16 @@ export function BoardMenu(props) {
         if (node.current.contains(e.target)) {
             return;
         }
-        props.closeMenu();
+        toggleMenu(false);
     };
 
     return (
-        <section ref={node} className="board-menu pop-up">
-            {menuType === '' && <div>
-                <button onClick={props.closeMenu} className="close-btn"><i className="fas fa-times"></i></button>
+        <section ref={node} className="board-menu-container">
+            <button className="board-header-icon show-menu-icon" onClick={()=>toggleMenu(!isMenuOpen)}>
+                <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
+            </button>
+            {( isMenuOpen && menuType === '') && <div className="board-menu pop-up">
+                <button onClick={() => toggleMenu(false)} className="close-btn"><i className="fas fa-times"></i></button>
                 <p className="headline">Menu</p>
                 <div className="main-menu">
                     <ul>
