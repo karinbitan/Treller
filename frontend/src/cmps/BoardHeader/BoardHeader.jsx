@@ -113,13 +113,13 @@ export class BoardHeader extends Component {
                         : <div className="board-header-icon board-name">{boardToEdit.title}</div>}
                     <button onClick={this.onFavoriteBoard} className="board-header-icon favorite-board">
                         <i style={isFavorite ? { color: "#f2d600" } : {}} className="far fa-star"></i></button>
-                         |
-                <div className="board-header-icon avatar-container">
+                    <span className="line line1">|</span>
+                    <div className="board-header-icon avatar-container flex align-center">
                         {board.members.map(member => {
                             return <Avatar className="member-avatar" name={member.fullName} size="25" round={true} key={member._id} />
                         })}
                     </div>
-        |
+        <span className="line line2">|</span>
                         {!board.isTemplate && <InviteMembers board={board} user={user}
                         inviteMemberToBoard={this.inviteMemberToBoard} />}
                     <BoardMenu isAdmin={isAdmin} board={board}
