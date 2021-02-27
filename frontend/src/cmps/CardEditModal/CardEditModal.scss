@@ -10,7 +10,7 @@
         border: 1px solid black;
         background-color: rgb(0, 0, 0); /* Fallback color */
         background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-        & .close-btn {
+        & .close-btn-modal {
             margin: 10px;
             font-family: quicksand;
             position: absolute;
@@ -63,14 +63,14 @@
     & form {
         position: relative;
         z-index: 1;
-        & .card-title-textarea{
+        & .card-title-textarea {
             resize: unset;
             height: 90px;
             width: 240px;
         }
     }
-    & .card-edit-options{
-        & p{
+    & .card-edit-options {
+        & .card-option {
             background: rgba(0, 0, 0, 0.6);
             border-radius: 3px;
             clear: both;
@@ -83,9 +83,23 @@
             padding: 6px 12px 6px 8px;
             text-decoration: none;
             transition: transform 85ms ease-in;
-            &:hover{
-                background-color: rgba(0,0,0,.9);
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.9);
             }
         }
+    }
+    & .move-card {
+        position: relative;
+        cursor: auto;
+    }
+    & .select-card {
+        color: #172b4d;
+    }
+    & .select-move-card {
+        width: 182px;
+        height: 30px;
+        background-color: rgba(9, 30, 66, 0.04);
+        border-radius: 3px;
+        margin-bottom: 5px;
     }
 }

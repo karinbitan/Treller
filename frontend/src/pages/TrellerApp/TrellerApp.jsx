@@ -37,6 +37,10 @@ class _TrellerApp extends Component {
             this.props.history.push(`/treller/board/${boardId}`);
         })
         eventBus.on('loadUser', () => this.loadUser());
+        eventBus.on('move-card', (cardInfo)=>{
+            this.moveCard(cardInfo.list, cardInfo.listIdx, cardInfo.newListPosition,
+                 cardInfo.cardIdx, cardInfo.newCardPosition)
+        })
 
         socketService.setup();
         socketService.emit('register board', boardId);
@@ -84,11 +88,11 @@ class _TrellerApp extends Component {
 
     favoriteBoard = async (isFavorite) => {
         const { board, user } = this.props;
-        if (isFavorite){
+        if (isFavorite) {
             await this.props.addBoardToFavorite(user._id, board._id)
         }
         else {
-            await this.props.removeBoardFromFavorite(user._id, board._id );
+            await this.props.removeBoardFromFavorite(user._id, board._id);
         }
     }
 
@@ -127,6 +131,13 @@ class _TrellerApp extends Component {
         await this.props.addList(board._id, list);
     }
 
+    moveList = async (startListIdx, endListIdx) => {
+        let { board } = this.props;
+        const reOrderLists = this.reorder(board.lists, startListIdx, endListIdx);
+        board.lists = reOrderLists;
+        await this.props.updateBoard(board);
+    }
+
     updateListTitle = async (listIdx, listTitle) => {
         const { board } = this.props;
         await this.props.updateListTitle(board._id, listIdx, listTitle);
@@ -151,6 +162,31 @@ class _TrellerApp extends Component {
     updateCardTitle = async (cardId, cardTitle) => {
         const title = cardTitle;
         await this.props.updateCardCollection(cardId, { title });
+    }
+
+    moveCard = async (list, sourceListIdx, destListIdx, startCardIdx, endCardIdx) => {
+        debugger
+        let { board } = this.props;
+        const listId = list._id;
+        if (sourceListIdx === destListIdx) {
+            const reOrderList = this.reorder(list.cards, startCardIdx, endCardIdx);
+            list.cards = reOrderList;
+            const listIdx = board.lists.findIndex(list => {
+                return list._id === listId;
+            })
+            board.lists.splice(listIdx, 1, list);
+        } else {
+            let sourceList = [list];
+            let destList = [board.lists[destListIdx]];
+            const source = { droppableId: list._id, index: startCardIdx };
+            const dest = { droppableId: destList[0]._id, index: endCardIdx };
+            this.move(sourceList, destList, source, dest);
+            sourceList = sourceList[0];
+            destList = destList[0];
+            board.lists.splice(sourceListIdx, 1, sourceList);
+            board.lists.splice(destListIdx, 1, destList);
+        }
+        await this.props.updateBoard(board);
     }
 
     // DRAG AND DROP //
@@ -248,16 +284,16 @@ class _TrellerApp extends Component {
                     result.source,
                     result.destination
                 );
-                const destListIdx = lists.findIndex(list => {
-                    return list._id === destListId;
-                })
                 const sourceListIdx = lists.findIndex(list => {
                     return list._id === sourceListId;
                 })
-                destList = destList[0];
+                const destListIdx = lists.findIndex(list => {
+                    return list._id === destListId;
+                })
                 sourceList = sourceList[0];
-                lists.splice(destListIdx, 1, destList);
+                destList = destList[0];
                 lists.splice(sourceListIdx, 1, sourceList);
+                lists.splice(destListIdx, 1, destList);
             }
             board.lists = lists;
             this.updateBoard(board);
@@ -326,7 +362,9 @@ class _TrellerApp extends Component {
                                                                                 updateListTitle={this.updateListTitle}
                                                                                 deleteCard={this.deleteCard}
                                                                                 updateCardTitle={this.updateCardTitle}
-                                                                                addCard={this.addCard} />
+                                                                                addCard={this.addCard}
+                                                                                moveList={this.moveList}
+                                                                                moveCard={this.moveCard} />
                                                                             {provided.placeholder}
                                                                         </div>
                                                                     )}

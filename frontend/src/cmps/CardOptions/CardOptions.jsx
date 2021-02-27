@@ -5,10 +5,16 @@ import './CardOptions.scss';
 
 
 export function CardOptions(props) {
+    const { type, board, card, cardIdx, listIdx } = props;
     const [checklist, newChecklist] = useState({ title: '', todos: [] });
     const [date, setDate] = useState(props.card.dueDate);
-    const { type, board, card } = props;
+    const [newCardPosition, setNewCardPosition] = useState(cardIdx);
+    const [newListPosition, setNewListPosition] = useState(listIdx);
     const node = useRef();
+
+    useEffect(()=>{
+        console.log(newCardPosition, newListPosition)
+    })
 
     useEffect(() => {
         // add when mounted
@@ -38,13 +44,13 @@ export function CardOptions(props) {
         return isMember;
     }
 
-    const addMember = (member)=>{
-        if(isMember(member._id)) return;
+    const addMember = (member) => {
+        if (isMember(member._id)) return;
         props.func(member);
     }
 
     return (
-        <div ref={node} className="card-options">
+        <div ref={node} className="card-options" style={{ top: props.screenCard.top - 105, left: props.screenCard.left - 164 }}>
             <button className="close-btn" onClick={closePopUp}><i className="fas fa-times"></i></button>
             {type === 'Cover' && <div className="covers">
                 <p className="headline-option">{props.type}</p>
@@ -86,7 +92,7 @@ export function CardOptions(props) {
                 </ul>}
             </div>}
             {type === 'Labels' && <div className="labels-container">
-                <p className="headline-option">{props.type}</p>
+                <p className="headline-option">{type}</p>
                 <div className="labels">
                     <ul className="flex column align-center">
                         <li className="label green" onClick={() => props.func('green')}></li>
@@ -99,7 +105,7 @@ export function CardOptions(props) {
                 </div>
             </div>}
             {type === 'Checklists' && <div className="checklists-container">
-                <p className="headline-option">{props.type}</p>
+                <p className="headline-option">{type}</p>
                 <form onSubmit={(ev) => props.func(ev, checklist)}>
                     <input type="text" name="title" value={checklist.title} className="checklist-add-input"
                         onChange={(ev) => newChecklist({ ...checklist, [ev.target.name]: ev.target.value })}
@@ -109,12 +115,48 @@ export function CardOptions(props) {
                 </form>
             </div>}
             {type === 'Due Date' && <div className="due-date-form">
-                <p className="headline-option">{props.type}</p>
+                <p className="headline-option">{type}</p>
                 <form onSubmit={(ev) => props.func(ev, date)}>
                     <input type="datetime-local" value={date} name="dueDate"
                         onChange={(ev) => setDate(ev.target.value)} />
                     <br />
                     <button className="save-btn">Add</button>
+                </form>
+            </div>}
+            {type === 'Move' && <div className="move-card-container">
+                <p className="headline-option">{type}</p>
+                <form onSubmit={(ev) => props.func(ev, newListPosition, newCardPosition)}>
+                    <label className="select-card">Select List:</label>
+                    <br />
+                    <select className="select-move-card" defaultValue={listIdx}
+                        onChange={(ev) => setNewListPosition(+ev.target.value)}>
+                        {board.lists.map((list, idx) => {
+                            return (
+                                <option key={list._id}
+                                    value={idx}>
+                                    {list.title}{idx === listIdx ? ' (Current)' : ''}
+                                </option>
+                            )
+                        })}
+                    </select>
+                    <br />
+                    <label className="select-card">Select Position:
+                            </label>
+                    <br />
+                    {(board.lists[newListPosition]) ?
+                        <select className="select-move-card" defaultValue={props.cardIdx}
+                            onChange={(ev) => setNewCardPosition(+ev.target.value)}>
+                            {board.lists[newListPosition].cards.map((card, idx) => {
+                                return (
+                                    <option key={card._id} value={idx}>{idx}{((idx === props.cardIdx) && (props.listIdx === newListPosition)) ? ' (Current)' : ''}</option>
+                                )
+                            })}
+                        </select>
+                        : <select className="select-move-card">
+                            <option value={0}>1</option>
+                        </select>}
+                    <br />
+                    <button className="add-form-btn">Move</button>
                 </form>
             </div>}
         </div>)

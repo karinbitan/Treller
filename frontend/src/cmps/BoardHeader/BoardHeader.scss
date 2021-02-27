@@ -61,4 +61,10 @@
             background-color: #14223b;
         }
     }
+    @media screen and (max-width: 480px) {
+        .board-name,
+        .favorite-board {
+            margin-bottom: 10px;
+        }
+    }
 }

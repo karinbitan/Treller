@@ -80,4 +80,22 @@
             }
         }
     }
+    @media screen and (max-width: 480px) {
+        .template-container {
+            flex-wrap: wrap;
+        }
+        .template-img {
+            width: 100px;
+            height: 70px;
+            margin-bottom: 10px;
+        }
+        .user-boards-container {
+            flex-wrap: wrap;
+            & .board-link {
+                width: 100px;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+        }
+    }
 }

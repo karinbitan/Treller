@@ -48,7 +48,7 @@ export function CardComments(props) {
             <div className="comment-form-container flex">
                 {user && <Avatar className="avatar-comment" name={user.fullName} size="30" round={true} />}
                 <form onFocus={() => toggleCommentOption(true)}
-                    className="comment-form flex wrap" onSubmit={(ev) => onAddComment(ev)}>
+                    className="comment-form flex cloumn wrap" onSubmit={(ev) => onAddComment(ev)}>
                     <textarea className="comment-text-area" name="txt" placeholder="Add a comment..." value={comment.txt}
                         onChange={(ev) => setComment({ ...comment, [ev.target.name]: ev.target.value })}>
                     </textarea>

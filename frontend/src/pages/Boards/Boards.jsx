@@ -116,7 +116,7 @@ export class _Boards extends Component {
                         <div className="flex justify-center align-center"><i className="fas fa-columns"></i><h2>Treller Templates</h2></div>
                         <p className="template-info"><span className="bold">Create your own board with our new template.</span>
                             <br /> Manage and monitoring your board, easily with Treller Templates! </p>
-                        <ul className="flex justify-center flex-wrap">
+                        <div className="template-container flex justify-center flex-wrap">
                             {templates.map(template => {
                                 return (
                                     <Link to={`/treller/board/${template.boardId}`} className="template-img" style={{ backgroundImage: `url(${template.smallImg})` }}
@@ -126,7 +126,7 @@ export class _Boards extends Component {
                                     </Link>
                                 )
                             })}
-                        </ul>
+                        </div>
                     </div>
                     <div className="user-boards-container">
                         {(user.favoriteBoards && user.favoriteBoards.length > 0) && <div className="boards-container">

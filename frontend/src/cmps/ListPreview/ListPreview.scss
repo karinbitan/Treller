@@ -5,7 +5,7 @@
     max-height: 100%;
     margin-right: 10px;
     position: relative;
-    & .list-title-form{
+    & .list-title-form {
         padding: 4px 4px;
     }
     & .list-title-textarea {
@@ -55,6 +55,16 @@
                 }
             }
         }
+    }
+    & .select-list {
+        color: #172b4d;
+    }
+    & .select-move-list {
+        width: 182px;
+        height: 30px;
+        background-color: rgba(9, 30, 66, 0.04);
+        border-radius: 3px;
+        margin-bottom: 5px;
     }
 }
 

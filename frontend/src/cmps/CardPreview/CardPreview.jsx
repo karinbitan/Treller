@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { utilService } from '../../services/utilService';
 // import { socketService } from '../../services/socketService';
@@ -7,23 +7,29 @@ import Avatar from 'react-avatar';
 import { CardEditModal } from '../CardEditModal/CardEditModal';
 
 import './CardPreview.scss';
+import { eventBus } from '../../services/eventBusService';
 
 export function CardPreview(props) {
+    const { card, isSearch } = props;
     const location = useLocation();
     const [isEditModalOpen, toggleEditModal] = useState(false);
     const [isEditBtnShow, toggleEditBtn] = useState(false);
     const [screenCard, setScreenCard] = useState({ top: null, left: null })
     let history = useHistory();
-    const { card, isSearch } = props;
+
+    useEffect(() => {
+        eventBus.emit('listInfo', { listIdx: props.listIdx, list: props.list });
+        eventBus.emit('cardIdx', props.cardIdx);
+    })
 
     const cardDetail = (ev) => {
         ev.stopPropagation();
         if (isEditModalOpen) return;
-        const x = {
+        const pushToCardDetails = {
             pathname: `/treller/card/${card._id}`,
             state: { background: location }
         }
-        history.push(x)
+        history.push(pushToCardDetails);
     }
 
     const deleteCard = async () => {
@@ -46,7 +52,18 @@ export function CardPreview(props) {
     const openEditModal = (ev) => {
         ev.stopPropagation();
         setScreenCard({ top: ev.screenY, left: ev.screenX });
-        toggleEditModal(true)
+        toggleEditModal(true);
+    }
+
+    const closeEditModal = () => {
+        toggleEditModal(false);
+        toggleEditBtn(false);
+    }
+
+    const moveCard = (newListPosition, newCardPosition) => {
+        props.moveCard(newListPosition, props.cardIdx, newCardPosition);
+        toggleEditModal(false);
+        toggleEditBtn(false);
     }
 
     return (
@@ -95,11 +112,16 @@ export function CardPreview(props) {
                 </div>
                 {(isEditModalOpen && !props.board.isTemplate) && <CardEditModal
                     cardTitle={card.title}
-                    onCloseEditModal={() => toggleEditModal(false)}
+                    onCloseEditModal={() => closeEditModal()}
                     updateCardTitle={updateCardTitle}
                     onDeleteCard={deleteCard}
                     onCopyCard={copyCard}
-                    screenCard={screenCard} />}
+                    screenCard={screenCard}
+                    list={props.list}
+                    board={props.board}
+                    moveCard={moveCard}
+                    cardIdx={props.cardIdx}
+                    listIdx={props.listIdx} />}
             </section>
         </section>
     )

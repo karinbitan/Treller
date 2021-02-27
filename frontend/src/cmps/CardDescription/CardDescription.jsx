@@ -61,7 +61,7 @@ export function CardDescription(props) {
                         Edit
                         </button>}
             </div>
-            {!props.board.isTemplate ? <form ref={node} className="description-form"
+            {!props.board.isTemplate ? <form ref={node} className="description-form flex column"
                 onSubmit={(ev) => onUpdateDescription(ev)}>
                 <textarea
                     onClick={() => openDescriptionForm()}

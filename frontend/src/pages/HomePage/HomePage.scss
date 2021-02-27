@@ -36,9 +36,10 @@
         }
     }
     & p {
-        align-self: flex-end;
+        align-self: center;
         text-align: center;
         font-size: 1.75rem;
+        padding-left: 5px;
         & .start-now-link {
             border: none;
             padding: 10px;
@@ -54,7 +55,7 @@
         }
     }
     & .banner {
-        max-width: 657px;
+        max-width: 100%;
     }
 }
 

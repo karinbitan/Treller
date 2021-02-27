@@ -15,6 +15,7 @@ import { CardChecklists } from '../../cmps/CardChecklists/CardChecklists';
 import { CardDescription } from '../../cmps/CardDescription/CardDescription';
 
 import './CardDetails.scss';
+import { eventBus } from '../../services/eventBusService';
 
 export class _CardDetails extends Component {
     state = {
@@ -23,7 +24,12 @@ export class _CardDetails extends Component {
         cardOptionType: '',
         cardOptionFunc: '',
         listIdx: null,
-        listTitle: null
+        list: null,
+        cardIdx: null,
+        screenCard: {
+            top: null,
+            left: null
+        }
     }
 
     async componentDidMount() {
@@ -31,7 +37,6 @@ export class _CardDetails extends Component {
         await this.props.setCard(cardId);
         await this.props.getLoggedInUser();
         this.setState({ cardToEdit: this.props.card });
-        this.getListIdx();
 
         socketService.setup();
         socketService.emit('register card', cardId);
@@ -40,6 +45,13 @@ export class _CardDetails extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        eventBus.on('listInfo', (info) => {
+            this.setState({ listIdx: info.listIdx });
+            this.setState({ list: info.list });
+        });
+        eventBus.on('cardIdx', (cardIdx) => {
+            this.setState({ cardIdx })
+        });
         if (prevProps.card !== this.props.card) {
             const cardToEdit = this.props.card;
             this.setState({ cardToEdit });
@@ -52,30 +64,6 @@ export class _CardDetails extends Component {
     //     socketService.terminate();
     // }
 
-    getListIdx = async () => {
-        const { card } = this.props;
-        if (card) {
-            let board = await this.props.getBoardById(card.createdBy.boardId);
-            let listId = card.createdBy.listId;
-            const listIdx = board.lists.findIndex(list => {
-                return list._id === listId;
-            })
-            this.setState({ listIdx })
-        }
-        this.getList();
-    }
-
-    getList = async () => {
-        let { listIdx } = this.state;
-        const { card, board } = this.props;
-        if (board) {
-            let board = await this.props.getBoardById(card.createdBy.boardId);
-            const list = board.lists[listIdx]
-            this.setState({ listTitle: list.title })
-        }
-    }
-
-    // CARD //
     setCard = async (cardId) => {
         await this.props.setCard(cardId);
         this.setState({ cardToEdit: this.props.card });
@@ -117,6 +105,12 @@ export class _CardDetails extends Component {
         const { card, board } = this.props;
         const { listIdx } = this.state;
         await this.props.addCard(board._id, card.createdBy.listId, listIdx, card);
+    }
+
+    moveCard = async (ev, newListPosition, newCardPosition) => {
+        ev.preventDefault();
+        const { list, listIdx, cardIdx } = this.state;
+        eventBus.emit('move-card', { list, listIdx, newListPosition, cardIdx, newCardPosition })
     }
 
     // DESCRIPTION //
@@ -177,10 +171,10 @@ export class _CardDetails extends Component {
     }
 
     handleCheckDueDate = async ({ target }) => {
-        const {card} = this.props;
+        const { card } = this.props;
         let isComplete = null;
         if (target.checked) {
-           isComplete = true;
+            isComplete = true;
         } else {
             isComplete = false;
         }
@@ -226,11 +220,11 @@ export class _CardDetails extends Component {
     }
 
     // CARD OPTIONS //
-
-    openPopUp = (type, func) => {
+    openPopUp = (ev, type, func) => {
         this.setState({ isCardOptionOpen: true })
         this.setState({ cardOptionType: type })
         this.setState({ cardOptionFunc: func })
+        this.setState({ screenCard: { top: ev.screenY, left: ev.screenX } })
     }
 
     closePopUp = () => {
@@ -239,11 +233,12 @@ export class _CardDetails extends Component {
 
     render() {
         const { user, board, card } = this.props;
-        const { cardToEdit, isCardOptionOpen, cardOptionType, cardOptionFunc, listTitle } = this.state;
+        const { cardToEdit, isCardOptionOpen, cardOptionType, cardOptionFunc,
+            list, listIdx, cardIdx, screenCard } = this.state;
 
         return (
             <section className="card-details modal">
-                {(card && cardToEdit && user) && <section className="modal-content">
+                {(card && cardToEdit && user && board) && <section className="modal-content">
                     <button className="close-btn close-details-modal" onClick={this.onCloseModal}>
                         <i className="fas fa-times"></i>
                     </button>
@@ -254,18 +249,18 @@ export class _CardDetails extends Component {
                     <div className="title-container">
                         <div className="headline flex align-center">
                             <i className="far fa-file-alt icon"></i>
-                           {!board.isTemplate ? <form className="card-title-form">
+                            {!board.isTemplate ? <form className="card-title-form">
                                 <textarea className="card-title" ref={el => this.myTextareaRef = el}
                                     name="title" value={cardToEdit.title}
                                     onChange={this.handleChangeCard} onKeyDown={this.onEnterPress}
                                     onBlur={this.updateTitle}>
                                 </textarea>
                             </form>
-                            :<div className="card-title">{cardToEdit.title}</div>}
+                                : <div className="card-title">{cardToEdit.title}</div>}
                         </div>
-                        <p className="list-name">in list {listTitle}</p>
+                        {list && <p className="list-name">in list {list.title}</p>}
                     </div>
-                    <div className="flex">
+                    <div className="main-sidebar flex">
                         <div className="main-container">
                             <div className="other-details flex">
                                 {(card.members && card.members.length > 0) &&
@@ -304,37 +299,44 @@ export class _CardDetails extends Component {
                                 </div>}
                             </div>
                             <CardDescription description={card.description} updateDescription={this.updateDescription}
-                            board={board} />
+                                board={board} />
                             {(card.checklists && card.checklists.length > 0) &&
                                 <CardChecklists checklists={card.checklists} addTodo={this.addTodo} onDeleteTodo={this.deleteTodo}
-                                    handleCheckChecklist={this.handleCheckChecklist} onDeleteChecklist={this.deleteChecklist} 
+                                    handleCheckChecklist={this.handleCheckChecklist} onDeleteChecklist={this.deleteChecklist}
                                     board={board} />}
                             {!board.isTemplate && <CardComments comments={card.comments} user={user}
                                 addComment={this.addComment}
                                 onDeleteComment={this.deleteComment} />}
                         </div>
-                       {!board.isTemplate && <div className="side-container flex column align-center">
+                        {!board.isTemplate && <div className="side-container flex column align-center">
                             <h5>ADD TO CARD</h5>
-                            <button onClick={() => this.openPopUp('Members', this.addMember)} className="card-details-btn">
-                                <i className="fas fa-user-friends"></i> Members</button>
-                            <button onClick={() => this.openPopUp('Cover', this.addCover)} className="card-details-btn">
-                                <i className="fas fa-palette"></i> Cover</button>
-                            <button onClick={() => this.openPopUp('Labels', this.addLabel)} className="card-details-btn">
-                                <i className="fas fa-tags"></i> Labels</button>
-                            <button onClick={() => this.openPopUp('Checklists', this.addChecklist)} className="card-details-btn">
-                                <i className="fas fa-tasks"></i> Checklist</button>
-                            <button onClick={() => this.openPopUp('Due Date', this.setDate)} className="card-details-btn">
-                                <i className="fas fa-calendar-week"></i> Due Date</button>
-                            <br />
+                            <div className="add-to-card flex column">
+                                <button onClick={(ev) => this.openPopUp(ev, 'Members', this.addMember)} className="card-details-btn">
+                                    <i className="fas fa-user-friends"></i> Members</button>
+                                <button onClick={(ev) => this.openPopUp(ev, 'Cover', this.addCover)} className="card-details-btn">
+                                    <i className="fas fa-palette"></i> Cover</button>
+                                <button onClick={(ev) => this.openPopUp(ev, 'Labels', this.addLabel)} className="card-details-btn">
+                                    <i className="fas fa-tags"></i> Labels</button>
+                                <button onClick={(ev) => this.openPopUp(ev, 'Checklists', this.addChecklist)} className="card-details-btn">
+                                    <i className="fas fa-tasks"></i> Checklist</button>
+                                <button onClick={(ev) => this.openPopUp(ev, 'Due Date', this.setDate)} className="card-details-btn">
+                                    <i className="fas fa-calendar-week"></i> Due Date</button>
+                                <br />
+                            </div>
                             <h5>ACTIONS</h5>
-                            <button onClick={this.copyCard} className="card-details-btn">
-                                <i className="fas fa-copy"></i> Copy</button>
-                            <button onClick={this.deleteCard} className="card-details-btn">
-                                <i className="fas fa-trash"></i> Delete</button>
-                        </div> }
+                            <div className="actions flex column">
+                                <button onClick={this.copyCard} className="card-details-btn">
+                                    <i className="fas fa-copy"></i> Copy</button>
+                                <button onClick={this.deleteCard} className="card-details-btn">
+                                    <i className="fas fa-trash"></i> Delete</button>
+                                <button onClick={(ev) => this.openPopUp(ev, 'Move', this.moveCard)} className="card-details-btn">
+                                    <i className="fas fa-trash"></i> Move</button>
+                            </div>
+                        </div>}
                     </div>
                     {isCardOptionOpen && <CardOptions board={board} type={cardOptionType} card={card}
-                        closePopUp={this.closePopUp} func={cardOptionFunc} />}
+                        listIdx={listIdx} cardIdx={cardIdx}
+                        closePopUp={this.closePopUp} func={cardOptionFunc} screenCard={screenCard} />}
                 </section>}
             </section>
         )

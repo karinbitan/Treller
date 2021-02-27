@@ -1,55 +1,61 @@
-.main-header {
-    margin-left: 5px;
-    margin-right: 5px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    flex-wrap: wrap;
-    & .logo {
-        width: 100px;
-        font-family: "Yellowtail";
-        color: white;
-        font-size: 1.75rem;
-        opacity: 0.6;
-        &:hover {
-            opacity: 0.8;
-        }
-    }
-
-    & .icon {
-        width: 20px;
-    }
-
-    & .icon-container {
-        background-color: hsla(0, 0%, 100%, 0.3);
-        border: unset;
-        width: 35px;
-        height: 35px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        border-radius: 3px;
-        position: relative;
-        & :not:first-child {
-            margin-left: 5px;
-        }
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.171);
-        }
-    }
-
-    & .icon-container:last-of-type {
+header {
+    & .main-header {
+        margin-left: 5px;
         margin-right: 5px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        flex-wrap: wrap;
+        & .logo {
+            width: 100px;
+            font-family: "Yellowtail";
+            color: white;
+            font-size: 1.75rem;
+            opacity: 0.6;
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+
+        & .icon {
+            width: 20px;
+        }
+
+        & .icon-container {
+            background-color: hsla(0, 0%, 100%, 0.3);
+            border: unset;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 3px;
+            position: relative;
+            & :not:first-child {
+                margin-left: 5px;
+            }
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.171);
+            }
+        }
+
+        & .icon-container:last-of-type {
+            margin-right: 5px;
+        }
+
+        & .menu-container {
+            flex-grow: 1;
+        }
+
+        @media screen and (max-width: 480px) {
+
+            .icon-container {
+                width: 30px;
+                height: 30px;
+            }
+            .icon {
+                width: 18px;
+            }
+        }
     }
-
-    & .menu-container {
-        flex-grow: 1;
-    }
-
-}
-
-@media screen and (max-width: 480px) {
-    // .logo {
-    //     display: none;
-    // }
 }

@@ -95,4 +95,14 @@
             }
         }
     }
+    @media screen and (max-width: 480px) {
+        .comment-form-container {
+            & .comment-form {
+                width: 250px;
+                & .comment-text-area {
+                    width: 250px;
+                }
+            }
+        }
+    }
 }
