@@ -60,7 +60,7 @@ export function CardChecklists(props) {
                                             onChange={ev => onHandleCheckChecklist(ev, todo, checklistIdx, todoIdx)}
                                             checked={todo.isDone} />
                                         <label htmlFor={`todo${todoIdx}`} style={{ textDecoration: todo.isDone ? 'line-through' : 'none' }}>
-                                            {todo.title}
+                                            {todo.title} {todo.createAt}
                                         </label>
                                        {!props.board.isTemplate && <button onClick={() => props.onDeleteTodo(checklistIdx, todo._id)} className="delete-todo"
                                             style={{ display: isDeleteBtnShow && currTodoIdx === todoIdx ? 'block' : 'none' }}>
@@ -70,7 +70,7 @@ export function CardChecklists(props) {
                                 })}
                             </ul>}
                            {!props.board.isTemplate &&  <div>
-                            {!isAddTodoFormShow ? <button className="card-details-btn flex open-form" onClick={toggleAddTodoForm}>Add Todo</button>
+                            {!isAddTodoFormShow ? <button className="card-details-btn flex open-form add-todo-btn" onClick={toggleAddTodoForm}>Add Todo</button>
                                 : <form onSubmit={ev => onAddTodo(ev, checklistIdx)} className="add-todo">
                                     <textarea name="title" value={todo.title}
                                         onChange={ev => setTodo({ ...todo, [ev.target.name]: ev.target.value })}></textarea>

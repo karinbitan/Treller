@@ -258,11 +258,11 @@ export class _CardDetails extends Component {
                             </form>
                                 : <div className="card-title">{cardToEdit.title}</div>}
                         </div>
-                        {list && <p className="list-name">In list: {list.title}</p>}
+                        {list && <p className="list-name">In list <span>{list.title}</span></p>}
                     </div>
                     <div className="main-sidebar flex">
                         <div className="main-container">
-                            <div className="other-details flex">
+                            <div className="other-details flex wrap">
                                 {(card.members && card.members.length > 0) &&
                                     <div className="members-container">
                                         <h5 className="other-details-headline">Members</h5>
@@ -277,7 +277,7 @@ export class _CardDetails extends Component {
                                 {(card.labels && card.labels.length > 0) &&
                                     <div className="labels-container">
                                         <h5 className="other-details-headline">Labels</h5>
-                                        <div className="flex">
+                                        <div className="flex wrap">
                                             {card.labels.map(label => {
                                                 return <div className={`label ${label}`}
                                                     key={label}></div>

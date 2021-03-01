@@ -34,7 +34,7 @@
             padding: 7px;
         }
         & .icon {
-            font-size: 20px;
+            font-size: 18px;
             position: absolute;
             left: 20px;
             color: #42526e;
@@ -149,7 +149,7 @@
         & .card-title {
             text-align: start;
             width: 100%;
-            padding: 10px 8px;
+            padding: 7px 0;
             background-color: transparent;
             resize: none;
             border: none;
@@ -164,19 +164,26 @@
         & .list-name {
             text-align: start;
             margin-bottom: 0;
+            margin-top: 0;
             margin-left: 40px;
+            color: #5e6c84;
+            font-size: small;
+            & span {
+                text-decoration: underline;
+            }
         }
     }
     & .main-container {
+        flex-basis: 500px;
         padding: 0 10px 10px;
-        margin-right: 50px;
         & .other-details {
             margin-left: 40px;
+            text-align: start;
             & > div {
                 margin-right: 20px;
             }
             & .other-details-headline {
-                margin-bottom: 10px;
+                margin-bottom: 5px;
             }
             & .members-container {
                 display: flex;
@@ -187,7 +194,6 @@
             & .labels-container {
                 display: flex;
                 flex-direction: column;
-                align-items: center;
                 justify-content: center;
                 & h4 {
                     text-align: start;
@@ -196,8 +202,9 @@
                     width: 50px;
                     height: 32px;
                     border-radius: 3px;
+                    margin-bottom: 3px;
                     &:not(:last-child) {
-                        margin-right: 5px;
+                        margin-right: 3px;
                     }
                     &.green {
                         background-color: #61bd4f;
@@ -220,6 +227,7 @@
                 }
             }
             & .due-date-container {
+                width: 100%;
                 & h4 {
                     text-align: start;
                 }
@@ -263,10 +271,11 @@
                 margin: 8px 12px;
             }
         }
-        & .side-container {
-            & h4 {
-                color: #5e6c84;
-            }
+    }
+    & .side-container {
+        flex-basis: 220px;
+        & h4 {
+            color: #5e6c84;
         }
     }
     @media screen and (max-width: 480px) {
@@ -290,6 +299,16 @@
         }
         .main-container {
             margin-left: 0;
+            & .other-details {
+                margin-left: 0;
+                flex-direction: column;
+                & .labels-container {
+                    margin-bottom: 10px;
+                }
+                & .due-date-container {
+                    margin-bottom: 10px;
+                }
+            }
         }
         .card-options {
             right: 0;

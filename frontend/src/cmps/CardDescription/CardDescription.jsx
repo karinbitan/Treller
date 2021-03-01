@@ -82,7 +82,7 @@ export function CardDescription(props) {
                         </button>
                     </div>}
             </form>
-                : <div className="description-form description value fake">{description}</div>}
+                : <div className="description-form description value fake" style={{cursor: 'auto'}}>{description}</div>}
         </section>
     )
 }

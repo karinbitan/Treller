@@ -100,7 +100,6 @@ async function addBoard(req, res, next) {
         }))
         board.lists = lists;
         await boardService.updateBoard(board);
-        console.log(lists)
         await userService.addBoardToUser(req.session.user._id, board._id);
         const realBoard = await boardService.getBoardById(board._id)
         res.send(realBoard);

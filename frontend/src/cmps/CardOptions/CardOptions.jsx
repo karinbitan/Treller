@@ -45,6 +45,18 @@ export function CardOptions(props) {
         props.func(member);
     }
 
+    const checkIfLabelExist = (currLabel) => {
+        let labels = card.labels;
+        if (labels) {
+            const isLabelExist = labels.some(label => {
+                if (label) {
+                    return label === currLabel;
+                }
+            })
+            return isLabelExist;
+        }
+    }
+
     return (
         <div ref={node} className="card-options" style={{ top: props.screenCard.top - 105 }}>
             <button className="close-btn" onClick={closePopUp}><i className="fas fa-times"></i></button>
@@ -91,12 +103,24 @@ export function CardOptions(props) {
                 <p className="headline-option">{type}</p>
                 <div className="labels">
                     <ul className="flex column align-center">
-                        <li className="label green" onClick={() => props.func('green')}></li>
-                        <li className="label yellow" onClick={() => props.func('yellow')}></li>
-                        <li className="label orange" onClick={() => props.func('orange')}></li>
-                        <li className="label red" onClick={() => props.func('red')}></li>
-                        <li className="label purple" onClick={() => props.func('purple')}></li>
-                        <li className="label blue" onClick={() => props.func('blue')}></li>
+                        <li className="label green" onClick={() => props.func('green')}>
+                            {checkIfLabelExist('green') ? <i class="fas fa-check"></i> : ''}
+                        </li>
+                        <li className="label yellow" onClick={() => props.func('yellow')}>
+                            {checkIfLabelExist('yellow') ? <i class="fas fa-check"></i> : ''}
+                        </li>
+                        <li className="label orange" onClick={() => props.func('orange')}>
+                            {checkIfLabelExist('orange') ? <i class="fas fa-check"></i> : ''}
+                        </li>
+                        <li className="label red" onClick={() => props.func('red')}>
+                            {checkIfLabelExist('red') ? <i class="fas fa-check"></i> : ''}
+                        </li>
+                        <li className="label purple" onClick={() => props.func('purple')}>
+                            {checkIfLabelExist('purple') ? <i class="fas fa-check"></i> : ''}
+                        </li>
+                        <li className="label blue" onClick={() => props.func('blue')}>
+                            {checkIfLabelExist('blue') ? <i class="fas fa-check"></i> : ''}
+                        </li>
                     </ul>
                 </div>
             </div>}

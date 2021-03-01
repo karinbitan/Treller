@@ -99,7 +99,6 @@ class _TrellerApp extends Component {
         if (!boardToAdd) {
             boardToAdd = boardService.getEmptyBoard();
         }
-        debugger
         const board = await this.props.addBoard(boardToAdd);
         await this.props.setBoard(board._id);
         this.props.history.push(`/treller/board/${board._id}`);
@@ -165,7 +164,6 @@ class _TrellerApp extends Component {
     }
 
     moveCard = async (list, sourceListIdx, destListIdx, startCardIdx, endCardIdx) => {
-        debugger
         let { board } = this.props;
         const listId = list._id;
         if (sourceListIdx === destListIdx) {
