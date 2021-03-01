@@ -131,7 +131,7 @@ export class BoardHeader extends Component {
                     <span className="line line2">|</span>
                     {!board.isTemplate && <InviteMembers board={board} user={user}
                         inviteMemberToBoard={this.inviteMemberToBoard} />}
-                    <BoardMenu isAdmin={this.checkIfAdmin() ? true : false} board={board}
+                    <BoardMenu board={board} isAdmin={this.checkIfAdmin() ? true : false} board={board}
                         user={user} onDeleteBoard={this.deleteBoard}
                         onChangeStyle={this.changeStyle} onUpdateBoardDescription={this.updateBoardDescription} />
                     {board.isTemplate && <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>

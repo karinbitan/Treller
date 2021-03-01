@@ -111,7 +111,7 @@ export function ListPreview(props) {
             </div>}
             <div ref={node}>
                 <button onClick={() => toggleListAction(!isListActionOpen)} className="list-menu-icon"><i className="fas fa-ellipsis-h"></i></button>
-                {isListActionOpen && <div className="list-actions">
+                {(isListActionOpen && !board.isTemplate)&& <div className="list-actions">
                     <button className="close-btn" onClick={() => toggleListAction(false)}><i className="fas fa-times"></i></button>
                     {!isMoveListOpen ? <div className="list-main-menu">
                         <p>List Actions</p>

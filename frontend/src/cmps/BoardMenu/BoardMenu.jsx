@@ -27,7 +27,7 @@ export function BoardMenu(props) {
 
     return (
         <section ref={node} className="board-menu-container">
-            <button className="board-header-icon show-menu-icon" onClick={() => toggleMenu(!isMenuOpen)}>
+            <button style={{marginLeft: props.board.isTemplate ? '5px' : ''}}  className="board-header-icon show-menu-icon" onClick={() => toggleMenu(!isMenuOpen)}>
                 <i className="fas fa-ellipsis-h"></i><span>Show Menu</span>
             </button>
             {isMenuOpen && <div className="board-menu pop-up">

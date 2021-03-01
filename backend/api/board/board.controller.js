@@ -3,6 +3,7 @@ const userService = require('./../user/user.service');
 const cardService = require('./../card/card.service');
 const utilService = require('./../../services/util.service');
 const { socketConnection } = require('./../../server');
+const ObjectId = require('mongodb').ObjectId;
 
 // BOARD CRUD //
 
@@ -63,6 +64,9 @@ async function addBoard(req, res, next) {
         if (board.isTemplate) {
             board.isTemplate = false;
             delete board._id;
+            board.lists.forEach(list => {
+                list._id = utilService._makeId();
+            })
         }
 
         if (req.session.user) {
@@ -78,8 +82,28 @@ async function addBoard(req, res, next) {
             )
         }
         await boardService.addBoard(board);
+        const lists = await Promise.all(board.lists.map(async (list) => {
+            if (list.cards && list.cards.length) {
+                list.cards = await Promise.all(list.cards.map(async (card) => {
+                    delete card._id
+                    card.createdBy = {
+                        boardId: board._id,
+                        listId: list._id,
+                        userId: req.session.user._id
+                    }
+                    const newCard = await cardService.addCard(card);
+                    // delete card;
+                    return newCard;
+                }))
+            }
+            return list;
+        }))
+        board.lists = lists;
+        await boardService.updateBoard(board);
+        console.log(lists)
         await userService.addBoardToUser(req.session.user._id, board._id);
-        res.send(board);
+        const realBoard = await boardService.getBoardById(board._id)
+        res.send(realBoard);
     } catch (err) {
         console.log(`ERROR: ${err}`)
         next({ status: 403, message: err })
@@ -139,7 +163,7 @@ async function addMemberToBoard(req, res, next) {
         await boardService.addMemberToBoard(boardId, member);
         await userService.addMemberToBoard(boardId, member._id);
         const realBoard = await boardService.getBoardById(boardId);
-        socketConnection.to(boardId).emit('updatedBoard', boardId); 
+        socketConnection.to(boardId).emit('updatedBoard', boardId);
         socketConnection.to(member._id).emit('newNotification',
             { message: `You were added to board: ${realBoard.title}`, id: boardId })
         res.send(realBoard);

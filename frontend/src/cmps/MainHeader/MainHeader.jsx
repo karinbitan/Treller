@@ -17,6 +17,7 @@ function _MainHeader(props) {
     const history = useHistory();
 
     const logout = async () => {
+        debugger
         await props.logout();
         history.push('/')
     }

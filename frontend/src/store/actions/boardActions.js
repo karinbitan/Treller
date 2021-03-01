@@ -63,6 +63,7 @@ export function addBoard(board) {
     try {
       const savedBoard = await boardService.addBoard(board);
       dispatch({ type: 'ADD_BOARD', board: savedBoard });
+      console.log(savedBoard)
       return savedBoard;
     } catch (err) {
       console.log('ERROR!', err);

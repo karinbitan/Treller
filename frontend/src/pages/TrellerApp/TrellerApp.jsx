@@ -99,6 +99,7 @@ class _TrellerApp extends Component {
         if (!boardToAdd) {
             boardToAdd = boardService.getEmptyBoard();
         }
+        debugger
         const board = await this.props.addBoard(boardToAdd);
         await this.props.setBoard(board._id);
         this.props.history.push(`/treller/board/${board._id}`);
