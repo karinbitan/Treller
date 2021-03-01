@@ -51,7 +51,6 @@ export function _Filter(props) {
                 setListTitle(list.title);
             })
         }
-        console.log(searchResult)
     }
 
     const closeForm = () => {

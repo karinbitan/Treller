@@ -12,10 +12,6 @@ export function CardOptions(props) {
     const [newListPosition, setNewListPosition] = useState(listIdx);
     const node = useRef();
 
-    useEffect(()=>{
-        console.log(newCardPosition, newListPosition)
-    })
-
     useEffect(() => {
         // add when mounted
         document.addEventListener("mousedown", handleClick);

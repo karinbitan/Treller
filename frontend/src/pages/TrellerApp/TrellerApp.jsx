@@ -73,7 +73,6 @@ class _TrellerApp extends Component {
 
     updateBoard = async (board) => {
         await this.props.updateBoard(board);
-        console.log(board)
     }
 
     updateBoardTitle = async (title) => {

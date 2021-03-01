@@ -102,7 +102,6 @@ export class BoardHeader extends Component {
                 if (!boardId) return;
                 return boardId === board._id;
             });
-            console.log(isAdmin)
             return isAdmin;
         }
     }

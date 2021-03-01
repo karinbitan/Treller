@@ -5,7 +5,6 @@ export function NotificiationMsg({ notification, user }) {
     const [isTimePass, setTime] = useState(false)
 
     useEffect(() => {
-        console.log(notification)
         setTimeout(() => {
             setTime(true)
         }, 4000);
