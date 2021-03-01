@@ -13,6 +13,7 @@ export function _Login(props) {
     const [loginCred, setLoginCred] = useState({ userName: '', password: '' })
     const [loginType, setLoginType] = useState('');
     const [isLoginFailed, toggleIsLoginFailed] = useState(false);
+    const [isSignUpFailed, toggleIsSignUpFailed] = useState(false);
 
 
     const login = async (ev) => {
@@ -32,10 +33,16 @@ export function _Login(props) {
     }
 
     const signup = async (ev) => {
+        debugger
         ev.preventDefault();
-        await props.signup(signUpCred);
-        setSignUpCred(null)
-        props.history.push('/user/id');
+        const user = await props.signup(signUpCred);
+        if (!user) {
+            console.log('no user')
+            setSignUpCred(newUser)
+            toggleIsSignUpFailed(true)
+        } else {
+            props.history.push(`/user/${user._id}/boards`);
+        }
     }
 
     return (
@@ -52,6 +59,7 @@ export function _Login(props) {
                         placeholder="Enter user name" value={signUpCred.userName} /><br />
                     <input type="password" name="password" onChange={(ev) => setSignUpCred({ ...signUpCred, [ev.target.name]: ev.target.value })}
                         placeholder="Enter password" value={signUpCred.password} /><br />
+                        {isSignUpFailed && <p className="login-failed">Sign Up failed, please try again</p>}
                     <button>Sign Up</button>
                 </form>
             </div>}

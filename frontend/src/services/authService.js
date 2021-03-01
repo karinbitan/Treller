@@ -8,11 +8,14 @@ export const authService = {
 }
 
 async function login(userCred) {
+    debugger
     try {
         const user = await httpService.post('auth/login', userCred);
         if (!user) {
+            console.log('no user - service')
             throw Error('login failed')
         }
+        debugger
         return user;
     } catch (err) {
         console.log('UserService: err in login', err);
@@ -20,8 +23,14 @@ async function login(userCred) {
 }
 
 async function signup(userCred) {
+    debugger
     try {
         const user = await httpService.post('auth/signup', userCred);
+        if (!user) {
+            console.log('no user - service')
+            throw Error('login failed')
+        }
+        debugger
         return user;
     } catch (err) {
         console.log('UserService: err in signup', err);
