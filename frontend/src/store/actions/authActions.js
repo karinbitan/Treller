@@ -9,7 +9,6 @@ export function login(userCred) {
 }
 
 export function signup(userCred) {
-  debugger
   return async dispatch => {
     const user = await authService.signup(userCred);
     dispatch({ type: 'SET_USER', user });

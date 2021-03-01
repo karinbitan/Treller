@@ -33,11 +33,9 @@ export function _Login(props) {
     }
 
     const signup = async (ev) => {
-        debugger
         ev.preventDefault();
         const user = await props.signup(signUpCred);
         if (!user) {
-            console.log('no user')
             setSignUpCred(newUser)
             toggleIsSignUpFailed(true)
         } else {

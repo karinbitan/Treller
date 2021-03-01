@@ -97,9 +97,12 @@ export class BoardHeader extends Component {
     checkIfAdmin = () => {
         const { board, user } = this.props;
         if (user) {
+            if (!user.boardsOwner || !user.boardsOwner.length) return
             const isAdmin = user.boardsOwner.some(boardId => {
+                if (!boardId) return;
                 return boardId === board._id;
             });
+            console.log(isAdmin)
             return isAdmin;
         }
     }
