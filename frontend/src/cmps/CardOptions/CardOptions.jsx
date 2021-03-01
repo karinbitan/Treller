@@ -46,7 +46,7 @@ export function CardOptions(props) {
     }
 
     return (
-        <div ref={node} className="card-options" style={{ top: props.screenCard.top - 105, left: props.screenCard.left - 164 }}>
+        <div ref={node} className="card-options" style={{ top: props.screenCard.top - 105 }}>
             <button className="close-btn" onClick={closePopUp}><i className="fas fa-times"></i></button>
             {type === 'Cover' && <div className="covers">
                 <p className="headline-option">{props.type}</p>
