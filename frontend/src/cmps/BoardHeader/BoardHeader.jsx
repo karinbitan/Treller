@@ -94,12 +94,18 @@ export class BoardHeader extends Component {
         this.props.updateBoardDescription(description);
     }
 
+    checkIfAdmin = () => {
+        if (this.props.user) {
+            const isAdmin = user.boardsOwner.some(boardId => {
+                return boardId === board._id;
+            });
+            return isAdmin;
+        }
+    }
+
     render() {
         const { board, user } = this.props;
         const { boardToEdit, isFavorite, templateMsg } = this.state;
-        const isAdmin = user.boardsOwner.some(boardId => {
-            return boardId === board._id;
-        });
         return (
             <section>
                 {(board && boardToEdit) && < section className="board-header flex align-center">
@@ -119,10 +125,10 @@ export class BoardHeader extends Component {
                             return <Avatar className="member-avatar" name={member.fullName} size="25" round={true} key={member._id} />
                         })}
                     </div>
-        <span className="line line2">|</span>
-                        {!board.isTemplate && <InviteMembers board={board} user={user}
+                    <span className="line line2">|</span>
+                    {!board.isTemplate && <InviteMembers board={board} user={user}
                         inviteMemberToBoard={this.inviteMemberToBoard} />}
-                    <BoardMenu isAdmin={isAdmin} board={board}
+                    <BoardMenu isAdmin={this.checkIfAdmin() ? true : false} board={board}
                         user={user} onDeleteBoard={this.deleteBoard}
                         onChangeStyle={this.changeStyle} onUpdateBoardDescription={this.updateBoardDescription} />
                     {board.isTemplate && <button className="add-from-template" onClick={this.onAddBoardWithTemplate}>
