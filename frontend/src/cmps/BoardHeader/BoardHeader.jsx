@@ -96,7 +96,7 @@ export class BoardHeader extends Component {
 
     checkIfAdmin = () => {
         const { board, user } = this.props;
-        if (this.props.user) {
+        if (user) {
             const isAdmin = user.boardsOwner.some(boardId => {
                 return boardId === board._id;
             });
