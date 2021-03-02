@@ -49,9 +49,9 @@ function getEmptyUser() {
         userName: '',
         password: '',
         imgUrl: '',
-        boardOwner: [],
-        boardMember: [],
-        cardMember : [],
+        boardsOwner: [],
+        boardsMember: [],
+        cardsMember : [],
         favoriteBoards: [],
         notifications: []
     }
